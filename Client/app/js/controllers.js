@@ -14,7 +14,8 @@ angular.module('myApp.controllers', [])
     $scope.update = function (user) {
         $scope.master = angular.copy(user);
 
-        if (!validate(user)) {
+        if (!$scope.registerForm.$valid)
+        {
             showError("Invalid inputs");
             return;
         }
@@ -23,12 +24,6 @@ angular.module('myApp.controllers', [])
 
         $location.path('/RegisterOk');
     };
-
-    function validate(user) {
-        if (user == null)
-            return false;
-        return user.Email != "" && user.Password != "" && user.RePassword;
-    }
 
     function showError(msg) {
         $scope.hasError = true;
