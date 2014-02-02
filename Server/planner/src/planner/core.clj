@@ -11,10 +11,10 @@
 (defn port [args]
   (if-let [port (first (remove #{"-dev"} args))]
     (Integer/parseInt port)
-    3000))
+    9090))
 
 (defn -main [& args]
   (http-kit/run-server
     (if (dev? args) (reload/wrap-reload app) app)
     {:port (port args)})
-  (timbre/info "server started on port"))
+  (timbre/info "server started on port 9090"))

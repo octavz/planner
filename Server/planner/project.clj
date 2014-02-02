@@ -20,10 +20,7 @@
    [org.clojure/clojurescript "0.0-2138"]
    [org.clojure/clojure "1.5.1"]
    [log4j "1.2.17" :exclusions
-    [javax.mail/mail
-     javax.jms/jms
-     com.sun.jdmk/jmxtools
-     com.sun.jmx/jmxri]]
+    [javax.mail/mail javax.jms/jms com.sun.jdmk/jmxtools com.sun.jmx/jmxri]]
    [lib-noir "0.8.0"]
    [compojure "1.1.6"]
    [selmer "0.5.9"]
@@ -34,12 +31,12 @@
   :ragtime {:migrations ragtime.sql.files/migrations,
             :database "jdbc:postgresql://localhost/planner?user=postgres&password=root"}
   :profiles {:uberjar {:aot :all},
-             :production {:ring {:open-browser? false, 
-                                 :stacktraces? false, 
+             :production {:ring {:open-browser? false,
+                                 :stacktraces? false,
                                  :auto-reload? false}},
-             :dev {:dependencies [[ring-mock "0.1.5"] 
-                                  [com.taoensso/carmine "2.4.5"] 
-                                  [midje "1.6.0"] 
+             :dev {:dependencies [[ring-mock "0.1.5"]
+                                  [com.taoensso/carmine "2.4.5"]
+                                  [midje "1.6.0"]
                                   [ring/ring-devel "1.2.1"]],
                    :env {:dev true}}}
   :url "http://example.com/FIXME"
