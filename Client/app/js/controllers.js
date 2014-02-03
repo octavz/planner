@@ -19,7 +19,7 @@ angular.module('myApp.controllers', [])
             showError("Invalid inputs");
             return;
         }
-
+        //
         updateTitle();
 
         $location.path('/RegisterOk');
