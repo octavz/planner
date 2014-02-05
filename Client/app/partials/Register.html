@@ -1,19 +1,30 @@
 <div class="Register">
-    {{title}}
+    <h4>Register</h4>
 
-    <form name="registerForm">
+    <form name="registerForm" novalidate>
         <div ng-show="hasError" class="ErrorMessageDiv">{{ErrorMessage}}</div>
 
-        <label for="email">Email</label>
-        <input type="text" name="email" ng-model="user.Email" required />
+        <div class="form-group" ng-class="{ 'has-error' : registerForm.email.$invalid && !registerForm.email.$pristine }">
+            <label for="email">Email</label>
+            <input type="email" name="email" class="form-control" ng-model="user.Email" required />
+            <p ng-show="registerForm.email.$invalid && !registerForm.email.$pristine" class="help-block">Invalid Email.</p>
+        </div>
 
-        <label for="password">Password</label>
-        <input type="password" name="password" ng-model="user.Password" required />
+        <div class="form-group" ng-class="{ 'has-error' : registerForm.password.$invalid && !registerForm.password.$pristine }">
+            <label for="password">Password</label>
+            <input type="password" name="password" class="form-control" ng-model="user.Password" required ng-minlength="6" id="PasswordID" />
+            <p ng-show="registerForm.password.$error.minlength" class="help-block">Password is too short.</p>
+        </div>
 
-        <label for="repassword">Retype password</label>
-        <input type="password" name="repassword" ng-model="user.RePassword" required />
+        <div class="form-group" ng-class="{ 'has-error' : registerForm.repassword.$error.pwmatch && !registerForm.repassword.$pristine }">
+            <label for="repassword">
+                Retype password
+            </label>
+            <input type="password" name="repassword" class="form-control" ng-model="user.RePassword" required pw-check="PasswordID" />
+            <p ng-show="registerForm.repassword.$error.pwmatch && !registerForm.repassword.$pristine" class="help-block">Password is not the same.</p>
+        </div>
 
-        <button ng-click="update(user)">
+        <button ng-click="update(user)" class="btn btn-primary" ng-disabled="registerForm.$invalid">
             Save
         </button>
     </form>

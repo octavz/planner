@@ -5,23 +5,28 @@
     <title>Planner App</title>
 
     <link rel="stylesheet" href="css/bootstrap.min.css" />
-    
+
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
 
     <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
-    <ul class="menu">
-        <li><a href="#/Register">Register</a></li>
-    </ul>
-    
-    <!-- this is a placeholder for all views (maybe the top links would be part of it)-->
-    <div ng-view></div>
-    
-    <script src="js/bootstrap.min.js"></script>
+    <div class="container">
+        <div class="col-sm-8 col-sm-offset-2">
+            <ul class="menu">
+                <li><a href="#/Register">Register</a></li>
+            </ul>
+            <h2>Super Planner</h2>
+            <!-- this is a placeholder for all views (maybe the top links would be part of it)-->
+            <div ng-view></div>
+        </div>
+    </div>
+
+    <script src="lib/jquery-2.1.0.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
     <!-- In production use:
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-    -->
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+        -->
     <script src="lib/angular/angular.js"></script>
     <script src="lib/angular/angular-route.js"></script>
     <script src="js/app.js"></script>
@@ -31,3 +36,4 @@
     <script src="js/directives.js"></script>
 </body>
 </html>
+

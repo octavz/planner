@@ -33,6 +33,7 @@ angular.module('myApp.controllers', [])
     function updateTitle() {
         $scope.title = 'Welcome ' + $scope.master.Email;
     }
+
 }])
 .controller('RegisterOkCtrl', [function () {
 
