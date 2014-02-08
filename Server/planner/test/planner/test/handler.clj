@@ -7,6 +7,7 @@
     (let [response (app (request :get "/"))]
       (fact "returns http 200" (:status response) => 200)
       (fact "body is html" (:body response) => (contains "<html>")
+      (fact "body is html" (:body response) => (contains "dsdsdhtml>")
             )))
 
   (facts "not-found route"

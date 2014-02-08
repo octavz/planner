@@ -5,5 +5,3 @@
    :subname "//localhost/planner"
    :user "postgres"
    :password "root"})
-
-
