@@ -2,7 +2,6 @@
     <h4>Register</h4>
 
     <form name="registerForm" novalidate>
-        <div ng-show="hasError" class="ErrorMessageDiv">{{ErrorMessage}}</div>
 
         <div class="form-group" ng-class="{ 'has-error' : registerForm.email.$invalid && !registerForm.email.$pristine }">
             <label for="email">Email</label>
@@ -23,7 +22,7 @@
             <input type="password" name="repassword" class="form-control" ng-model="user.RePassword" required pw-check="PasswordID" />
             <p ng-show="registerForm.repassword.$error.pwmatch && !registerForm.repassword.$pristine" class="help-block">Password is not the same.</p>
         </div>
-
+        
         <button ng-click="update(user)" class="btn btn-primary" ng-disabled="registerForm.$invalid">
             Save
         </button>
