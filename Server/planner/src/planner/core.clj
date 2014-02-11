@@ -1,4 +1,5 @@
 (ns planner.core  
+  (:use planner.auth.providers.sql)
   (:require
     [planner.handler :refer [app]]
     [ring.middleware.reload :as reload]
@@ -11,7 +12,6 @@
      [auth-code :refer [auth-code-store]]]
     )
   (:gen-class))
-(use 'planner.auth.postgres)
 
 (defn dev? [args] (some #{"-dev"} args))
 

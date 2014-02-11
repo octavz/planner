@@ -1,6 +1,7 @@
 (ns planner.repl
   (:use planner.handler
         ring.server.standalone
+        planner.auth.providers.sql
         [ring.middleware file-info file])
   (:require 
             [clauth
@@ -11,7 +12,6 @@
              [user :refer [user-store]]
              [auth-code :refer [auth-code-store]]])
   )
-(use 'planner.auth.postgres)
 
 (defonce server (atom nil))
 
