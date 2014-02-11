@@ -12,6 +12,7 @@
    [korma "0.3.0-RC6"]
    [http-kit "2.1.14"]
    [liberator "0.10.0"]
+   [clj-time "0.6.0"]
    [clauth "1.0.0-rc17"]
    [lein-light-nrepl "0.0.11"]
    [cheshire "5.3.1"]
