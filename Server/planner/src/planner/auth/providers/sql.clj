@@ -27,7 +27,11 @@
 (defn get-user-by-email [login] (first (select users (where {:login login}) (limit 1))))
 (defn delete-user [login] (update users (set-fields {:status 10}) (where {:login login})))
 
-(defn create-token [rec] (insert oauth-tokens (values rec)))
+(defn create-token [rec]
+  (transaction
+    (delete oauth-tokens (where {:user_id (:subject rec) 
+                                 :client_id (:client rec) }) ) 
+    (insert oauth-tokens (values rec))))
 (defn update-token [id token user-id subject expires scope object]
   (update oauth-tokens
           (set-fields {:id token :client_id user-id
@@ -88,7 +92,7 @@
   cl/Store
   (fetch [this t] (get-token t))
   (revoke! [this t] (delete-token t))
-  (store! [this key_param client] (create-token client))
+  (store! [this key_param rec] (create-token (update-in rec [:subject] :id )))
   (entries [this] (throw (Exception. "entries not implemented for codes")))
   (reset-store! [this] (throw (Exception. "reset not implemented for codes"))))
 

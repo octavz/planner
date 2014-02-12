@@ -17,6 +17,8 @@
    [lein-light-nrepl "0.0.11"]
    [cheshire "5.3.1"]
    [com.taoensso/tower "2.0.1"]
+   [hiccup "1.0.5"]
+   [hiccup-bootstrap "0.1.2"]
    [org.clojure/tools.reader "0.8.3"]
    [org.clojure/clojurescript "0.0-2138"]
    [org.clojure/clojure "1.5.1"]
