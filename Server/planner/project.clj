@@ -5,6 +5,7 @@
   {:init-ns planner.repl}
   :dependencies
   [[ring-server "0.3.1"]
+   [ring/ring-core "1.2.1"]
    [com.taoensso/timbre "3.0.0"]
    [ragtime "0.3.4"]
    [environ "0.4.0"]
