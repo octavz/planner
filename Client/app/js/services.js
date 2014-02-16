@@ -3,7 +3,27 @@
 /* Services */
 
 
-// Demonstrate how to register services
-// In this case it is a simple value service.
-angular.module('myApp.services', []).
-  value('version', '0.1');
+var services = angular.module('myApp.services', ['ngResource']);
+
+var baseUrl = 'http://localhost\\:8080';
+
+services.factory('DummyFactory', function ($resource) {
+    return $resource(baseUrl + '/ngdemo/web/dummy', {}, {
+        query: { method: 'GET', params: {} }
+    })
+});
+
+services.factory('UsersFactory', function ($resource) {
+    return $resource(baseUrl + '/ngdemo/web/users', {}, {
+        query: { method: 'GET', isArray: true },
+        create: { method: 'POST' }
+    })
+});
+
+services.factory('UserFactory', function ($resource) {
+    return $resource(baseUrl + '/ngdemo/web/users/:id', {}, {
+        show: { method: 'GET' },
+        update: { method: 'PUT', params: { id: '@id' } },
+        delete: { method: 'DELETE', params: { id: '@id' } }
+    })
+});

@@ -9,7 +9,7 @@ angular.module('myApp.controllers', [])
 .controller('MyCtrl2', [function () {
 
 }])
-.controller('RegisterCtrl', ['$scope', '$location', function ($scope, $location) {
+.controller('RegisterCtrl', ['$scope', '$location', 'UsersFactory', 'UserFactory', function ($scope, $location, UsersFactory, UserFactory) {
 
     $scope.title = 'Welcome';
 
@@ -18,9 +18,11 @@ angular.module('myApp.controllers', [])
 
         if (!$scope.registerForm.$valid)
         {
+
             return;
         }
 
+        UserFactory.update(user);
         $location.path('/RegisterOk');
     };
 
