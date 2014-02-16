@@ -1,6 +1,5 @@
 (ns planner.handler
   (:require [compojure.core :refer [defroutes]]
-            [planner.routes.home :refer [home-routes]]
             [planner.middleware :as middleware]
             [noir.util.middleware :refer [app-handler]]
             [compojure.route :as route]
@@ -10,11 +9,6 @@
             [environ.core :refer [env]]
             [planner.routes.auth :refer [auth-routes]]
             [planner.models.schema :as schema]))
-
-(defroutes
-  app-routes
-  (route/resources "/")
-  (route/not-found "Not Found"))
 
 (defn init
   "init will be called once when
@@ -44,7 +38,7 @@
 
 (def app
  (app-handler
-   [auth-routes home-routes app-routes]
+   [auth-routes]
    :middleware
    [middleware/template-error-page middleware/log-request]
    :access-rules

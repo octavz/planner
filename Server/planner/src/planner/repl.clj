@@ -1,7 +1,17 @@
 (ns planner.repl
   (:use planner.handler
         ring.server.standalone
-        [ring.middleware file-info file]))
+        planner.auth.providers.sql
+        [ring.middleware file-info file])
+  (:require 
+            [clauth
+             [middleware :as mw]
+             [endpoints :as ep]
+             [client :refer [client-store clients register-client]]
+             [token :refer [token-store]]
+             [user :refer [user-store]]
+             [auth-code :refer [auth-code-store]]])
+  )
 
 (defonce server (atom nil))
 
@@ -32,3 +42,10 @@
 (defn stop-server []
   (.stop @server)
   (reset! server nil))
+
+(do
+    (reset! token-store (create-token-store))
+    (reset! auth-code-store (create-code-store))
+    (reset! client-store (create-client-store))
+    (reset! user-store (create-user-store))
+)

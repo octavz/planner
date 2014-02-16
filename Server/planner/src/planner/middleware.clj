@@ -6,7 +6,7 @@
 (defn log-request [handler]
   (if (env :dev)
     (fn [req]
-      (timbre/debug req)
+      ;(timbre/debug req)
       (handler req))
     handler))
 
