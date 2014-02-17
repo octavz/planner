@@ -7,12 +7,13 @@ var services = angular.module('myApp.services', ['ngResource']);
 
 var baseUrl = 'http://localhost\\:49664';
 
-services.factory('UsersFactory', function ($resource) {
+services.factory('UsersApi', function ($resource) {
     return $resource(baseUrl + '/users', {}, {
         query: { method: 'GET', isArray: true },
-        create: { method: 'POST' }
+        register: { method: 'POST' }
     });
 });
+
 
 /*
 // sample of usage for the ngResources (more details at http://draptik.github.io/blog/2013/07/28/restful-crud-with-angularjs/)

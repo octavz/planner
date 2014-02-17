@@ -4,7 +4,7 @@
 
 angular.module('myApp.controllers', [])
 
-.controller('RegisterCtrl', ['$scope', '$location', 'UsersFactory', 'UserFactory', function ($scope, $location, UsersFactory, UserFactory) {
+.controller('RegisterCtrl', ['$scope', '$location', 'UsersApi', function ($scope, $location, UsersApi) {
 
     $scope.title = 'Welcome';
 
@@ -15,9 +15,10 @@ angular.module('myApp.controllers', [])
             return;
         }
 
-        //var userCall = UsersFactory.create(user);
-        //todo cip should we take from user.email? or from the scope, or from where?
-        var userCall = UsersFactory.create({ Email: user.Email }
+        UsersApi.register({
+            Email: user.Email,
+            Password: user.Password,
+        }
         , function (data, headers) {
             if (typeof (data.error) !== "undefined") {
                 return;
