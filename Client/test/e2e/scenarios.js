@@ -64,6 +64,23 @@ describe('my app', function () {
             expect(browser().location().url()).toBe("/RegisterOk");
         });
 
+        it('Validation - submitting an existing email should not redirect to RegisterOk view', function () {
+            //arrange
+            input('user.Email').enter('existing@mail.com');
+            input('user.Password').enter('AGoodPassword');
+            input('user.RePassword').enter('AGoodPassword');
+
+            //todo cip is it correct to make a pre-assert?
+            //pre-assert
+            expect(element('button:disabled').count()).toBe(0);
+
+            //act
+            element(':button').click();
+
+            //assert
+            expect(browser().location().url()).toBe("/Register");
+        });
+
         it('Validation - submitting an invalid field should remain in the same screen (invalid email)', function () {
             //arrange
             input('user.Email').enter('InvaliEmail.com');
