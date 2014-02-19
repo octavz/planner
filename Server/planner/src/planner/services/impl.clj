@@ -1,5 +1,6 @@
 (ns planner.services.impl
   (:use planner.repos.sql
+        validateur.validation
         planner.util)
   (:require [clj-time.core :as time]
             [ring.util.response :as rutil]
@@ -55,3 +56,16 @@
   "get user by id"
   [{req :request} id]
   {::entry {:id id :name "get"}})
+
+(def v-user-register (validation-set
+            (presence-of :email)
+            (presence-of :password)
+            (length-of :password :within (range 5 51))
+            (format-of :email :format #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+            ))
+
+(defn handler-user-register 
+  [{req :request}]
+    {:result "some value"}
+  ;{:err "some error"} 
+  )
