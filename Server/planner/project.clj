@@ -29,6 +29,7 @@
    [lib-noir "0.8.0"]
    [compojure "1.1.6"]
    [selmer "0.5.9"]
+   [com.taoensso/carmine "2.4.5"]
    [postgresql/postgresql "9.1-901.jdbc4"]]
   :ring {:handler planner.handler/app,
          :init planner.handler/init,
