@@ -67,7 +67,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage'])
             return (currentUserRights & rights) > 0;
         },
         login: function(username, rights) {
-            if (username != "") {
+            if (username != "" && username != null) {
                 CurrentUserSession.setUser(username);
                 CurrentUserSession.setRights(rights);
                 loggedIn = true;

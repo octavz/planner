@@ -3,7 +3,6 @@
 /* jasmine specs for services go here */
 
 describe('myAuth services', function() {
-    var auth;
     var accessRights;
     var currentUserSession;
 
@@ -14,8 +13,10 @@ describe('myAuth services', function() {
         module('myAuth.services');
 
     });
-    
+
     describe('Auth', function() {
+        var auth;
+
         //excuted before each "it" is run.
         beforeEach(function() {
 
@@ -65,6 +66,48 @@ describe('myAuth services', function() {
             currentUserSession.setRights(accessRights.Right2 | accessRights.Right3);
             var result = auth.authorize(accessRights.Right1);
             expect(result).toBe(false);
+        });
+
+
+    });
+
+
+    describe('Auth operations', function() {
+        var auth;
+
+        //excuted before each "it" is run.
+        beforeEach(function() {
+
+            //inject your service for testing.
+            inject(function($injector) {
+                auth = $injector.get('Auth');
+                // accessRights = $injector.get('AccessRights');
+                // currentUserSession = $injector.get('CurrentUserSession');
+            });
+        });
+
+        it('when doing a login with some right, the current user should be allowed for that right and not other rights', function() {
+            auth.login("theuser", accessRights.Right1);
+            expect(auth.authorize(accessRights.Right1)).toBe(true);
+            expect(auth.authorize(accessRights.Right2)).toBe(false);
+        });
+
+        it('when login a user, the isLoggedIn property shouyld be true, when is logged out it should be false; initial should be false', function() {
+            expect(auth.isLoggedIn()).toBe(false);
+            auth.login("theuser", accessRights.Right1);
+            expect(auth.isLoggedIn()).toBe(true);
+            auth.logout();
+            expect(auth.isLoggedIn()).toBe(false);
+        });
+
+        it('login an user with empty name is not permitted', function() {
+            expect(auth.isLoggedIn()).toBe(false);
+
+            auth.login("", accessRights.Right1);
+            expect(auth.isLoggedIn()).toBe(false);
+
+            auth.login(null, accessRights.Right1);
+            expect(auth.isLoggedIn()).toBe(false);
         });
     });
 });
