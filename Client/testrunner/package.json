@@ -1,11 +1,14 @@
 {
-  "name": "angularjs-test",
-  "description": "automate testing in  AngularJS",
-  "devDependencies": {
-    "phantomjs" : "~1.9",
-    "karma" : "~0.10",
-    "karma-junit-reporter" : "~0.1",
-    "karma-jasmine" : "~0.1",
-    "karma-ng-scenario" : "~0.1"
-  }
+    "name": "angularjs-test",
+    "description": "automate testing in  AngularJS",
+    "devDependencies": {
+        "phantomjs": "~1.9",
+        "karma": "~0.10",
+        "karma-junit-reporter": "~0.2.1",
+        "karma-jasmine": "~0.1",
+        "karma-ng-scenario": "~0.1",
+        "karma-coverage": "~0.1",
+        "karma-ie-launcher": "~0.1",
+        "karma-phantomjs-launcher": "~0.1"
+    }
 }

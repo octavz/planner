@@ -1,37 +1,56 @@
-module.exports = function(config){
+module.exports = function(config) {
     config.set({
-    basePath : '../../',
+        basePath: '../../',
 
-    files : [
-      'app/lib/angular/angular.js',
-      'app/lib/angular/angular-*.js',
-      'test/lib/angular/angular-mocks.js',
-      'app/js/**/*.js',
-      'test/unit/**/*.js'
-    ],
+        files: [
+            'app/lib/angular/angular.js',
+            'app/lib/angular/angular-*.js',
+            'app/lib/angular3rdparty/*.js',
+            'test/lib/angular/angular-mocks.js',
+            'app/js/**/*.js',
+            'test/unit/**/*.js',
+        ],
 
-    exclude : [
-      'app/lib/angular/angular-loader.js',
-      'app/lib/angular/*.min.js',
-      'app/lib/angular/angular-scenario.js'
-    ],
+        exclude: [
+            'app/lib/angular/angular-loader.js',
+            'app/lib/angular/*.min.js',
+            'app/lib/angular/angular-scenario.js'
+        ],
 
-    autoWatch : true,
+        autoWatch: true,
 
-    frameworks: ['jasmine'],
+        frameworks: ['jasmine'],
 
-    browsers : ['Chrome'],
+        // browsers : ['Chrome'],
+        browsers: ['Firefox'],
 
-    plugins : [
+        plugins: [
             'karma-junit-reporter',
+            'karma-coverage',
             'karma-chrome-launcher',
             'karma-firefox-launcher',
             'karma-jasmine'
-            ],
+        ],
 
-    junitReporter : {
-      outputFile: 'test_out/unit.xml',
-      suite: 'unit'
-    }
+        junitReporter: {
+            outputFile: 'test_out/unit.xml',
+            suite: 'unit'
+        },
 
-})}
+        // coverage reporter generates the coverage
+        reporters: ['progress', 'coverage'],
+
+        preprocessors: {
+            // source files, that you wanna generate coverage for
+            // do not include tests or libraries
+            // (these files will be instrumented by Istanbul)
+            'app/js/**/*.js': ['coverage']
+        },
+
+        // optionally, configure the reporter
+        coverageReporter: {
+            type: 'html',
+            dir: 'coverage/'
+        },
+    })
+}
