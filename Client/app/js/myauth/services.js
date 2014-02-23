@@ -2,8 +2,23 @@
 
 /* Services */
 
-
 angular.module('myAuth.services', ['ngCookies'])
+    .run(['$rootScope', '$location', 'Auth',
+        function($rootScope, $location, Auth) {
+
+        	//more details here - http://docs.angularjs.org/api/ngRoute/service/$route
+            $rootScope.$on("$routeChangeStart", function(event, next, current) {
+                if (!Auth.authorize(next.accessRights)) {
+                    if (Auth.isLoggedIn()) $location.path('/');
+                    else{
+                    	//todo cip (do we need to verify here?)
+                    	if(next.OriginalPath!="/Login")
+                    		$location.path('/Login');
+                    }
+                }
+            });
+        }
+    ])
     .factory('serviceId', function() {
         var shinyNewServiceInstance;
         //factory function body that constructs shinyNewServiceInstance
@@ -39,5 +54,9 @@ angular.module('myAuth.services', ['ngCookies'])
                 var currentUserRights = CurrentUserSession.getRights();
                 return (currentUserRights & rights) > 0;
             },
+            isLoggedIn: function() {
+                //todo cip -change here!
+                return false;
+            }
         }
     });
