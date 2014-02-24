@@ -31,7 +31,6 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage'])
 })
 
 .factory('CurrentUserSession', function($sessionStorage) {
-    //todo cip is it ok to store this in cache? what if it expires
 
     return {
         getRights: function() {
