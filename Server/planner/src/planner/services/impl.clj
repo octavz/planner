@@ -1,6 +1,7 @@
 (ns planner.services.impl
   (:use planner.repos.sql
         validateur.validation
+        planner.repos.redis
         planner.util)
   (:require [clj-time.core :as time]
             [ring.util.response :as rutil]
@@ -18,15 +19,22 @@
   (use-layout "Login" ((ep/login-handler master-client) req)))
 
 (defn oauth-login
- [req]
-  ((ep/login-handler {:client web-client-id}) req))
+  [req]
+  ((ep/login-handler 
+     {:client web-client-id 
+      :token-creator 
+      (fn [client user]
+        (when-let [token (cltoken/create-token client user)]
+          (save-session (:token token) {:client client :uid (:id user)})
+          token))
+      }) req))
 
 (defn handler-login-post
   "handle login and redirect in case of success"
   [{req :request}]
-  (let [res (oauth-login req)
-        at (-> res :session :access_token) ]
-    {::access-token at}) )
+  (when-let [res (oauth-login req) ]
+    (when-let [at (-> res :session :access_token) ]
+      {::access-token at})))
 
 (defn login-redirect 
   "doc-string"
@@ -49,23 +57,29 @@
 (defn handler-user-save 
   "creates or updates user"
   [{req :request} id]
-  (prn (str "post " id))
-  {::entry {:id (if (nil? id) "post-id" (str "put-id" id)) :name "post"}})
+  (prn "action save")
+  {:entry {:id (if (nil? id) "post-id" (str "put-id" id)) :name "post"}})
 
 (defn handler-user-get
   "get user by id"
   [{req :request} id]
-  {::entry {:id id :name "get"}})
+  {:entry {:id id :name "get"}})
 
 (def v-user-register (validation-set
             (presence-of :email)
             (presence-of :password)
             (length-of :password :within (range 5 51))
-            (format-of :email :format #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-            ))
+            (format-of :email :format #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")))
 
 (defn handler-user-register 
   [{req :request}]
-    {:result "some value"}
+    {:result "token"}
   ;{:err "some error"} 
   )
+
+(defn check-user 
+  [{req :request}]
+  (when-let [hval (get-in req [:headers "authorization"])]
+    (when-let [sess (get-session hval)]
+      true
+      )))

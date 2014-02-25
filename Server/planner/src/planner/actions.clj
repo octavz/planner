@@ -57,14 +57,14 @@
   :handle-ok #(ring-response (handler-token %)))
 
 (defresource action-user [id]
-  :allowed-methods [:get :post :put]
+  :allowed-methods [:get :put]
+  :authorized? check-user
   :available-media-types ["application/json"]
   :exists? #(handler-user-get % id)
-  :post! #(handler-user-save % nil)
   :put! #(handler-user-save % id)
   :respond-with-entity? true
-  :handle-created #(::user %)
-  :handle-ok ::entry)
+  :new? false
+  :handle-ok :entry)
 
 (defresource action-register 
   :allowed-methods [:post]
