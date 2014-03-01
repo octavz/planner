@@ -41,13 +41,12 @@
                         <p ng-show="loginForm.password.$error.minlength" class="help-block">Password is too short.</p>
                     </div>
 
-
                     <input type="submit" class="btn btn-primary" ng-disabled="loginForm.$invalid" value="Sign In" />
-                    <button ng-click='goNext("/index.html#/Register")' class="btn btn-primary">
-                        Register!
-                    </button>
-
+                    <a href="/index.html#/register">
+                        <input type="button" value="Register" class="btn btn-primary"/>
+                    </a>
                 </form>
+             
             </div>
 
         </div>
