@@ -57,6 +57,14 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage'])
     var loggedIn = false;
     var username = CurrentUserSession.getUser();
 
+    var InitStorage = function(){
+        var rights = CurrentUserSession.getRights();
+        if(rights===undefined)
+            CurrentUserSession.setRights(AccessRights.Public);
+    }
+    
+    InitStorage();
+
     if (username != null)
         loggedIn = true;
 
