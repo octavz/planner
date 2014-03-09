@@ -12,8 +12,19 @@ myAppDev.run(function ($httpBackend) {
         Email: 'existing@mail.com'
     }];
 
-    // returns the current list of phones
+    var allowedRoutes = {
+        routes: [
+            { get: '/projects' },
+            { post: '/projects' },
+            { put: '/projects' },
+            { get: '/tasks' },
+            { post: '/tasks' },
+            { put: '/tasks' }
+        ]
+    };
+
     $httpBackend.whenGET(/users/).respond(users);
+    $httpBackend.whenGET(/allowedRoutes/).respond(allowedRoutes);
 
     //todo cip dont make it relative
     $httpBackend.whenPOST(/users/).respond(function (method, url, data) {
