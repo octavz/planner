@@ -1,19 +1,11 @@
 (ns planner.routes.auth
-  (:use compojure.core)
-  (:require [planner.views.layout :as layout]
-            [compojure.route :as route]
-            [noir.session :as session]
-            [noir.response :as resp]
-            [clauth
-             [middleware :as mw]
-             [endpoints :as ep]
-             ]
-  ))
-
-(defn handle-login [id pass])
-
+  (:use compojure.core
+        planner.actions)) 
 
 (defroutes auth-routes
-  (POST "/login" [id pass] (handle-login id pass))
-  (route/files "/client/" {:root "../../Client/app"})
-)
+  (ANY "/login" [] action-login)
+  (ANY "/user" [] action-user)
+  (ANY "/logout" [] action-logout)
+  (ANY "/register" [] action-register)
+  (ANY "/token" [] action-token))
+

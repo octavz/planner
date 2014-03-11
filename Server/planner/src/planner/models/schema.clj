@@ -2,10 +2,8 @@
   (:use 
     korma.core
     korma.db
-    planner.util
-    )
-  (:require [clojure.set :as cset])
-  )
+    planner.util)
+  (:require [clojure.set :as cset]))
 
 (def db-spec
   {:subprotocol "postgresql"
@@ -29,6 +27,8 @@
   (has-one oauth-tokens)
   (has-one oauth-codes)
   )
+
+(defentity actions)
 
 (defentity oauth-tokens 
   (prepare (partial map-prep map-tokens))
