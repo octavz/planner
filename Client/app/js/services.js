@@ -3,7 +3,26 @@
 /* Services */
 
 
-// Demonstrate how to register services
-// In this case it is a simple value service.
-angular.module('myApp.services', []).
-  value('version', '0.1');
+var services = angular.module('myApp.services', ['ngResource']);
+
+var baseUrl = 'http://localhost\\:49664';
+
+services.factory('UsersApi', function ($resource) {
+    return $resource(baseUrl + '/users', {}, {
+        query: { method: 'GET', isArray: true },
+        register: { method: 'POST' }
+    });
+});
+
+
+/*
+// sample of usage for the ngResources (more details at http://draptik.github.io/blog/2013/07/28/restful-crud-with-angularjs/)
+
+services.factory('UserFactory', function ($resource) {
+    return $resource(baseUrl + '/ngdemo/web/users/:id', {}, {
+        show: { method: 'GET' },
+        update: { method: 'PUT', params: { id: '@id' } },
+        delete: { method: 'DELETE', params: { id: '@id' } }
+    });
+});
+*/

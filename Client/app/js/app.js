@@ -9,8 +9,9 @@ angular.module('myApp', [
   'myApp.directives',
   'myApp.controllers'
 ]).
-config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/Register', { templateUrl: 'partials/Register.html', controller: 'RegisterCtrl' });
-  $routeProvider.when('/RegisterOk', { templateUrl: 'partials/RegisterOk.html', controller: 'RegisterOkCtrl' });
-  $routeProvider.otherwise({redirectTo: '/Register'});
+config(['$routeProvider', function ($routeProvider) {
+    $routeProvider.when('/Register', { templateUrl: 'partials/Register.html', controller: 'RegisterCtrl' });
+    $routeProvider.when('/RegisterOk', { templateUrl: 'partials/RegisterOk.html', controller: 'RegisterOkCtrl' });
+    $routeProvider.otherwise({ redirectTo: '/Register' });
 }]);
+

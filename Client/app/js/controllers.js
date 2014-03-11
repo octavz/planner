@@ -3,38 +3,37 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('MyCtrl1', [function () {
 
-}])
-.controller('MyCtrl2', [function () {
+.controller('RegisterCtrl', ['$scope', '$location', 'UsersApi', function ($scope, $location, UsersApi) {
 
-}])
-.controller('RegisterCtrl', ['$scope', '$location', function ($scope, $location) {
     $scope.title = 'Welcome';
+
     $scope.update = function (user) {
         $scope.master = angular.copy(user);
 
-        if (!$scope.registerForm.$valid)
-        {
-            showError("Invalid inputs");
+        if (!$scope.registerForm.$valid) {
             return;
         }
 
-        updateTitle();
+        UsersApi.register({
+            Email: user.Email,
+            Password: user.Password,
+        }
+        , function (data, headers) {
+            if (typeof (data.error) !== "undefined") {
+                return;
+            }
 
-        $location.path('/RegisterOk');
+            if (data.ok) {
+                $location.path('/RegisterOk');
+            }
+
+        });
+
     };
 
-    function showError(msg) {
-        $scope.hasError = true;
-        $scope.ErrorMessage = msg;
-    }
-
-    function updateTitle() {
-        $scope.title = 'Welcome ' + $scope.master.Email;
-    }
 }])
 .controller('RegisterOkCtrl', [function () {
 
-}])
-;
+}]);
+
