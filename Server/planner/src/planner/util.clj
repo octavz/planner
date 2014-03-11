@@ -1,4 +1,5 @@
 (ns planner.util
+  (:import (java.util UUID))
   (:require [noir.io :as io]
             [clj-time.format :as timef  ] 
             [clj-time.coerce :as timec]           
@@ -21,6 +22,8 @@
 
 (defn now-ts [] (timec/to-timestamp (tcore/now) ))
 
+(defn uuid  []  (str (UUID/randomUUID)))
+
 (defn layout [title & body]
   (html5
     [:head
@@ -32,11 +35,15 @@
     [:body
      (fixed-layout
        [:div {:class "navbar"}
-        [:div {:class "navbar-inner"}
-         ]]
-       body)]))
+        [:div {:class "navbar-inner"}]
+        body])]))
+
 
 (defn use-layout
   "Wrap a response with a layout"
   [title response]
   (assoc response :body (layout title (response :body))))
+
+(defmacro tryc[ & e]
+  `(try ~@e
+        (catch Exception e# {:er (.getMessage e#)})))

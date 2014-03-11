@@ -3,6 +3,7 @@
     korma.core
     korma.db
     planner.models.schema
+    planner.repos.redis
     planner.util)
   (:require 
     [clauth.store :as cl]))
@@ -22,11 +23,9 @@
           (where {:id id})))
 
 (defn get-user [id] 
-  (first 
-    (select users (where {:id id}) (limit 1))))
+  (first (select users (where {:id id}) (limit 1))))
 (defn get-user-by-email [login] 
-  (first 
-    (select users (where {:login login}) (limit 1))))
+  (first (select users (where {:login login}) (limit 1))))
 (defn delete-user [login] 
   (update users (set-fields {:status 10}) (where {:login login})))
 
@@ -43,12 +42,10 @@
                        :scope scope :object object})
           (where {:id id})))
 (defn get-token [id] 
-  (first 
-    (select oauth-tokens (where {:id id}) (limit 1))))
+  (first (select oauth-tokens (where {:id id}) (limit 1))))
 (defn delete-token [id] (delete oauth-tokens (where {:id [= id]}) ))
 (defn get-token-by-user [user-id] 
-  (first 
-    (select oauth-tokens (where {:user_id user-id}) (limit 1))))
+  (first (select oauth-tokens (where {:user_id user-id}) (limit 1))))
 
 (defn create-client [rec] (insert oauth-clients (values rec)))
 (defn update-client [id secret]
@@ -56,8 +53,7 @@
           (set-fields {:secret id :updated (now-ts)} )
           (where {:id id})))
 (defn get-client [id] 
-  (first 
-    (select oauth-clients (where {:id id}) (limit 1))))
+  (first (select oauth-clients (where {:id id}) (limit 1))))
 (defn delete-client [id] 
   (transaction
     (delete oauth-codes (where {:client_id [= id]}))
@@ -71,10 +67,12 @@
                        :updated (now-ts) :scope scope :object object})
           (where {:id id})))
 (defn get-code [id] 
-  (first 
-    (select oauth-codes (where {:id id}) (limit 1))))
+  (first (select oauth-codes (where {:id id}) (limit 1))))
 (defn delete-code [id] 
   (delete oauth-codes (where {:id [= id]})))
+
+(defn get-all-actions []
+  (get-or-else ns-action "all" (fn [] (select actions))))
 
 (defrecord UserStore []
   cl/Store

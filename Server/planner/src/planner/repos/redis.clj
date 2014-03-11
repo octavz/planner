@@ -1,4 +1,5 @@
-(ns planner.repos.redis 
+(ns planner.repos.redis
+  (:use clojure.walk)
   (:require 
     [taoensso.carmine :as car :refer (wcar)]
     ))
@@ -17,17 +18,27 @@
 (defn get* [key] (redis (car/get key)))
 (defn set* [key value] (redis (car/set key value)))
 
-(defn key-session 
-  [token]
-  (format "s:%s" token)
-  )
+(def ns-action "a")
+(def ns-session "s")
 
-(defn save-session 
-  [token values] 
-  (rec-set (key-session token) values)
-  )
+(defn key-ns [namespace key] (format "%s:%s" namespace key) )
+
+(defn cache-save
+  [key values] 
+  (rec-set (key-ns ns-session key) values) )
 
 (defn get-session 
-  [token]
-  (when-let [rec (rec-get (key-session token))] 
-    (if (empty? rec) nil rec)))
+  [key]
+  (when-let [rec (rec-get (key-ns ns-session key))]
+    (if (empty? rec)
+      nil
+      (keywordize-keys (apply array-map rec)))))
+
+(defn get-or-else
+  [namespace key getter]
+  (let [rec (rec-get (key-ns namespace key))]
+    (if (or (nil? rec) (empty? rec))
+      (let [res (getter)] 
+        (rec-set (key-ns namespace key) res) 
+        res)
+      (keywordize-keys rec))))

@@ -8,26 +8,32 @@
     [clauth.endpoints :as ep ]
     [clojure.java.io :as io]
     [liberator.core :refer [resource defresource]]
-    [liberator.representation :refer [ring-response]] ))
+    [liberator.representation :refer [ring-response]]))
 
 (defn validate-data [ctx validator data]
   (when (nil? (:err ctx)) 
     (let [v (validator data)]
       (if (empty? v)
-        [false] 
+        [false {:json data}] 
         [true {:err v}]) )))
 
 (defn body-as-string [ctx]
   (if-let [body (get-in ctx [:request :body])]
     (condp instance? body
-      java.lang.String body
+      String body
       (slurp (io/reader body)))))
 
-(defn body-as-json [ctx]
+(defn body-as-json 
+  "transforms the json string to an array 
+  with first element true if successfull or
+  false if it gets an exception"
+  [ctx]
   (try
-    [true (keywordize-keys (parse-string (body-as-string ctx)))] 
+    [true 
+     (keywordize-keys (parse-string (body-as-string ctx)))] 
     (catch Exception e
-      [false {:err (.getMessage e)}] )))
+      [false 
+       {:err (.getMessage e)}] )))
 
 (defn is-valid [ctx validator] 
   (let [[v j] (body-as-json ctx)] 
@@ -56,12 +62,12 @@
   :available-media-types ["text/html"] 
   :handle-ok #(ring-response (handler-token %)))
 
-(defresource action-user [id]
+(defresource action-user
   :allowed-methods [:get :put]
   :authorized? check-user
   :available-media-types ["application/json"]
-  :exists? #(handler-user-get % id)
-  :put! #(handler-user-save % id)
+  :exists? handler-user-get
+  :put! handler-user-save
   :respond-with-entity? true
   :new? false
   :handle-ok :entry)
@@ -70,6 +76,6 @@
   :allowed-methods [:post]
   :available-media-types ["application/json"]
   :malformed? #(is-valid % v-user-register)
-  :post! #(handler-user-register %)
+  :post! handler-user-register
   :handle-malformed #(generate-string (:err %))
-  :handle-created #(ret-handler %))
+  :handle-created ret-handler)

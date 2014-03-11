@@ -4,9 +4,8 @@
 
 (defroutes auth-routes
   (ANY "/login" [] action-login)
-  (ANY "/register" [email password] action-register)
-  (ANY "/user/:id" [id] (action-user id))
-  (ANY "/user" [] (action-user nil))
+  (ANY "/user" [] action-user)
   (ANY "/logout" [] action-logout)
+  (ANY "/register" [] action-register)
   (ANY "/token" [] action-token))
 
