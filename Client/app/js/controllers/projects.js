@@ -2,7 +2,7 @@
 
 angular.module('myApp.controllers')
 
-.controller('ProjectsCtrl', ['$scope', '$location', 'UsersApi', function ($scope, $location, ProjectsApi) {
+.controller('ProjectsCtrl', ['$scope', '$location', 'ProjectsApi', function ($scope, $location, ProjectsApi) {
     $scope.title = 'Projects';
 
     $scope.save = function(project){
