@@ -5,14 +5,18 @@
 
         <div class="form-group" ng-class="{ 'has-error' : projectForm.projectName.$invalid && !projectForm.projectName.$pristine }">
             <label for="projectName">Name:</label>
-            <input type="text" name="projectName" class="form-control" required />
+            <input type="text" name="projectName" class="form-control" ng-model="project.Name" required />
             <p ng-show="projectForm.projectName.$invalid && !projectForm.projectName.$pristine" class="help-block">Project description is required</p>
         </div>
 
-        <button class="btn btn-primary" ng-disabled="projectForm.$invalid">
+        <div class="form-group">
+            <label for="projectDescription">Description:</label>
+            <textarea name="projectDescription" class="form-control" ng-model="project.Description" rows="6"/>
+        </div>
+
+        <button ng-click="save(project)" class="btn btn-primary" ng-disabled="projectForm.$invalid">
             Save
         </button>
-
-    </form>
+</form>
 </div>
 

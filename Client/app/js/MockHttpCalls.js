@@ -28,6 +28,13 @@ myAppDev.run(function ($httpBackend) {
         return [200, { ok: true }, {}];
     });
 
+    // Projects mock.
+    $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
+        var jsondata = angular.fromJson(data);
+
+        return [200, { ok: true }, {}];
+    });
+
     $httpBackend.whenGET(/^\/templates\//).passThrough();
     $httpBackend.whenGET(/^partials\//).passThrough();
     //...
