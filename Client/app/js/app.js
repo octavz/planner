@@ -12,6 +12,7 @@ angular.module('myApp', [
 config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/Register', { templateUrl: 'partials/Register.html', controller: 'RegisterCtrl' });
     $routeProvider.when('/RegisterOk', { templateUrl: 'partials/RegisterOk.html', controller: 'RegisterOkCtrl' });
+    $routeProvider.when('/AddNewProject', { templateUrl: 'partials/Project.html', controller: 'ProjectsCtrl' });
     $routeProvider.otherwise({ redirectTo: '/Register' });
 }]);
 

@@ -1,0 +1,18 @@
+﻿<div class="Project">
+    <h4>Project</h4>
+
+    <form name="projectForm" novalidate>
+
+        <div class="form-group" ng-class="{ 'has-error' : projectForm.projectName.$invalid && !projectForm.projectName.$pristine }">
+            <label for="projectName">Name:</label>
+            <input type="text" name="projectName" class="form-control" required />
+            <p ng-show="projectForm.projectName.$invalid && !projectForm.projectName.$pristine" class="help-block">Project description is required</p>
+        </div>
+
+        <button class="btn btn-primary" ng-disabled="projectForm.$invalid">
+            Save
+        </button>
+
+    </form>
+</div>
+
