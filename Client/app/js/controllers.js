@@ -79,6 +79,18 @@ angular.module('myApp.controllers', [])
             'title': 'Home',
             'link': '#/Home'
         }, {
+            'title': 'Projects',
+            'link': '#/Projects'
+        }, {
+            'title': 'New Project',
+            'link': '#/ProjectNew'
+        }, {
+            'title': 'Tasks',
+            'link': '#/Tasks'
+        }, {
+            'title': 'New Task',
+            'link': '#/TaskNew'
+        }, {
             'title': 'Other',
             'link': '#/Other'
         }];
@@ -106,7 +118,7 @@ angular.module('myApp.controllers', [])
 
         $scope.isActive = function(menuItem) {
             var loc = "#" + $location.path();
-            console.log("isactive?", menuItem, loc);
+//            console.log("isactive?", menuItem, loc);
             if (menuItem.link == loc){
                 return 'active';
             }
