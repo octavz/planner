@@ -16,11 +16,9 @@ angular.module('myApp')
         });
         $routeProvider.when('/RegisterOk', {
             templateUrl: 'partials/RegisterOk.html',
-            controller: 'RegisterOkCtrl'
-        });
+          });
         $routeProvider.when('/Home', {
             templateUrl: 'partials/Private/Home.html',
-            controller: 'HomeCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/Error', {
@@ -50,7 +48,6 @@ angular.module('myApp')
         });
         $routeProvider.when('/Other', {
             templateUrl: 'partials/Private/Other.html',
-            controller: 'OtherCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.otherwise({

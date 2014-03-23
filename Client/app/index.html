@@ -15,6 +15,7 @@
 <body>
     <div class="container">
         <div class="col-sm-8 col-sm-offset-2" ng-controller="TopMenuCtrl">
+
             <h2>Super Planner</h2>
             <div class="tabbable">
                 <ul class="nav nav-pills">
@@ -25,6 +26,7 @@
                         <a href="#" ng-click="logOut()" ng-show="isLoggedIn()">Logout</a>
                     </li>
                 </ul>
+
             </div>
             <!-- this is a placeholder for all views (maybe the top links would be part of it)-->
             <div ng-view></div>
@@ -47,9 +49,12 @@
     <script src="js/app.js"></script>
     <script src="js/routes.js"></script>
     <script src="js/services.js"></script>
+    <script src="js/services/sitemap.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/controllers/appbootstrap.js"></script>
     <script src="js/controllers/error.js"></script>
+    <script src="js/controllers/register.js"></script>
+    <script src="js/controllers/topmenu.js"></script>
     <script src="js/filters.js"></script>
     <script src="js/directives.js"></script>
     <script src="js/MockHttpCalls.js"></script>
