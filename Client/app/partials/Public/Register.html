@@ -1,0 +1,36 @@
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Register</h3>
+    </div>
+    <div class="panel-body">
+
+
+        <form name="registerForm" novalidate>
+
+            <div class="form-group" ng-class="{ 'has-error' : registerForm.email.$invalid && !registerForm.email.$pristine }">
+                <label for="email">Email</label>
+                <input type="email" name="email" class="form-control" ng-model="user.Email" required />
+                <p ng-show="registerForm.email.$invalid && !registerForm.email.$pristine" class="help-block">Invalid Email.</p>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : registerForm.password.$invalid && !registerForm.password.$pristine }">
+                <label for="password">Password</label>
+                <input type="password" name="password" class="form-control" ng-model="user.Password" required ng-minlength="6" id="PasswordID" />
+                <p ng-show="registerForm.password.$error.minlength" class="help-block">Password is too short.</p>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : registerForm.repassword.$error.pwmatch && !registerForm.repassword.$pristine }">
+                <label for="repassword">
+                    Retype password
+                </label>
+                <input type="password" name="repassword" class="form-control" ng-model="user.RePassword" required pw-check="PasswordID" />
+                <p ng-show="registerForm.repassword.$error.pwmatch && !registerForm.repassword.$pristine" class="help-block">Password is not the same.</p>
+            </div>
+
+            <button ng-click="update(user)" class="btn btn-primary" ng-disabled="registerForm.$invalid">
+                Save
+            </button>&nbsp;or
+            <a href="#/Login">Login</a>
+        </form>
+    </div>
+</div>

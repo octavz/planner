@@ -10,3 +10,5 @@ angular.module('myApp', [
     'myAuth.services',
     'ngStorage'
 ]);
+
+angular.module('myApp.controllers', []);

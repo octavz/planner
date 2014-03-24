@@ -6,17 +6,7 @@ angular.module('myApp')
 .config(['$routeProvider', 'RouteAccessProvider',
     function($routeProvider, RouteAccessProvider) {
 
-        $routeProvider.when('/Register', {
-            templateUrl: 'partials/Register.html',
-            controller: 'RegisterCtrl'
-        });
-        $routeProvider.when('/Login', {
-            templateUrl: 'partials/LoginMock.html',
-            controller: 'LoginMockCtrl'
-        });
-        $routeProvider.when('/RegisterOk', {
-            templateUrl: 'partials/RegisterOk.html',
-          });
+
         $routeProvider.when('/Home', {
             templateUrl: 'partials/Private/Home.html',
             resolve: RouteAccessProvider.routeResolvers
@@ -51,7 +41,7 @@ angular.module('myApp')
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.otherwise({
-            redirectTo: '/Login'
+            redirectTo: '/Home'
         });
 
     }

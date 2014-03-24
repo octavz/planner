@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-angular.module('myApp.controllers')
+angular.module('myAppPublic.controllers')
 
 .controller('RegisterCtrl', ['$scope', '$location', 'UsersApi',
     function($scope, $location, UsersApi) {
