@@ -5,14 +5,15 @@ angular.module('myApp')
 
 .config(['$routeProvider', 'RouteAccessProvider',
     function($routeProvider, RouteAccessProvider) {
-
-
+        $routeProvider.when('/', {
+            redirectTo: '/AppBootstrap'
+        });
         $routeProvider.when('/Home', {
             templateUrl: 'partials/Private/Home.html',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/Error', {
-            templateUrl: 'partials/Error.html',
+            templateUrl: 'partials/Private/Error.html',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/AppBootstrap', {
@@ -36,9 +37,17 @@ angular.module('myApp')
             templateUrl: 'partials/Private/TaskNew.html',
             resolve: RouteAccessProvider.routeResolvers
         });
-        $routeProvider.when('/Other', {
-            templateUrl: 'partials/Private/Other.html',
-            resolve: RouteAccessProvider.routeResolvers
+        $routeProvider.when('/Logout', {
+            controller: "LogoutCtrl",
+            template: "<div></div>"
+        });
+        $routeProvider.when('/Exit', {
+            controller: function() {
+                window.setTimeout(function() {
+                    window.location = "Public.html";
+                }, 100);
+            },
+            template: "<div></div>"
         });
         $routeProvider.otherwise({
             redirectTo: '/Home'

@@ -118,7 +118,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 
 .provider("RouteAccess",
     function() {
-        var skipRoutes = ["/Home", "/Error", "/AppBootstrap"];
+        var skipRoutes = ["/", "/Home", "/Error", "/AppBootstrap"];
 
         var hasAccess = function($q, $route, RouteAccessApi) {
 

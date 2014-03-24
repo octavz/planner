@@ -34,6 +34,7 @@ angular.module('myApp.services')
                 var ret = _(allowedRoutes).contains(lnk);
                 return ret;
             })
+            console.log("calculateAllowedMenuLinks",filtererLinks);
             return filtererLinks;
         };
 
@@ -41,6 +42,7 @@ angular.module('myApp.services')
 
             return RouteAccessApi.get().$promise
                 .then(function(data) {
+                    console.log("RouteAccessApi", data);
                     return calculateAllowedMenuLinks(links, data.routes);
                 });
         };
