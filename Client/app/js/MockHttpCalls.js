@@ -12,7 +12,7 @@ myAppDev.run(function($httpBackend) {
     }];
 
     var allowedRoutes = {
-        routes: ['/Projects', '/ProjectNew', '/Tasks']
+        routes: ["/Home", "/Projects", "/ProjectNew", "/Tasks"]
     };
 
     $httpBackend.whenGET(/users/).respond(users);

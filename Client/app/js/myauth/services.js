@@ -4,34 +4,28 @@
 
 angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 
-.run(['$rootScope', '$location',
-    function($rootScope, $location) {
+.run(['$rootScope', '$location', 'Auth',
+    function($rootScope, $location, Auth) {
         $rootScope.$on("$routeChangeError", function(event, current) {
             $location.url("/Error");
+        });
+        $rootScope.$on("$routeChangeStart", function(event, next, current) {
+            var skipRoutes = ["/", "/Error", "/AppBootstrap"];
+            var routeToVerify = next.$$route.originalPath;
+
+            if (_(skipRoutes).contains(routeToVerify))
+                return;
+
+            if (!Auth.isLoggedIn()) {
+                $location.path('/Logout');
+            };
         });
     }
 ])
 
-//constants
-.constant('AccessRights', {
-    Public: 1,
-    Registered: 2,
-    Projects: 4,
-    Tasks: 8,
-    Users: 16,
-})
-
 .factory('CurrentUserSession', function($sessionStorage) {
 
     return {
-        getRights: function() {
-            //todo cip - what if is undefined?
-            var ret = $sessionStorage.UserRights;
-            return ret;
-        },
-        setRights: function(val) {
-            $sessionStorage.UserRights = val;
-        },
         getUser: function() {
             //todo cip - what if is undefined?
             var ret = $sessionStorage.Username;
@@ -44,54 +38,24 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
     };
 })
 
-.factory('Auth', function($http, $cookieStore, AccessRights, CurrentUserSession) {
+.factory('Auth', function($http, $cookieStore, CurrentUserSession) {
     var loggedIn = false;
     var username = CurrentUserSession.getUser();
-
-    var InitStorage = function() {
-        var rights = CurrentUserSession.getRights();
-        if (rights === undefined)
-            CurrentUserSession.setRights(AccessRights.Public);
-    }
-
-    InitStorage();
 
     if (username != null)
         loggedIn = true;
 
     return {
-        authorize: function(rights) {
-            var currentUserRights = CurrentUserSession.getRights();
-            return (currentUserRights & rights) > 0;
-        },
-        RoutesToRights: function(routes) {
-            // var routesMapping = [{
-            //     right: AccessRights.Projects,
-            //     routes: [{
-            //         get: '/projects'
-            //     }, ]
-            // }, {
-            //     right: AccessRights.Tasks,
-            //     routes: [{
-            //         get: '/tasks'
-            //     }, ]
-            // }];
-
-            return 0;
-        },
-        login: function(username, rights) {
+        login: function(username) {
             if (username != "" && username != null) {
                 CurrentUserSession.setUser(username);
-                CurrentUserSession.setRights(rights);
                 loggedIn = true;
             } else {
                 CurrentUserSession.setUser(null);
-                CurrentUserSession.setRights(AccessRights.Public);
             }
         },
         logout: function() {
             CurrentUserSession.setUser(null);
-            CurrentUserSession.setRights(AccessRights.Public);
             loggedIn = false;
         },
         isLoggedIn: function() {
@@ -108,17 +72,9 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
     });
 })
 
-// .factory('RouteAccess', function($resource) {
-//     return $resource( '/json/RouteAccess.json', {}, {
-//         get: {
-//             method: 'GET'
-//         },
-//     });
-// })
-
 .provider("RouteAccess",
     function() {
-        var skipRoutes = ["/", "/Home", "/Error", "/AppBootstrap"];
+        var skipRoutes = ["/", "/Error", "/AppBootstrap"];
 
         var hasAccess = function($q, $route, RouteAccessApi) {
 
