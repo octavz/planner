@@ -5,6 +5,7 @@
   {:init-ns planner.repl}
   :dependencies
   [[ring-server "0.3.1"]
+   [ring/ring-core "1.2.1"]
    [com.taoensso/timbre "3.0.0"]
    [ragtime "0.3.4"]
    [environ "0.4.0"]
@@ -21,12 +22,14 @@
    [hiccup-bootstrap "0.1.2"]
    [org.clojure/tools.reader "0.8.3"]
    [org.clojure/clojurescript "0.0-2138"]
+   [com.novemberain/validateur "1.7.0"]
    [org.clojure/clojure "1.5.1"]
    [log4j "1.2.17" :exclusions
     [javax.mail/mail javax.jms/jms com.sun.jdmk/jmxtools com.sun.jmx/jmxri]]
    [lib-noir "0.8.0"]
    [compojure "1.1.6"]
    [selmer "0.5.9"]
+   [com.taoensso/carmine "2.4.5"]
    [postgresql/postgresql "9.1-901.jdbc4"]]
   :ring {:handler planner.handler/app,
          :init planner.handler/init,
