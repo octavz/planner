@@ -1,18 +1,14 @@
 'use strict';
 
-
 // Declare app level module which depends on filters, and services
 angular.module('myApp', [
   'ngRoute',
   'myApp.filters',
   'myApp.services',
   'myApp.directives',
-  'myApp.controllers'
-]).
-config(['$routeProvider', function ($routeProvider) {
-    $routeProvider.when('/Register', { templateUrl: 'partials/Register.html', controller: 'RegisterCtrl' });
-    $routeProvider.when('/RegisterOk', { templateUrl: 'partials/RegisterOk.html', controller: 'RegisterOkCtrl' });
-    $routeProvider.when('/AddNewProject', { templateUrl: 'partials/Project.html', controller: 'ProjectsCtrl' });
-    $routeProvider.otherwise({ redirectTo: '/Register' });
-}]);
+    'myApp.controllers',
+    'myAuth.services',
+    'ngStorage'
+]);
 
+angular.module('myApp.controllers', []);

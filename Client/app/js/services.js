@@ -9,7 +9,6 @@ var baseUrl = 'http://localhost\\:9090';
 
 services.factory('UsersApi', function ($resource) {
     return $resource(baseUrl + '/users', {}, {
-        query: { method: 'GET', isArray: true },
         register: { method: 'POST' }
     });
 });
@@ -17,6 +16,13 @@ services.factory('UsersApi', function ($resource) {
 services.factory('ProjectsApi', function ($resource) {
     return $resource(baseUrl + '/projects', {}, {
         saveProject: { method: 'POST' }
+    });
+});
+
+
+services.factory('LoggedUserApi', function ($resource) {
+    return $resource(baseUrl + '/users', {}, {
+        myDetails: { method: 'GET', params: { id: '@id' } },
     });
 });
 
