@@ -23,14 +23,14 @@ angular.module('myApp')
         });
         $routeProvider.when('/Projects', {
             templateUrl: 'partials/Private/Projects.html',
+            controller: 'ProjectsCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/ProjectNew', {
             templateUrl: 'partials/Private/ProjectNew.html',
+            controller: 'ProjectsCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });
-
-        $routeProvider.when('/AddNewProject', { templateUrl: 'partials/Project.html', controller: 'ProjectsCtrl' });
 
         $routeProvider.when('/Tasks', {
             templateUrl: 'partials/Private/Tasks.html',

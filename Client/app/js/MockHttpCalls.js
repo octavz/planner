@@ -11,6 +11,7 @@ myAppDev.run(function($httpBackend) {
         Email: 'existing@mail.com'
     }];
 
+
     var allowedRoutes = {
         routes: ["/Home", "/Projects", "/ProjectNew", "/Tasks"]
     };
@@ -38,10 +39,16 @@ myAppDev.run(function($httpBackend) {
     });
 
     // Projects mock.
+    var projects = [{ Id: 1, Name: "default proj", Description: "a descr" }];
+    var projectId = 2;
+    $httpBackend.whenGET(/projects/).respond({ data: projects });
     $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
+        
         var jsondata = angular.fromJson(data);
+        jsondata.Id = projectId++;
+        projects.push(jsondata);
 
-        return [200, { ok: true }, {}];
+        return [200, { ok: true, o: jsondata }];
     });
 
     $httpBackend.whenGET(/.*/).passThrough();
