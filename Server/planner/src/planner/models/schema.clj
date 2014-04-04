@@ -1,5 +1,5 @@
 (ns planner.models.schema
-  (:use 
+  (:use
     korma.core
     korma.db
     planner.util)
@@ -22,33 +22,38 @@
 (defn map-prep [mappings ent]  (cset/rename-keys ent mappings))
 (defn map-trans [mappings ent] (cset/rename-keys ent (swap-keys mappings)))
 
-(defentity users 
+(defentity groups)
+
+(defentity users
   (table :users)
   (has-one oauth-tokens)
   (has-one oauth-codes)
-  )
+  (many-to-many groups :groups_users 
+                {:lpk :id :lfk :user_id :rpk :id :rfk :group_id}))
 
-(defentity actions)
+(defentity groups-users 
+  (table :groups_users))
 
-(defentity oauth-tokens 
+(defentity oauth-tokens
   (prepare (partial map-prep map-tokens))
   (transform (partial map-trans map-tokens))
   (table :oauth_tokens)
   (belongs-to oauth-clients)
-  (belongs-to users)
-  )
+  (belongs-to users))
 
 (defentity oauth-clients
   (prepare (partial map-prep map-clients))
   (transform (partial map-trans map-clients))
   (table :oauth_clients)
-  (has-one oauth-codes)
-  )
+  (has-one oauth-codes))
 
 (defentity oauth-codes
   (prepare (partial map-prep map-codes))
   (transform (partial map-trans map-codes))
   (table :oauth_codes)
   (belongs-to users)
-  (belongs-to oauth-clients)
-  )
+  (belongs-to oauth-clients))
+
+(defentity actions)
+(defentity resources)
+(defentity projects)

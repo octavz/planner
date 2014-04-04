@@ -2,8 +2,10 @@
   (:use planner.util
         cheshire.core
         clojure.walk
+        planner.models.schema
+        planner.services.validation
         planner.services.impl)
-  (:require 
+  (:require
     [compojure.route :as route]
     [clauth.endpoints :as ep ]
     [clojure.java.io :as io]
@@ -11,10 +13,10 @@
     [liberator.representation :refer [ring-response]]))
 
 (defn validate-data [ctx validator data]
-  (when (nil? (:err ctx)) 
+  (when (nil? (:err ctx))
     (let [v (validator data)]
       (if (empty? v)
-        [false {:json data}] 
+        [false {:json data}]
         [true {:err v}]) )))
 
 (defn body-as-string [ctx]
@@ -23,30 +25,30 @@
       String body
       (slurp (io/reader body)))))
 
-(defn body-as-json 
-  "transforms the json string to an array 
+(defn body-as-json
+  "transforms the json string to an array
   with first element true if successfull or
   false if it gets an exception"
   [ctx]
   (try
-    [true 
-     (keywordize-keys (parse-string (body-as-string ctx)))] 
+    [true
+     (keywordize-keys (parse-string (body-as-string ctx)))]
     (catch Exception e
-      [false 
-       {:err (.getMessage e)}] )))
+      [false
+       {:er (.getMessage e)}] )))
 
-(defn is-valid [ctx validator] 
-  (let [[v j] (body-as-json ctx)] 
+(defn is-valid [ctx validator]
+  (let [[v j] (body-as-json ctx)]
     (if v (validate-data ctx validator j) j)))
 
-(defn ret-handler [ctx] 
-  (if (:err ctx) 
-    {:err (:err ctx)}
-    {:result (:result ctx)}) )
+(defn ret-handler [ctx]
+  (if (:er ctx)
+    {:er (:er ctx) :ec 0}
+    {:data (:data ctx)}) )
 
 (defresource action-login
   :allowed-methods [:post :get]
-  :available-media-types ["text/html"] 
+  :available-media-types ["text/html"]
   :handle-ok #(ring-response (handler-login-get %))
   :post! handler-login-post
   :post-redirect? false
@@ -54,28 +56,61 @@
 
 (defresource action-logout
   :allowed-methods [:get]
-  :available-media-types ["text/html"] 
+  :available-media-types ["text/html"]
   :handle-ok handler-logout)
 
 (defresource action-token
   :allowed-methods [:get]
-  :available-media-types ["text/html"] 
+  :available-media-types ["text/html"]
   :handle-ok #(ring-response (handler-token %)))
 
-(defresource action-user
-  :allowed-methods [:get :put]
-  :authorized? check-user
+(defresource action-user 
+  :allowed-methods [:get :put :post]
+  :authorized? 
+  (fn[ctx] 
+    (if (not= (get-in ctx [:request :request-method]) :post) 
+      (check-user ctx)
+      true))
   :available-media-types ["application/json"]
-  :exists? handler-user-get
+  :malformed? 
+  (fn[ctx] 
+    (if(not= (get-in ctx [:request :request-method]) :get) 
+      (is-valid ctx v-user)))
+  :exists? 
+  (fn[ctx]
+    (let [uid (get-in ctx [:request :params :id])]
+      (get-by-id 
+        users 
+        (if uid 
+          uid 
+          (get-in ctx [:current-session :user :id])))))
   :put! handler-user-save
   :respond-with-entity? true
   :new? false
-  :handle-ok :entry)
+  :handle-ok handler-user-get)
 
-(defresource action-register 
-  :allowed-methods [:post]
+(defresource action-projects [id]
+  :allowed-methods [:get :put :post]
+  :authorized? check-user
   :available-media-types ["application/json"]
-  :malformed? #(is-valid % v-user-register)
-  :post! handler-user-register
-  :handle-malformed #(generate-string (:err %))
-  :handle-created ret-handler)
+  :malformed? 
+  (fn[ctx] 
+    (if(not= (get-in ctx [:request :request-method]) :get) 
+      (is-valid ctx v-project)))
+  :exists? #(if(not= (get-in % [:request :request-method]) :post) handler-projects-get)
+  :post! handler-project-save
+  :put! handler-project-save
+  :respond-with-entity? true
+  ;:new? false
+  :handle-created :data
+  :handle-ok :data)
+
+(defresource action-resources
+  :allowed-methods [:get :put :post]
+  :authorized? check-user
+  :available-media-types ["application/json"]
+  :exists? handler-resources-get
+  ;:put! handler-put-save
+  :respond-with-entity? true
+  ;:new? false
+  :handle-ok :data)

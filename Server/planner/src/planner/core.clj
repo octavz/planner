@@ -1,5 +1,6 @@
 (ns planner.core  
-  (:use planner.repos.sql)
+  (:use planner.repos.sql
+        planner.repos.oauth)
   (:require
     [ring.middleware.reload :as reload]
     [ring.middleware.params :refer [wrap-params]]
@@ -17,14 +18,13 @@
      [auth-code :refer [auth-code-store]]]
     [liberator.core :refer [resource defresource]]
     [liberator.dev :refer [wrap-trace]]
-    [planner.routes.auth :refer [auth-routes ]]
-    )
+    [planner.routes.auth :refer [auth-routes ]])
   (:gen-class))
 
 (defn log-request [handler]
   (if (env :dev)
     (fn [req]
-      ;(timbre/debug req)
+      (timbre/debug req)
       (handler req))
     handler))
 
@@ -66,13 +66,6 @@
   (if-let [port (first (remove #{"-dev"} args))]
     (Integer/parseInt port)
     9090))
-
-(defn init-auth 
-  []
-  (reset! token-store (create-token-store))
-  (reset! auth-code-store (create-code-store))
-  (reset! client-store (create-client-store))
-  (reset! user-store (create-user-store)))
 
 (defn -main [& args]
   (init-auth)
