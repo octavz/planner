@@ -97,7 +97,10 @@
   (fn[ctx] 
     (if(not= (get-in ctx [:request :request-method]) :get) 
       (is-valid ctx v-project)))
-  :exists? #(if(not= (get-in % [:request :request-method]) :post) handler-projects-get)
+  :exists? 
+  (fn[ctx]
+    (if(not= (get-in ctx [:request :request-method]) :post) 
+      (handler-projects-get ctx)))
   :post! handler-project-save
   :put! handler-project-save
   :respond-with-entity? true

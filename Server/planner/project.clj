@@ -29,7 +29,8 @@
    [compojure "1.1.6"]
    ;[selmer "0.6.4"]
    [com.taoensso/carmine "2.6.0"]
-   [postgresql/postgresql "9.1-901-1.jdbc4"]]
+   [postgresql/postgresql "9.1-901-1.jdbc4"]
+   ]
   :bootclasspath true,
   :ring {:handler planner.handler/app,
          :init planner.handler/init,

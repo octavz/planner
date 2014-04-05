@@ -88,17 +88,27 @@
               (kfn/pred-and (kfn/pred-in :group_id ~g) (kfn/pred-> :perm_group 0)) ))))
 
 (defn get-groups [uid]
-  (select groups 
-          (join groups-users (= :groups_users.group_id :groups.id))
-          (where {:groups_users.user_id uid})))
+  (get-or-else-json
+    ns-groups 
+    uid 
+    (fn[] 
+      (select 
+        groups 
+        (fields :id)
+        (join groups-users (= :groups_users.group_id :groups.id))
+        (where {:groups_users.user_id uid})))))
 
 (defn get-projects [id usr off lim]
-  (select 
-    projects 
-    (fields :id :name :description (max-perm)) 
-    (where-perm (:id usr) (:groups usr) (if id {:id id} true))
-    (offset off)
-    (limit lim)))
+  (get-or-else-json 
+    ns-projects
+    (:id usr)
+    (fn[]
+    (select 
+      projects 
+      (fields :id :name :description (max-perm)) 
+      (where-perm (:id usr) (:groups usr) (if id {:id id} true))
+      (offset off)
+      (limit lim)))))
 
 (defn get-resources [id usr off lim]
   (if usr
@@ -107,9 +117,9 @@
       (fields :id :content (max-perm)) 
       (where-perm (:id usr) (map :id (get-groups (:id usr))) (if id {:id id} true))
       (offset off)
-      (limit lim))))
+      (limit lim) )))
 
-#_(get-resources nil {:id "1" :groups ["1"]} 0 1000)
+#_(get-projects nil {:id "1" :groups ["1"]} 0 100)
 
 (defn get-actions [id usr off lim]
   (select 

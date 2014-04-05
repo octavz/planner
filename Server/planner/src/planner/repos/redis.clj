@@ -1,5 +1,6 @@
 (ns planner.repos.redis
-  (:use clojure.walk)
+  (:use clojure.walk
+        cheshire.core)
   (:require
     [taoensso.carmine :as car :refer (wcar)]
     ))
@@ -21,6 +22,8 @@
 (def ns-action "a")
 (def ns-resource "r")
 (def ns-session "s")
+(def ns-groups "g")
+(def ns-projects "p")
 
 (defn key-ns [namespace key] (format "%s:%s" namespace key) )
 
@@ -43,3 +46,15 @@
         (rec-set (key-ns namespace key) res)
         res)
       (keywordize-keys rec))))
+
+(defn get-or-else-json
+  [namespace key getter]
+  (let [rec (get* (key-ns namespace key)) ]
+    (if (or (nil? rec) (empty? rec))
+      (let [res (getter)]
+        (set* (key-ns namespace key) (generate-string res))
+        res)
+      (let [ret (parse-string rec)] 
+        (if (map? ret) (keywordize-keys ret) ret)
+        ))))
+

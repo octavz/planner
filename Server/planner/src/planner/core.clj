@@ -60,6 +60,10 @@
   (let [all-routes (apply routes [auth-routes default-routes])]
     (-> all-routes (wrap-trace :header))) )
 
+(def handler-prod
+  (let [all-routes (apply routes [auth-routes default-routes])]
+    all-routes )) 
+
 (defn dev? [args] (some #{"-dev"} args))
 
 (defn port [args]
@@ -70,7 +74,7 @@
 (defn -main [& args]
   (init-auth)
   (http-kit/run-server
-    (if (dev? args) (reload/wrap-reload (site #'handler)) handler)
+    (if (dev? args) (reload/wrap-reload (site #'handler)) handler-prod)
     {:port (port args)})
   (timbre/info "server started on port 9090"))
 
