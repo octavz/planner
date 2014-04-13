@@ -5,17 +5,15 @@
 
 var services = angular.module('myApp.services', ['ngResource']);
 
-var baseUrl = 'http://localhost\\:49664';
-
 services.factory('UsersApi', function ($resource) {
-    return $resource(baseUrl + '/users', {}, {
+    return $resource( '/users', {}, {
         register: { method: 'POST' }
     });
 });
 
 
 services.factory('LoggedUserApi', function ($resource) {
-    return $resource(baseUrl + '/users', {}, {
+    return $resource( '/users', {}, {
         myDetails: { method: 'GET', params: { id: '@id' } },
     });
 });
