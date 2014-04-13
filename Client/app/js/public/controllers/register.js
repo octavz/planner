@@ -13,6 +13,7 @@ angular.module('myAppPublic.controllers')
 
         $scope.update = function(user) {
             $scope.master = angular.copy(user);
+            $scope.alerts = [];
 
             if (!$scope.registerForm.$valid) {
                 return;
