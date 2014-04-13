@@ -23,14 +23,17 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
     }
 ])
 
+.constant('AuthConstants', {
+    AuthCookieName: 'access_token'
+})
 
-.factory('Auth', function ($http, $cookies) {
+.factory('Auth', function ($http, $cookies, AuthConstants) {
     return {
         logout: function () {
-            $cookies.token = undefined;
+            $cookies[AuthConstants.AuthCookieName] = undefined;
         },
         isLoggedIn: function () {
-            var token = $cookies.token;
+            var token = $cookies[AuthConstants.AuthCookieName];
             return token != null && token != "";
         }
     }
