@@ -31,7 +31,8 @@ angular.module('myApp.services')
                 var lnk = linkItem.link;
                 if (lnk[0] == '#')
                     lnk = lnk.substr(1, lnk.length - 1);
-                var ret = _(allowedRoutes).contains(lnk);
+                var lnkHashed = calcMD5(lnk);
+                var ret = _(allowedRoutes).contains(lnkHashed);
                 return ret;
             })
             console.log("calculateAllowedMenuLinks",filtererLinks);
@@ -41,9 +42,9 @@ angular.module('myApp.services')
         var getLinks = function() {
 
             return RouteAccessApi.get().$promise
-                .then(function(data) {
-                    console.log("RouteAccessApi", data);
-                    return calculateAllowedMenuLinks(links, data.routes);
+                .then(function(res) {
+                    console.log("RouteAccessApi", res);
+                    return calculateAllowedMenuLinks(links, res.data);
                 });
         };
 

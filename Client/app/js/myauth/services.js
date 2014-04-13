@@ -37,11 +37,11 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
             var token = $cookies[AuthConstants.AuthCookieName];
             return token != null && token != "";
         }
-    }
+    };
 })
 
 .factory('RouteAccessApi', function ($resource) {
-    return $resource('json/RoutesAccess.json', {}, {
+    return $resource('/routes', {}, {
         get: {
             method: 'GET'
         },
@@ -59,9 +59,10 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
                 return;
 
             var asyncVerify = $q.defer();
-            RouteAccessApi.get().$promise.then(function (data) {
+            RouteAccessApi.get().$promise.then(function (res) {
+                var routeToVerifyHashed = calcMD5(routeToVerify);
 
-                var isAllowed = _(data.routes).contains(routeToVerify);
+                var isAllowed = _(res.data).contains(routeToVerifyHashed);
 
                 if (isAllowed)
                     asyncVerify.resolve();
