@@ -34,15 +34,6 @@ describe('myAuth services', function() {
             expect(auth.isLoggedIn()).toBe(false);
         });
 
-        it('login an user with empty name is not permitted', function() {
-            expect(auth.isLoggedIn()).toBe(false);
-
-            auth.login("");
-            expect(auth.isLoggedIn()).toBe(false);
-
-            auth.login(null);
-            expect(auth.isLoggedIn()).toBe(false);
-        });
     });
 
 });

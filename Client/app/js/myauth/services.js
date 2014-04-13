@@ -23,41 +23,11 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
     }
 ])
 
-.factory('CurrentUserSession', function ($sessionStorage) {
 
+.factory('Auth', function ($http, $cookies) {
     return {
-        getUser: function () {
-            //todo cip - what if is undefined?
-            var ret = $sessionStorage.Username;
-            return ret;
-        },
-        setUser: function (val) {
-            $sessionStorage.Username = val;
-        },
-
-    };
-})
-
-.factory('Auth', function ($http, $cookies, CurrentUserSession) {
-    var loggedIn = false;
-    var username = CurrentUserSession.getUser();
-
-    if (username != null)
-        loggedIn = true;
-
-    return {
-        login: function (username) {
-            if (username != "" && username != null) {
-                CurrentUserSession.setUser(username);
-                loggedIn = true;
-            } else {
-                CurrentUserSession.setUser(null);
-            }
-        },
         logout: function () {
-            CurrentUserSession.setUser(null);
             $cookies.token = undefined;
-            loggedIn = false;
         },
         isLoggedIn: function () {
             var token = $cookies.token;
