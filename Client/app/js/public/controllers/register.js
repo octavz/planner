@@ -20,8 +20,8 @@ angular.module('myAppPublic.controllers')
             }
 
             UsersApi.register({
-                Email: user.Email,
-                Password: user.Password,
+                email: user.Email,
+                password: user.Password,
             }, function (data, headers) {
                 //if we have the error property, than we have an error
                 if (typeof (data.error) !== "undefined") {

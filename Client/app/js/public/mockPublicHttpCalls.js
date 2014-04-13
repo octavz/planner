@@ -8,13 +8,13 @@ var myAppLoginDev = angular.module('myAppPublicDev', ['myAppPublic', 'ngMockE2E'
 myAppLoginDev.run(function ($httpBackend) {
 
     var users = [{
-        Email: 'existing@mail.com'
+        email: 'existing@mail.com'
     }];
 
     $httpBackend.whenPOST(/users/).respond(function (method, url, data) {
         var jsondata = angular.fromJson(data);
         var existingUsers = _(users).filter(function (o) {
-            return o.Email == jsondata.Email;
+            return o.email == jsondata.email;
         });
 
         if (existingUsers.length > 0) {
