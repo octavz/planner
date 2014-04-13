@@ -24,7 +24,8 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 ])
 
 .constant('AuthConstants', {
-    AuthCookieName: 'access_token'
+    AuthCookieName: 'access_token',
+    AuthHttpHeader: 'access_token',
 })
 
 .factory('Auth', function ($http, $cookies, AuthConstants) {
@@ -84,4 +85,28 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
             }
         };
     }
-);
+)
+
+.factory('AuthInterceptor', function ($rootScope, $q, $window, AuthConstants, $cookies) {
+    return {
+        request: function (config) {
+            config.headers = config.headers || {};
+            var authToken = $cookies[AuthConstants.AuthCookieName];
+            if (authToken != undefined) {
+                config.headers[AuthConstants.AuthHttpHeader] = authToken;
+            }
+            return config;
+        },
+        response: function (response) {
+            if (response.status === 401) {
+                //todo cip should we do something here?
+                // handle the case where the user is not authenticated
+            }
+            return response || $q.when(response);
+        }
+    };
+})
+
+.config(function ($httpProvider) {
+    $httpProvider.interceptors.push('AuthInterceptor');
+});
