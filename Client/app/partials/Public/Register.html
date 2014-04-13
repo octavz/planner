@@ -26,6 +26,8 @@
                 <input type="password" name="repassword" class="form-control" ng-model="user.RePassword" required pw-check="PasswordID" />
                 <p ng-show="registerForm.repassword.$error.pwmatch && !registerForm.repassword.$pristine" class="help-block">Password is not the same.</p>
             </div>
+            
+            <alert ng-repeat="alert in alerts" type="alert.type">{{alert.msg}}</alert>
 
             <button ng-click="update(user)" class="btn btn-primary" ng-disabled="registerForm.$invalid">
                 Save
