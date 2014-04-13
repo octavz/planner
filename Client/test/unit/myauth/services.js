@@ -14,6 +14,7 @@ describe('myAuth services', function() {
     describe('Auth', function() {
 
         var auth;
+        var cookies;
 
         //excuted before each "it" is run.
         beforeEach(function() {
@@ -21,13 +22,13 @@ describe('myAuth services', function() {
             //inject your service for testing.
             inject(function($injector) {
                 auth = $injector.get('Auth');
-
+                cookies = $injector.get('$cookies');
             });
         });
 
         it('when login a user, the isLoggedIn property shouyld be true, when is logged out it should be false; initial should be false', function() {
             expect(auth.isLoggedIn()).toBe(false);
-            auth.login("theuser");
+            cookies.token = "something";
             expect(auth.isLoggedIn()).toBe(true);
             auth.logout();
             expect(auth.isLoggedIn()).toBe(false);

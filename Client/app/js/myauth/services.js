@@ -5,11 +5,11 @@
 angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 
 .run(['$rootScope', '$location', 'Auth',
-    function($rootScope, $location, Auth) {
-        $rootScope.$on("$routeChangeError", function(event, current) {
+    function ($rootScope, $location, Auth) {
+        $rootScope.$on("$routeChangeError", function (event, current) {
             $location.url("/Error");
         });
-        $rootScope.$on("$routeChangeStart", function(event, next, current) {
+        $rootScope.$on("$routeChangeStart", function (event, next, current) {
             var skipRoutes = ["/", "/Error", "/AppBootstrap"];
             var routeToVerify = next.$$route.originalPath;
 
@@ -23,22 +23,22 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
     }
 ])
 
-.factory('CurrentUserSession', function($sessionStorage) {
+.factory('CurrentUserSession', function ($sessionStorage) {
 
     return {
-        getUser: function() {
+        getUser: function () {
             //todo cip - what if is undefined?
             var ret = $sessionStorage.Username;
             return ret;
         },
-        setUser: function(val) {
+        setUser: function (val) {
             $sessionStorage.Username = val;
         },
 
     };
 })
 
-.factory('Auth', function($http, $cookieStore, CurrentUserSession) {
+.factory('Auth', function ($http, $cookies, CurrentUserSession) {
     var loggedIn = false;
     var username = CurrentUserSession.getUser();
 
@@ -46,7 +46,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
         loggedIn = true;
 
     return {
-        login: function(username) {
+        login: function (username) {
             if (username != "" && username != null) {
                 CurrentUserSession.setUser(username);
                 loggedIn = true;
@@ -54,17 +54,19 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
                 CurrentUserSession.setUser(null);
             }
         },
-        logout: function() {
+        logout: function () {
             CurrentUserSession.setUser(null);
+            $cookies.token = undefined;
             loggedIn = false;
         },
-        isLoggedIn: function() {
-            return loggedIn;
+        isLoggedIn: function () {
+            var token = $cookies.token;
+            return token != null && token != "";
         }
     }
 })
 
-.factory('RouteAccessApi', function($resource) {
+.factory('RouteAccessApi', function ($resource) {
     return $resource('json/RoutesAccess.json', {}, {
         get: {
             method: 'GET'
@@ -73,17 +75,17 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 })
 
 .provider("RouteAccess",
-    function() {
+    function () {
         var skipRoutes = ["/", "/Error", "/AppBootstrap"];
 
-        var hasAccess = function($q, $route, RouteAccessApi) {
+        var hasAccess = function ($q, $route, RouteAccessApi) {
 
             var routeToVerify = $route.current.originalPath;
             if (_(skipRoutes).contains(routeToVerify))
                 return;
 
             var asyncVerify = $q.defer();
-            RouteAccessApi.get().$promise.then(function(data) {
+            RouteAccessApi.get().$promise.then(function (data) {
 
                 var isAllowed = _(data.routes).contains(routeToVerify);
 
@@ -104,7 +106,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
             },
 
             //todo cip write something in this function...
-            $get: function() {
+            $get: function () {
                 return 1;
             }
         };

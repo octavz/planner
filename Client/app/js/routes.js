@@ -17,7 +17,6 @@ angular.module('myApp')
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/AppBootstrap', {
-            templateUrl: 'partials/Private/AppBootstrap.html',
             controller: 'AppBootstrapCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });

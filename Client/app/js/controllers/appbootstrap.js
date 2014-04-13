@@ -9,10 +9,8 @@ angular.module('myApp.controllers')
 
         if (Auth.isLoggedIn()) {
             $location.path('/Home');
-        };
-
-        $scope.simulateLogin = function() {
-            Auth.login("dummy");
+        } else {
+            $location.path('/Exit');
         }
     }
 ]);
