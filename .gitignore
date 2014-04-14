@@ -6,3 +6,4 @@ tmp
 .idea
 Client/coverage/
 *.log
+*.suo
