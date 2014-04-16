@@ -43,7 +43,11 @@
 
 (defn ret-handler [ctx]
   (if (:er ctx)
-    {:er (:er ctx) :ec 0}
+    (ring-response 
+      {
+       :status 500
+       :body (generate-string {:er (:er ctx) :ec 0})
+       :headers {"Content-Type" "application/json"} })
     {:data (:data ctx)}) )
 
 (defresource action-login
@@ -78,16 +82,19 @@
       (is-valid ctx v-user)))
   :exists? 
   (fn[ctx]
-    (let [uid (get-in ctx [:request :params :id])]
+    (if-let [uid (get-in ctx [:request :params :id])]
       (get-by-id 
         users 
         (if uid 
           uid 
           (get-in ctx [:current-session :user :id])))))
-  :put! handler-user-save
+  :put! handler-user-update
+  :post! handler-user-create
   :respond-with-entity? true
-  :new? false
-  :handle-ok handler-user-get)
+  :handle-ok handler-user-get
+  :handle-created ret-handler
+  )
+  
 
 (defresource action-projects [id]
   :allowed-methods [:get :put :post]
@@ -105,8 +112,8 @@
   :put! handler-project-save
   :respond-with-entity? true
   ;:new? false
-  :handle-created :data
-  :handle-ok :data)
+  :handle-created ret-handler
+  :handle-ok ret-handler)
 
 (defresource action-resources
   :allowed-methods [:get :put :post]
@@ -116,4 +123,4 @@
   ;:put! handler-put-save
   :respond-with-entity? true
   ;:new? false
-  :handle-ok :data)
+  :handle-ok ret-handler)

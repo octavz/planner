@@ -4,7 +4,7 @@
 
 (defroutes auth-routes
   (ANY "/login" [] action-login)
-  (ANY "/user" [] action-user)
+  (ANY "/users" [] action-user)
   (ANY "/user/:id" [] action-user)
   (ANY "/logout" [] action-logout)
   (ANY "/resources" [] action-resources)

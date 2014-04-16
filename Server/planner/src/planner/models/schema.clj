@@ -17,7 +17,8 @@
 
 (def map-tokens {:token :id, :client :client_id, :subject :user_id})
 (def map-clients {:client-id :id, :client-secret :secret})
-(def map-codes {:code :id, :client :client_id, :secret :client-secret, :subject :user_id})
+(def map-codes {:code :id :client :client_id :secret :client-secret 
+                :subject :user_id})
 
 (defn map-prep [mappings ent]  (cset/rename-keys ent mappings))
 (defn map-trans [mappings ent] (cset/rename-keys ent (swap-keys mappings)))

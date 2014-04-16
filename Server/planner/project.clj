@@ -47,6 +47,7 @@
                    :env {:dev true}}}
   :url "http://example.com/FIXME"
   :main planner.core
+  :repl-options {:port 55555}
   ;:repl-options {:nrepl-middleware [lighttable.nrepl.handler/lighttable-ops]}
   :plugins [
             [lein-ancient "0.5.5"]

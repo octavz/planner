@@ -24,8 +24,10 @@
 
 (defn get-user [id] 
   (first (select users (where {:id id}) (limit 1))))
+
 (defn get-user-by-email [login] 
   (first (select users (with groups) (where {:login login}) (limit 1))))
+
 (defn delete-user [login] 
   (update users (set-fields {:status 10}) (where {:login login})))
 

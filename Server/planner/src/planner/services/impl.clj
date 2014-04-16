@@ -113,32 +113,39 @@
 
 (defn handler-user-get
   [{{session :current-session} :request :as ctx}]
+  (prn ctx)
   (tryc
     (if-let [usr (:data ctx)]
       {:data 
        {:email (:login usr)
         :perm (map :id (get-resources nil usr 0 1000)) }})))
 
-(handler-user-get 
-  (assoc 
-    (dev-req "1" ["1"] {:id "1"}) 
-    :data {:id "1" :login "test@test.com" :groups ["1"]} ))
-
 (defn get-by-id [ent id] 
   (if-let [item (generic-get-by-id ent id)]
     {:data item}))
 
-(defn handler-user-save
+#_(get-user-by-email "aaa1@aaa.com")
+
+(defn handler-user-create
   [{req :request json :json :as ctx}]
   (tryc
     (let [{e :email p :password} json
           usr (get-user-by-email e)]
       (if usr
         {:er "Email already exists" :ec (:email-exists errors)}
-        {:result (create-user
+        {:data (clean-response (create-user
                    {:id (uuid)
                     :login e
-                    :password (cluser/bcrypt p)})}))))
+                    :password (cluser/bcrypt p)}))}))))
+
+(defn handler-user-update
+  [{req :request json :json :as ctx}]
+  (tryc
+    (let [{e :email p :password} json
+          usr (get-user-by-email e)]
+      (if (\= (:id usr) (-> req :current-sesion :user :id))
+        {:er "Email already exists" :ec (:email-exists errors)}
+        {:data (update-user (uuid) e (cluser/bcrypt p) (:openid_type usr) e)}))))
 
 (defn check-user-access
   "evaluates access to the route and verb"

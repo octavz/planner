@@ -74,7 +74,7 @@
 (defn -main [& args]
   (init-auth)
   (http-kit/run-server
-    (if (dev? args) (reload/wrap-reload (site #'handler)) handler-prod)
+    (if (dev? args) (reload/wrap-reload (site #'handler)) handler)
     {:port (port args)})
   (timbre/info "server started on port 9090"))
 
