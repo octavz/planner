@@ -6,20 +6,20 @@
 var services = angular.module('myApp.services', ['ngResource']);
 
 services.factory('UsersApi', function ($resource) {
-    return $resource( '/users', {}, {
+    return $resource('/users', {}, {
         register: { method: 'POST' }
     });
 });
 
 services.factory('ProjectsApi', function ($resource) {
-    return $resource(baseUrl + '/projects', {}, {
+    return $resource('/projects', {}, {
         saveProject: { method: 'POST' }
     });
 });
 
 
 services.factory('LoggedUserApi', function ($resource) {
-    return $resource( '/users', {}, {
+    return $resource('/users', {}, {
         myDetails: { method: 'GET', params: { id: '@id' } },
     });
 });

@@ -31,7 +31,6 @@ angular.module('myApp')
             controller: 'ProjectsCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });
-
         $routeProvider.when('/Tasks', {
             templateUrl: 'partials/Private/Tasks.html',
             resolve: RouteAccessProvider.routeResolvers

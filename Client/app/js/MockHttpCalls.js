@@ -41,13 +41,13 @@ myAppDev.run(function ($httpBackend) {
     });
 
     // Projects mock.
-    var projects = [{ Id: 1, Name: "default proj", Description: "a descr" }];
+    var projects = [{ id: 1, name: "default proj", desc: "a descr", parent: "" }];
     var projectId = 2;
     $httpBackend.whenGET(/projects/).respond({ data: projects });
     $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
         
         var jsondata = angular.fromJson(data);
-        jsondata.Id = projectId++;
+        jsondata.id = projectId++;
         projects.push(jsondata);
 
         return [200, { ok: true, o: jsondata }];

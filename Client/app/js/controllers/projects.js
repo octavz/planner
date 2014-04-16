@@ -15,16 +15,18 @@ angular.module('myApp.controllers')
             return;
         }
 
+        // make sure contract
         ProjectsApi.saveProject({
-            Name: $scope.project.Name,
-            Description: $scope.project.Description,
+            name: $scope.project.Name,
+            desc: $scope.project.Description,
+            parent: $scope.project.Parent,
         }
         , function (data, headers) {
             if (typeof (data.error) !== "undefined") {
                 return;
             }
             if (data.ok) {
-                $location.path('index.html');
+                $location.path('/Projects');
             }
         });
     }
