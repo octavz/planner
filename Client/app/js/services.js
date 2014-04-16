@@ -13,7 +13,8 @@ services.factory('UsersApi', function ($resource) {
 
 services.factory('ProjectsApi', function ($resource) {
     return $resource('/projects', {}, {
-        saveProject: { method: 'POST' }
+        insertProject: { method: 'POST' },
+        updateProject: { method: 'PUT' },
     });
 });
 

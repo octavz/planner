@@ -3,7 +3,7 @@
 
     <ul class="example-animate-container">
         <li class="animate-repeat" ng-repeat="project in projects">
-            {{project.name}} {{project.desc}} {{project.parent}}
+            <a href="#ProjectEdit/{{project.id}}"> {{project.name}} {{project.desc}} {{project.parent}}</a>
         </li>
     </ul>
 </div>

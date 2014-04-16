@@ -2,32 +2,68 @@
 
 angular.module('myApp.controllers')
 
-.controller('ProjectsCtrl', ['$scope', '$location', 'ProjectsApi', function ($scope, $location, ProjectsApi) {
-    $scope.title = 'Projects';
+.controller('ProjectsCtrl', ['$scope', '$location', '$routeParams', 'ProjectsApi', function ($scope, $location, $routeParams, ProjectsApi) {
+
+    var id = $routeParams.id;
+    if (id != null) {
+        $scope.title = 'Edit project';
+        ProjectsApi.get({ id: id }, function (resp) {
+            console.log("received something", resp);
+
+            //fill the scope
+            $scope.project = {
+                Name: resp.data.name,
+                Description: resp.data.desc,
+                Parent: resp.data.parent
+            }
+        });
+
+    } else {
+        $scope.title = 'Insert a new project';
+    }
 
     ProjectsApi.get(function (resp) {
         $scope.projects = resp.data;
     });
 
-    $scope.save = function(){
+    $scope.save = function () {
 
         if ($scope.projectForm.$invalid) {
             return;
         }
 
-        // make sure contract
-        ProjectsApi.saveProject({
-            name: $scope.project.Name,
-            desc: $scope.project.Description,
-            parent: $scope.project.Parent,
+        if (id != null) {
+            //make a post
+            ProjectsApi.updateProject({
+                id: id,
+                name: $scope.project.Name,
+                desc: $scope.project.Description,
+                parent: $scope.project.Parent,
+            }
+            , function (data, headers) {
+                if (typeof (data.error) !== "undefined") {
+                    return;
+                }
+                if (data.ok) {
+                    $location.path('/Projects');
+                }
+            });
+        } else {
+            //make a put
+
+            ProjectsApi.insertProject({
+                name: $scope.project.Name,
+                desc: $scope.project.Description,
+                parent: $scope.project.Parent,
+            }
+            , function (data, headers) {
+                if (typeof (data.error) !== "undefined") {
+                    return;
+                }
+                if (data.ok) {
+                    $location.path('/Projects');
+                }
+            });
         }
-        , function (data, headers) {
-            if (typeof (data.error) !== "undefined") {
-                return;
-            }
-            if (data.ok) {
-                $location.path('/Projects');
-            }
-        });
     }
 }]);
