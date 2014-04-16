@@ -1,5 +1,6 @@
 (ns planner.core  
-  (:use planner.repos.sql)
+  (:use planner.repos.sql
+        planner.repos.oauth)
   (:require
     [ring.middleware.reload :as reload]
     [ring.middleware.params :refer [wrap-params]]
@@ -17,14 +18,13 @@
      [auth-code :refer [auth-code-store]]]
     [liberator.core :refer [resource defresource]]
     [liberator.dev :refer [wrap-trace]]
-    [planner.routes.auth :refer [auth-routes ]]
-    )
+    [planner.routes.auth :refer [auth-routes ]])
   (:gen-class))
 
 (defn log-request [handler]
   (if (env :dev)
     (fn [req]
-      ;(timbre/debug req)
+      (timbre/debug req)
       (handler req))
     handler))
 
@@ -60,6 +60,10 @@
   (let [all-routes (apply routes [auth-routes default-routes])]
     (-> all-routes (wrap-trace :header))) )
 
+(def handler-prod
+  (let [all-routes (apply routes [auth-routes default-routes])]
+    all-routes )) 
+
 (defn dev? [args] (some #{"-dev"} args))
 
 (defn port [args]
@@ -67,17 +71,10 @@
     (Integer/parseInt port)
     9090))
 
-(defn init-auth 
-  []
-  (reset! token-store (create-token-store))
-  (reset! auth-code-store (create-code-store))
-  (reset! client-store (create-client-store))
-  (reset! user-store (create-user-store)))
-
 (defn -main [& args]
   (init-auth)
   (http-kit/run-server
-    (if (dev? args) (reload/wrap-reload (site #'handler)) handler)
+    (if (dev? args) (reload/wrap-reload (site #'handler)) handler-prod)
     {:port (port args)})
   (timbre/info "server started on port 9090"))
 

@@ -2,9 +2,14 @@
   (:use planner.repos.sql
         validateur.validation
         planner.repos.redis
+        planner.views.login
+        planner.models.schema
+        planner.services.validation
+        planner.repos.oauth
         planner.util)
   (:require [clj-time.core :as time]
             [ring.util.response :as rutil]
+            [hiccup.core :as hiccup]
             [clauth.user :as cluser]
             [clauth.token :as cltoken]
             [clauth.endpoints :as ep]))
@@ -13,42 +18,55 @@
 
 (def web-client-id (:client-id master-client))
 
+(planner.repos.oauth/init-auth)
+
+(defn dev-req [uid groups params]
+  "session structure"
+  {:request 
+   {:current-session 
+    {:user 
+     {:id uid 
+      :groups groups}} 
+    :params params }})
+
+(defn clean-response [data]
+  {:data (dissoc data :created :updated :user_id 
+                 :group_id :perm_public :perm_group 
+                 :perm_owner :status)})
+
 (defn handler-login-get
   "show login form"
   [{req :request}]
-  (use-layout "Login" ((ep/login-handler master-client) req)))
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (hiccup/html viewLogin) })
 
-(defn oauth-login
-  [req]
-  ((ep/login-handler 
-     {:client web-client-id 
-      :user-authenticator
-      (fn [login password]
-        #_(prn (cluser/authenticate-user login password))
-        (if-let [u (cluser/authenticate-user login password)]
-          (if (= 1 (:status u)) u nil)))
-      :token-creator 
-      (fn [client user]
-        (when-let [token (cltoken/create-token client user)]
-          (save-session (:token token) {:client client
-                                        :uid (:id user)})
-          token))
-      }) req))
+(defn do-login [{params :params :as req}]
+  (if-let [u (cluser/authenticate-user
+               (params :username)
+               (params :password))]
+    (let [groups (clojure.string/join "," (map :id (:groups u)))]
+      (if (= 1 (:status u))
+        (let [token (:token (cltoken/create-token web-client-id u)) ]
+          (save-cache token {:c web-client-id :u (:id u) :g groups})
+          {:access-token token})
+        nil))))
+
+#_(def dev-token 
+    (:access-token 
+      (do-login {:params {:username "aaa@aaa.com" :password "123456"}})))
 
 (defn handler-login-post
   "handle login and redirect in case of success"
   [{req :request}]
   (tryc
-    (when-let [res (oauth-login req) ]
-      (when-let [at (-> res :session :access_token) ]
-        {:access-token at}))))
+    (do-login req)))
 
-(defn login-redirect 
+(defn login-redirect
   "doc-string"
   [ctx]
-  (prn ctx)
   (if-let [at (:access-token ctx)]
-    (-> (rutil/redirect "/") 
+    (-> (rutil/redirect "/")
         (rutil/set-cookie :access_token (:access-token ctx)))
     (rutil/redirect "/login?retry")))
 
@@ -63,50 +81,79 @@
   [{req :request}]
   (comment "do logout"))
 
-(defn handler-user-save 
-  "creates or updates user"
-  [{req :request} id]
-  {:entry {:id (if (nil? id) "post-id" (str "put-id" id)) :name "post"}})
+(defn generic-get 
+  [getter 
+   {session :current-session 
+    {params :params} :request :as ctx} ]
+  (let [off (:offset params)
+        lim (:limit params)]
+    {:data (getter 
+            (:id params) 
+            (:user  session)
+            (if off (to-int off) 0)
+            (if lim (to-int lim) 10))}))
+
+(defn handler-projects-get [ctx]
+  (tryc (generic-get get-projects ctx)))
+
+(defn handler-project-save 
+  [{{params :params} :request
+    json :json {user :user} :current-session :as ctx}]
+  (tryc
+    (let [rec {:name (:name json) 
+               :description (:description json) 
+               :parent_id (:parent_id json)} ]
+      (clean-response 
+        (if (:id json) 
+          (generic-update projects user (assoc rec :id (:id json))) 
+          (generic-insert projects user (assoc rec :id (uuid))))))))
+
+(defn handler-resources-get [ctx]
+  (tryc (generic-get get-resources ctx)))
 
 (defn handler-user-get
-  "get user by id"
-  [{req :request sess :current-session :as ctx}]
+  [{{session :current-session} :request :as ctx}]
   (tryc
-    (let [uid (:uid sess)
-          usr (get-user uid)]
-      {:entry {:email (usr :login)}} ) ))
+    (if-let [usr (:data ctx)]
+      {:data 
+       {:email (:login usr)
+        :perm (map :id (get-resources nil usr 0 1000)) }})))
 
-(def v-user-register (validation-set
-                       (presence-of :email)
-                       (presence-of :password)
-                       (length-of :password :within (range 5 51))
-                       (format-of :email :format #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")))
+(handler-user-get 
+  (assoc 
+    (dev-req "1" ["1"] {:id "1"}) 
+    :data {:id "1" :login "test@test.com" :groups ["1"]} ))
 
-(defn handler-user-register 
+(defn get-by-id [ent id] 
+  (if-let [item (generic-get-by-id ent id)]
+    {:data item}))
+
+(defn handler-user-save
   [{req :request json :json :as ctx}]
   (tryc
     (let [{e :email p :password} json
-          usr (get-user-by-email e)] 
+          usr (get-user-by-email e)]
       (if usr
-        {:err "Email already exists"}
-        {:result (create-user 
-                   {:id (uuid) 
-                    :login e 
+        {:er "Email already exists" :ec (:email-exists errors)}
+        {:result (create-user
+                   {:id (uuid)
+                    :login e
                     :password (cluser/bcrypt p)})}))))
 
 (defn check-user-access
   "evaluates access to the route and verb"
   [uid]
-  (when-let [actions (get-all-actions)]
-    
-    )
-  )
+  (when-let [actions (get-all-actions)] ))
 
-(defn check-user 
+(defn check-user
   [{req :request}]
   (try
     (when-let [hval (get-in req [:headers "authorization"])]
-      (when-let [sess (get-session hval)]
-        {:current-session sess} ))
-    (catch Exception e nil) ))
+      (when-let [session (get-session hval)]
+        {:current-session 
+         {:user 
+          {:id (:u session) 
+           :client-id (:c session) 
+           :groups (clojure.string/split (:g session) #",")}}} ))
+    (catch Exception e nil)))
 

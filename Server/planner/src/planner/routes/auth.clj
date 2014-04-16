@@ -1,11 +1,16 @@
 (ns planner.routes.auth
   (:use compojure.core
-        planner.actions)) 
+        planner.actions))
 
 (defroutes auth-routes
   (ANY "/login" [] action-login)
   (ANY "/user" [] action-user)
+  (ANY "/user/:id" [] action-user)
   (ANY "/logout" [] action-logout)
-  (ANY "/register" [] action-register)
-  (ANY "/token" [] action-token))
+  (ANY "/resources" [] action-resources)
+  (ANY "/token" [] action-token)
+  (ANY "/projects" [] action-projects) 
+  (ANY "/project/:id" [id] action-projects) 
+  (ANY "/project" [] action-projects) 
+  )
 

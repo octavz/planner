@@ -8,7 +8,8 @@ angular.module('myApp', [
   'myApp.directives',
     'myApp.controllers',
     'myAuth.services',
-    'ngStorage'
+    'ngStorage',
+    'ui.bootstrap'
 ]);
 
 angular.module('myApp.controllers', []);

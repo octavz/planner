@@ -4,7 +4,8 @@
 angular.module('myAppPublic', [
     'ngRoute',
     'myAppPublic.services',
-    'myAppPublic.controllers'
+    'myAppPublic.controllers',
+    'ui.bootstrap'
 ])
 
 .config(['$routeProvider',

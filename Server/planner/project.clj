@@ -5,32 +5,33 @@
   {:init-ns planner.repl}
   :dependencies
   [[ring-server "0.3.1"]
-   [ring/ring-core "1.2.1"]
-   [com.taoensso/timbre "3.0.0"]
-   [ragtime "0.3.4"]
+   [ring/ring-core "1.2.2"]
+   [com.taoensso/timbre "3.1.6"]
+   [ragtime "0.3.7"]
    [environ "0.4.0"]
-   [markdown-clj "0.9.41"]
-   [korma "0.3.0-RC6"]
-   [http-kit "2.1.14"]
-   [liberator "0.10.0"]
+   ;[markdown-clj "0.9.41"]
+   [korma "0.3.0"]
+   [http-kit "2.1.18"]
+   [liberator "0.11.0"]
+   ;[lib-noir "0.8.1"]
    [clj-time "0.6.0"]
    [clauth "1.0.0-rc17"]
-   [lein-light-nrepl "0.0.11"]
+   ;[lein-light-nrepl "0.0.17"]
    [cheshire "5.3.1"]
-   [com.taoensso/tower "2.0.1"]
+   ;[com.taoensso/tower "2.0.2"]
    [hiccup "1.0.5"]
-   [hiccup-bootstrap "0.1.2"]
-   [org.clojure/tools.reader "0.8.3"]
-   [org.clojure/clojurescript "0.0-2138"]
-   [com.novemberain/validateur "1.7.0"]
-   [org.clojure/clojure "1.5.1"]
-   [log4j "1.2.17" :exclusions
-    [javax.mail/mail javax.jms/jms com.sun.jdmk/jmxtools com.sun.jmx/jmxri]]
-   [lib-noir "0.8.0"]
+   ;[hiccup-bootstrap "0.1.2"]
+   ;[org.clojure/tools.reader "0.8.3"]
+   ;[org.clojure/clojurescript "0.0-2197"]
+   [com.novemberain/validateur "2.0.0"]
+   [org.clojure/clojure "1.6.0"]
+   [log4j "1.2.17" :exclusions [javax.mail/mail javax.jms/jms com.sun.jdmk/jmxtools com.sun.jmx/jmxri]]
    [compojure "1.1.6"]
-   [selmer "0.5.9"]
-   [com.taoensso/carmine "2.4.5"]
-   [postgresql/postgresql "9.1-901.jdbc4"]]
+   ;[selmer "0.6.4"]
+   [com.taoensso/carmine "2.6.0"]
+   [postgresql/postgresql "9.1-901-1.jdbc4"]
+   ]
+  :bootclasspath true,
   :ring {:handler planner.handler/app,
          :init planner.handler/init,
          :destroy planner.handler/destroy}
@@ -41,16 +42,17 @@
                                  :stacktraces? false,
                                  :auto-reload? false}},
              :dev {:dependencies [[ring-mock "0.1.5"]
-                                  [com.taoensso/carmine "2.4.5"]
-                                  [midje "1.6.0"]
-                                  [ring/ring-devel "1.2.1"]],
+                                  [midje "1.6.3"]
+                                  [ring/ring-devel "1.2.2"]],
                    :env {:dev true}}}
   :url "http://example.com/FIXME"
   :main planner.core
-  :repl-options {:nrepl-middleware [lighttable.nrepl.handler/lighttable-ops]}
-  :plugins [[lein-ring "0.8.10"]
+  ;:repl-options {:nrepl-middleware [lighttable.nrepl.handler/lighttable-ops]}
+  :plugins [
+            [lein-ancient "0.5.5"]
+            [lein-ring "0.8.10"]
             [lein-midje "3.1.1"]
             [lein-environ "0.4.0"]
-            [ragtime/ragtime.lein "0.3.4"]]
+            [ragtime/ragtime.lein "0.3.7"]]
   :description "FIXME: write description"
   :min-lein-version "2.0.0")

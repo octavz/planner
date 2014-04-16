@@ -6,7 +6,7 @@
     planner.repos.redis
     planner.util)
   (:require 
-    [clauth.store :as cl]))
+    [korma.sql.fns :as kfn]))
 
 (defdb db planner.models.schema/db-spec)
 
@@ -25,7 +25,7 @@
 (defn get-user [id] 
   (first (select users (where {:id id}) (limit 1))))
 (defn get-user-by-email [login] 
-  (first (select users (where {:login login}) (limit 1))))
+  (first (select users (with groups) (where {:login login}) (limit 1))))
 (defn delete-user [login] 
   (update users (set-fields {:status 10}) (where {:login login})))
 
@@ -74,48 +74,78 @@
 (defn get-all-actions []
   (get-or-else ns-action "all" (fn [] (select actions))))
 
-(defrecord UserStore []
-  cl/Store
-  (fetch [this t] (get-user-by-email t))
-  (revoke! [this t] (delete-user t))
-  (store! [this key_param user] (create-user user))
-  (entries [this] 
-    (throw (Exception. "entries not implemented for user")))
-  (reset-store! [this] 
-    (throw (Exception. "reset not implemented for user"))))
+(defn get-all-resources []
+  (get-or-else ns-resource "all" (fn [] (select resources))))
 
-(defrecord ClientStore []
-  cl/Store
-  (fetch [this t] (get-client t))
-  (revoke! [this t] (delete-client t))
-  (store! [this key_param client] (create-client client))
-  (entries [this] 
-    (throw (Exception. "entries not implemented for clients")))
-  (reset-store! [this] 
-    (throw (Exception. "reset not implemented for codes"))))
+(defmacro max-perm [] `[(sqlfn GREATEST :perm_public :perm_group :perm_owner) :perm])
+(defmacro where-perm [q u g body] 
+  `(where ~q
+          (kfn/pred-and 
+            ~body
+            (kfn/pred-or 
+              (kfn/pred-> :perm_public 0) 
+              (kfn/pred-and (kfn/pred-= :user_id ~u) (kfn/pred-> :perm_owner 0))
+              (kfn/pred-and (kfn/pred-in :group_id ~g) (kfn/pred-> :perm_group 0)) ))))
 
-(defrecord CodeStore []
-  cl/Store
-  (fetch [this t] (get-code t))
-  (revoke! [this t] (delete-code t))
-  (store! [this key_param client] (create-code client))
-  (entries [this] (("entries not implemented for codes")))
-  (reset-store! [this] 
-    (throw (Exception. "reset not implemented for codes"))))
+(defn get-groups [uid]
+  (get-or-else-json
+    ns-groups 
+    uid 
+    (fn[] 
+      (select 
+        groups 
+        (fields :id)
+        (join groups-users (= :groups_users.group_id :groups.id))
+        (where {:groups_users.user_id uid})))))
 
-(defrecord TokenStore []
-  cl/Store
-  (fetch [this t] (get-token t))
-  (revoke! [this t] (delete-token t))
-  (store! [this key_param rec] 
-    (create-token (update-in rec [:subject] :id )))
-  (entries [this] 
-    (throw (Exception. "entries not implemented for codes")))
-  (reset-store! [this] 
-    (throw (Exception. "reset not implemented for codes"))))
+(defn get-projects [id usr off lim]
+  (get-or-else-json 
+    ns-projects
+    (:id usr)
+    (fn[]
+    (select 
+      projects 
+      (fields :id :name :description (max-perm)) 
+      (where-perm (:id usr) (:groups usr) (if id {:id id} true))
+      (offset off)
+      (limit lim)))))
 
-(defn create-user-store [] (UserStore.))
-(defn create-token-store [] (TokenStore.))
-(defn create-code-store [] (CodeStore.))
-(defn create-client-store [] (ClientStore.))
+(defn get-resources [id usr off lim]
+  (if usr
+    (select 
+      resources 
+      (fields :id :content (max-perm)) 
+      (where-perm (:id usr) (map :id (get-groups (:id usr))) (if id {:id id} true))
+      (offset off)
+      (limit lim) )))
+
+#_(get-projects nil {:id "1" :groups ["1"]} 0 100)
+
+(defn get-actions [id usr off lim]
+  (select 
+    actions 
+    (fields :id :url (max-perm)) 
+    (where-perm (:id usr) (:groups usr) (if id {:id id} true))
+    (offset off)
+    (limit lim)))
+
+(defn generic-get-by-id [ent id]
+  (if id 
+    (if-let [res (select ent (where {:id id}))]
+      (first res))))
+
+(defn generic-insert [ent user rec]
+  (insert ent 
+          (values 
+            (assoc rec 
+                   :user_id (:id user) 
+                   :group_id (first (:groups user)) ))))
+
+(defn generic-update [ent user rec]
+  (update ent 
+          (set-fields 
+            (assoc rec 
+                   :user_id (:id user) 
+                   :group_id (first (:groups user)) ))
+          (where {:id rec})))
 

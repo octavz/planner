@@ -14,6 +14,8 @@ describe('myAuth services', function() {
     describe('Auth', function() {
 
         var auth;
+        var cookies;
+        var authConstants;
 
         //excuted before each "it" is run.
         beforeEach(function() {
@@ -21,27 +23,19 @@ describe('myAuth services', function() {
             //inject your service for testing.
             inject(function($injector) {
                 auth = $injector.get('Auth');
-
+                cookies = $injector.get('$cookies');
+                authConstants = $injector.get('AuthConstants');
             });
         });
 
         it('when login a user, the isLoggedIn property shouyld be true, when is logged out it should be false; initial should be false', function() {
             expect(auth.isLoggedIn()).toBe(false);
-            auth.login("theuser");
+            cookies[authConstants.AuthCookieName] = "something";
             expect(auth.isLoggedIn()).toBe(true);
             auth.logout();
             expect(auth.isLoggedIn()).toBe(false);
         });
 
-        it('login an user with empty name is not permitted', function() {
-            expect(auth.isLoggedIn()).toBe(false);
-
-            auth.login("");
-            expect(auth.isLoggedIn()).toBe(false);
-
-            auth.login(null);
-            expect(auth.isLoggedIn()).toBe(false);
-        });
     });
 
 });

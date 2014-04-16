@@ -20,14 +20,13 @@
 
   (fact "extract access-token"
     (prerequisite
-      (oauth-login anything) =>
+      (do-login anything) =>
       {:session
-       {:access_token .t.,
-        :csrf-token "csrf-token"},
-       :status 302,
-       :headers {"Location" "/"},
+       {:access_token .t. }
+       :status 302
+       :headers {"Location" "/"}
        :body ""} )
-    (handler-login-post .req.) => (contains {:access-token .t.}))
+    ((handler-login-post .req.) :session) => (contains {:access_token .t.}))
 
   (fact "authorize by header"
     (prerequisite
@@ -90,12 +89,64 @@
   (fact "get user should return current user"
     (handler-user-get
       {:current-session
-       {:uid .id.}}) => {:entry {:email valid-email}}
+       {:uid .id.}}) => {:entry {:email valid-email} :perm anything}
     (provided
+      (user-get-perm .id.) => anything
       (get-user .id.) => {:login valid-email}))
 
-  (fact "user should have access to specific routes"
-    (check-user-access .id.) => true
-    )
+  (fact "read should be allowed for public"
+    (can-read? {:group 1 :perm "0001" :user 1} {:group 10 :user 10}) => true
+    (can-read? {:group 1 :perm "0003" :user 1} {:group 10 :user 10}) => true)
+
+  (fact "read should be allowed for same user"
+    (can-read? {:group 1 :perm "0100" :user 1} {:group 10 :user 1}) => true
+    (can-read? {:group 1 :perm "0300" :user 1} {:group 10 :user 1}) => true)
+
+  (fact "read should be allowed for same group"
+    (can-read? {:group 1 :perm "0010" :user 1} {:group 1 :user 10}) => true
+    (can-read? {:group 1 :perm "0030" :user 1} {:group 1 :user 10}) => true)
+
+  (fact "read should not be allowed for wrong permission and public"
+    (can-read? {:group 1 :perm "0000" :user 1} {:group 10 :user 10}) => false
+    (can-read? {:group 1 :perm "0002" :user 1} {:group 10 :user 10}) => false)
+
+  (fact "read should not be allowed for wrong permission and same user"
+    (can-read? {:group 1 :perm "0210" :user 1} {:group 10 :user 1}) => false
+    (can-read? {:group 1 :perm "0230" :user 1} {:group 10 :user 1}) => false)
+
+  (fact "read should not be allowed for wrong permission and same group"
+    (can-read? {:group 1 :perm "0120" :user 1} {:group 1 :user 10}) => false
+    (can-read? {:group 1 :perm "0320" :user 1} {:group 1 :user 10}) => false)
+
+  (fact "write should be allowed for public"
+    (can-write? {:group 1 :perm "0002" :user 1} {:group 10 :user 10}) => true
+    (can-write? {:group 1 :perm "0003" :user 1} {:group 10 :user 10}) => true)
+
+  (fact "write should be allowed for same user"
+    (can-write? {:group 1 :perm "0200" :user 1} {:group 10 :user 1}) => true
+    (can-write? {:group 1 :perm "0300" :user 1} {:group 10 :user 1}) => true)
+
+  (fact "write should be allowed for same group"
+    (can-write? {:group 1 :perm "0020" :user 1} {:group 1 :user 10}) => true
+    (can-write? {:group 1 :perm "0030" :user 1} {:group 1 :user 10}) => true)
+
+  (fact "write should not be allowed for wrong permission and public"
+    (can-write? {:group 1 :perm "0000" :user 1} {:group 10 :user 10}) => false
+    (can-write? {:group 1 :perm "0001" :user 1} {:group 10 :user 10}) => false)
+
+  (fact "write should not be allowed for wrong permission and same user"
+    (can-write? {:group 1 :perm "0120" :user 1} {:group 10 :user 1}) => false
+    (can-write? {:group 1 :perm "0130" :user 1} {:group 10 :user 1}) => false)
+
+  (fact "write should not be allowed for wrong permission and same group"
+    (can-write? {:group 1 :perm "0210" :user 1} {:group 1 :user 10}) => false
+    (can-write? {:group 1 :perm "0310" :user 1} {:group 1 :user 10}) => false)
+
+  (fact "get user should return permissions"
+    (handler-user-get
+      {:current-session
+       {:uid .id.}}) => {:entry {:email valid-email} :perm [1 2 3 4]}
+    (provided
+      (get-user .id.) => {:login valid-email}))
   )
 

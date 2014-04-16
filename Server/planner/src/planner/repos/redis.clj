@@ -1,6 +1,7 @@
 (ns planner.repos.redis
-  (:use clojure.walk)
-  (:require 
+  (:use clojure.walk
+        cheshire.core)
+  (:require
     [taoensso.carmine :as car :refer (wcar)]
     ))
 
@@ -13,21 +14,24 @@
 (defn rec-set [key m] (redis (car/hmset* key m)))
 (defn smembers* [key] (redis (car/smembers key)))
 (defn sadd* [key vals] (redis (car/sadd key vals)))
-(defn flushall* [] (redis (car/flushall)))  
+(defn flushall* [] (redis (car/flushall)))
 (defn del* [key] (redis (car/del)))
 (defn get* [key] (redis (car/get key)))
 (defn set* [key value] (redis (car/set key value)))
 
 (def ns-action "a")
+(def ns-resource "r")
 (def ns-session "s")
+(def ns-groups "g")
+(def ns-projects "p")
 
 (defn key-ns [namespace key] (format "%s:%s" namespace key) )
 
-(defn cache-save
-  [key values] 
+(defn save-cache
+  [key values]
   (rec-set (key-ns ns-session key) values) )
 
-(defn get-session 
+(defn get-session
   [key]
   (when-let [rec (rec-get (key-ns ns-session key))]
     (if (empty? rec)
@@ -36,9 +40,21 @@
 
 (defn get-or-else
   [namespace key getter]
-  (let [rec (rec-get (key-ns namespace key))]
+  (let [rec (rec-get (key-ns namespace key)) ]
     (if (or (nil? rec) (empty? rec))
-      (let [res (getter)] 
-        (rec-set (key-ns namespace key) res) 
+      (let [res (getter)]
+        (rec-set (key-ns namespace key) res)
         res)
       (keywordize-keys rec))))
+
+(defn get-or-else-json
+  [namespace key getter]
+  (let [rec (get* (key-ns namespace key)) ]
+    (if (or (nil? rec) (empty? rec))
+      (let [res (getter)]
+        (set* (key-ns namespace key) (generate-string res))
+        res)
+      (let [ret (parse-string rec)] 
+        (if (map? ret) (keywordize-keys ret) ret)
+        ))))
+
