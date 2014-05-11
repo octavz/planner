@@ -28,12 +28,8 @@
    [log4j "1.2.17" :exclusions [javax.mail/mail javax.jms/jms com.sun.jdmk/jmxtools com.sun.jmx/jmxri]]
    [compojure "1.1.6"]
    ;[selmer "0.6.4"]
-   [com.taoensso/carmine "2.6.0"]
+   [com.taoensso/carmine "2.6.0" :exclusions [commons-codec org.clojure/tools.reader com.taoensso/encore org.clojure/data.json]]
    [postgresql/postgresql "9.1-901-1.jdbc4"]
-   [log4j "1.2.15" :exclusions [javax.mail/mail
-                            javax.jms/jms
-                            com.sun.jdmk/jmxtools
-                            com.sun.jmx/jmxri]]
    ]
   :bootclasspath true,
   :ring {:handler planner.handler/app,
@@ -46,7 +42,7 @@
                                  :stacktraces? false,
                                  :auto-reload? false}},
              :dev {:dependencies [[ring-mock "0.1.5"]
-                                  [midje "1.6.3"]
+                                  [midje "1.6.3" :exclusions [commons-codec org.clojure/tools.macro org.clojars.trptcolin/sjacket]]
                                   [ring/ring-devel "1.2.2"]],
                    :env {:dev true}}}
   :url "http://example.com/FIXME"
