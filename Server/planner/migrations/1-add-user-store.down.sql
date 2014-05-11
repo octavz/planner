@@ -1,22 +1,23 @@
-drop table oauth_codes;
-drop table oauth_tokens;
-drop table oauth_clients;
+DROP TABLE oauth_codes;
+DROP TABLE oauth_tokens;
+DROP TABLE oauth_clients;
 
-drop table actions;
+DROP TABLE actions;
 
-drop table verbs;
+DROP TABLE verbs;
 
-drop table groups_users;
-drop table plugins_projects;
+DROP TABLE groups_users;
+DROP TABLE plugins_projects;
 
-drop table extra_fields_values;
-drop table extra_fields;
+DROP TABLE extra_fields_values;
+DROP TABLE extra_fields;
 
-drop table resources;
-drop table projects;
-drop table plugins;
-drop table groups;
-drop table users;
-drop table user_status;
-drop table labels;
-drop table entity_types;
+DROP TABLE resources;
+DROP TABLE groups CASCADE;
+DROP TABLE projects CASCADE;
+DROP TABLE plugins;
+DROP TABLE users;
+DROP TABLE user_status;
+DROP TABLE labels;
+DROP TABLE entity_types;
+

@@ -1,5 +1,6 @@
 (ns planner.core  
   (:use planner.repos.sql
+        planner.repos.store
         planner.repos.oauth)
   (:require
     [ring.middleware.reload :as reload]

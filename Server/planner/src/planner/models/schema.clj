@@ -7,11 +7,14 @@
 
 (def db-spec
   {:subprotocol "postgresql"
+   :make-pool? true
+   :minimum-pool-size 10
+   :maximum-pool-size 60
    :subname "//localhost/planner"
    :user "postgres"
    :password "root"})
 
-(declare users oauth-tokens oauth-codes oauth-clients)
+(declare users oauth-tokens oauth-codes oauth-clients )
 
 (defn swap-keys [h] (into {} (map (fn [[k v]] [v k]) h)))
 
@@ -58,3 +61,4 @@
 (defentity actions)
 (defentity resources)
 (defentity projects)
+

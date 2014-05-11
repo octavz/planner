@@ -45,31 +45,38 @@
           (where {:id id})))
 (defn get-token [id] 
   (first (select oauth-tokens (where {:id id}) (limit 1))))
+
 (defn delete-token [id] (delete oauth-tokens (where {:id [= id]}) ))
+
 (defn get-token-by-user [user-id] 
   (first (select oauth-tokens (where {:user_id user-id}) (limit 1))))
 
 (defn create-client [rec] (insert oauth-clients (values rec)))
+
 (defn update-client [id secret]
   (update oauth-tokens
           (set-fields {:secret id :updated (now-ts)} )
           (where {:id id})))
 (defn get-client [id] 
   (first (select oauth-clients (where {:id id}) (limit 1))))
+
 (defn delete-client [id] 
   (transaction
     (delete oauth-codes (where {:client_id [= id]}))
     (delete oauth-clients (where {:client_id [= id]}))))
 
 (defn create-code [rec] (insert oauth-codes (values rec)))
+
 (defn update-code [id code client subject redirect-uri scope object]
   (update oauth-codes
           (set-fields {:id code :client_id client
                        :subject subject :redirect-uri redirect-uri
                        :updated (now-ts) :scope scope :object object})
           (where {:id id})))
+
 (defn get-code [id] 
   (first (select oauth-codes (where {:id id}) (limit 1))))
+
 (defn delete-code [id] 
   (delete oauth-codes (where {:id [= id]})))
 
@@ -80,6 +87,7 @@
   (get-or-else ns-resource "all" (fn [] (select resources))))
 
 (defmacro max-perm [] `[(sqlfn GREATEST :perm_public :perm_group :perm_owner) :perm])
+
 (defmacro where-perm [q u g body] 
   `(where ~q
           (kfn/pred-and 
@@ -105,12 +113,12 @@
     ns-projects
     (:id usr)
     (fn[]
-    (select 
-      projects 
-      (fields :id :name :description (max-perm)) 
-      (where-perm (:id usr) (:groups usr) (if id {:id id} true))
-      (offset off)
-      (limit lim)))))
+      (select 
+        projects 
+        (fields :id :name :description (max-perm)) 
+        (where-perm (:id usr) (:groups usr) (if id {:id id} true))
+        (offset off)
+        (limit lim)))))
 
 (defn get-resources [id usr off lim]
   (if usr
@@ -151,3 +159,23 @@
                    :group_id (first (:groups user)) ))
           (where {:id rec})))
 
+(defn store-insert-project [project-id name desc parent user-id]
+  (insert projects
+          (values {:id project-id :name name :description desc :parent_id parent :user_id user-id}) 
+          ))
+
+#_(store-insert-project (uuid) "name1" "desc1" nil "1")
+
+(defn store-insert-group [group-id project-id group-name group-type]
+  (insert groups
+          (values {:id group-id :project_id  project-id :name group-name :type group-type})))
+
+#_(all (store-insert-group (uuid) "test1" "test-group" 1))
+
+(defn store-add-user-to-group [user-id group-id]
+  (insert groups-users 
+          (values {:user_id user-id :group_id group-id})))
+
+#_(store-add-user-to-group "1" "test11")
+
+(defmacro all [& body] `(transaction ~@body))

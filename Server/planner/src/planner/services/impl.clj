@@ -6,13 +6,16 @@
         planner.models.schema
         planner.services.validation
         planner.repos.oauth
-        planner.util)
+        planner.util
+        )
   (:require [clj-time.core :as time]
             [ring.util.response :as rutil]
             [hiccup.core :as hiccup]
             [clauth.user :as cluser]
             [clauth.token :as cltoken]
-            [clauth.endpoints :as ep]))
+            [clauth.endpoints :as ep]
+            [planner.repos.store :as repo]
+            ))
 
 (def master-client (get-client "1"))
 
@@ -20,14 +23,16 @@
 
 (planner.repos.oauth/init-auth)
 
-(defn dev-req [uid groups params]
-  "session structure"
-  {:request 
-   {:current-session 
-    {:user 
-     {:id uid 
-      :groups groups}} 
-    :params params }})
+(defn dev-req [uid groups params json]
+  "request structure"
+  {
+   :json json
+   :request {
+             :current-session 
+             {:user {
+                     :id uid 
+                     :groups groups}} 
+             :params params }})
 
 (defn clean-response [data]
   {:data (dissoc data :created :updated :user_id 
@@ -88,10 +93,10 @@
   (let [off (:offset params)
         lim (:limit params)]
     {:data (getter 
-            (:id params) 
-            (:user  session)
-            (if off (to-int off) 0)
-            (if lim (to-int lim) 10))}))
+             (:id params) 
+             (:user  session)
+             (if off (to-int off) 0)
+             (if lim (to-int lim) 10))}))
 
 (defn handler-projects-get [ctx]
   (tryc (generic-get get-projects ctx)))
@@ -134,9 +139,9 @@
       (if usr
         {:er "Email already exists" :ec (:email-exists errors)}
         {:data (clean-response (create-user
-                   {:id (uuid)
-                    :login e
-                    :password (cluser/bcrypt p)}))}))))
+                                 {:id (uuid)
+                                  :login e
+                                  :password (cluser/bcrypt p)}))}))))
 
 (defn handler-user-update
   [{req :request json :json :as ctx}]
@@ -163,4 +168,24 @@
            :client-id (:c session) 
            :groups (clojure.string/split (:g session) #",")}}} ))
     (catch Exception e nil)))
+
+(defn handler-load-test [ctx]
+  #_(repo/load-test)
+  "no test"
+  )
+
+(defn handler-create-project [ctx]
+  (let [{json :json} ctx
+        project-id (uuid) 
+        project-group-id (uuid)
+        user-id (-> ctx :request :current-session :user :id)
+        groups(-> ctx :request :current-sesison :user :groups )
+        ]
+    (all
+      (let [ret (store-insert-project project-id (:name json) (:desc json) (:parent json) user-id)]
+        (store-insert-group project-group-id project-id "users" 1)
+        (store-add-user-to-group user-id project-group-id)
+        {:data {:id (:id ret) :name (:name ret) :desc (:description ret) :parent (:parent_id ret)}}
+        ))))
+
 

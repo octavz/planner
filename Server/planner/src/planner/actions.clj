@@ -124,3 +124,11 @@
   :respond-with-entity? true
   ;:new? false
   :handle-ok ret-handler)
+
+(defresource action-load-test
+  :allowed-methods [:post]
+  :available-media-types ["application/json"]
+  :post! handler-load-test
+  :respond-with-entity? true
+  :handle-created ret-handler
+  )
