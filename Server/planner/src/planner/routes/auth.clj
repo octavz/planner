@@ -12,6 +12,5 @@
   (ANY "/projects" [] action-projects) 
   (ANY "/project/:id" [id] action-projects) 
   (ANY "/project" [] action-projects) 
-  (ANY "/load" [] action-load-test) 
   )
 

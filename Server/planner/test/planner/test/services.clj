@@ -105,12 +105,15 @@
   ;(get-user .id.) => {:login valid-email}))
 
   (fact "should create project group with name users, add user to group, add project in a single transaction"
-    (handler-create-project (dev-req "1" ["1"] {} {:name "name" :desc "desc" :parent "parent"})) => {:data {:name "name" :desc "desc" :parent "parent" :id "pid"}}
+    (handler-create-project (dev-req "1" ["1"] {} {:name "name" :desc "desc" :parent "parent"})) =>
+      {:data {:name "name" :desc "desc" :parent "parent" :id "pid"}}
     (provided 
-      (uuid) =streams=> ["pid", "gid"] :times 2
-      (store-insert-group "gid" "pid" "users" 1) => anything :times 1
-      (store-add-user-to-group "1" "gid") => anything :times 1
-      (store-insert-project "pid" "name" "desc" "parent" "1") => 
+      (uuid) =streams=> ["pid", "gid","gid1"] :times 3
+      (insert-group "gid" "pid" "users" 1) => anything :times 1
+      (insert-group "gid1" "pid" "admin" 1) => anything :times 1
+      (add-user-to-group "1" "gid") => anything :times 1
+      (add-user-to-group "1" "gid1") => anything :times 1
+      (insert-project "pid" "name" "desc" "parent" "1") =>
       {:updated "" :created "" :description "desc" :id "pid" :name "name" :parent_id "parent" :perm_public 1 :status 0 :user_id "1"} :times 1
       )
     )
@@ -119,7 +122,8 @@
 
 (facts "repo"
   (fact "should create project group with name users, add user to group, add project in a single transaction"
-    (handler-create-project (dev-req "1" ["1"] {} {:name "name" :desc "desc" :parent nil})) => {:data {:name "name" :desc "desc" :parent nil :id anything}}
+        (:data (handler-create-project (dev-req "1" ["1"] {} {:name "name" :desc "desc" :parent nil}))) =>
+    (contains {:name "name" :desc "desc" :parent nil})
     )
   
   

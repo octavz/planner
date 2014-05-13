@@ -159,20 +159,20 @@
                    :group_id (first (:groups user)) ))
           (where {:id rec})))
 
-(defn store-insert-project [project-id name desc parent user-id]
+(defn insert-project [project-id name desc parent user-id]
   (insert projects
           (values {:id project-id :name name :description desc :parent_id parent :user_id user-id}) 
           ))
 
 #_(store-insert-project (uuid) "name1" "desc1" nil "1")
 
-(defn store-insert-group [group-id project-id group-name group-type]
+(defn insert-group [group-id project-id group-name group-type]
   (insert groups
           (values {:id group-id :project_id  project-id :name group-name :type group-type})))
 
 #_(all (store-insert-group (uuid) "test1" "test-group" 1))
 
-(defn store-add-user-to-group [user-id group-id]
+(defn add-user-to-group [user-id group-id]
   (insert groups-users 
           (values {:user_id user-id :group_id group-id})))
 

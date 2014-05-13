@@ -31,7 +31,7 @@
    [com.taoensso/carmine "2.6.0" :exclusions [commons-codec org.clojure/tools.reader com.taoensso/encore org.clojure/data.json]]
    [postgresql "9.1-901-1.jdbc4"]
    ]
-  :bootclasspath true,
+  ;:bootclasspath true,
   :ring {:handler planner.handler/app,
          :init planner.handler/init,
          :destroy planner.handler/destroy}

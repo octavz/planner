@@ -1,23 +1,24 @@
 (ns planner.services.impl
-  (:use planner.repos.sql
+  (:use
         validateur.validation
         planner.repos.redis
         planner.views.login
-        planner.models.schema
         planner.services.validation
         planner.repos.oauth
         planner.util
         )
-  (:require [clj-time.core :as time]
+  (:require
+            [planner.models.schema :as models]
+            [planner.repos.sql :as repo]
+            [clj-time.core :as time]
             [ring.util.response :as rutil]
             [hiccup.core :as hiccup]
             [clauth.user :as cluser]
             [clauth.token :as cltoken]
             [clauth.endpoints :as ep]
-            [planner.repos.store :as repo]
             ))
 
-(def master-client (get-client "1"))
+(def master-client (repo/get-client "1"))
 
 (def web-client-id (:client-id master-client))
 
@@ -41,12 +42,12 @@
 
 (defn handler-login-get
   "show login form"
-  [{req :request}]
+  []
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (hiccup/html viewLogin) })
 
-(defn do-login [{params :params :as req}]
+(defn do-login [{params :params}]
   (if-let [u (cluser/authenticate-user
                (params :username)
                (params :password))]
@@ -72,7 +73,7 @@
   [ctx]
   (if-let [at (:access-token ctx)]
     (-> (rutil/redirect "/")
-        (rutil/set-cookie :access_token (:access-token ctx)))
+        (rutil/set-cookie :access_token at))
     (rutil/redirect "/login?retry")))
 
 (defn handler-token
@@ -89,7 +90,7 @@
 (defn generic-get 
   [getter 
    {session :current-session 
-    {params :params} :request :as ctx} ]
+    {params :params} :request} ]
   (let [off (:offset params)
         lim (:limit params)]
     {:data (getter 
@@ -99,22 +100,22 @@
              (if lim (to-int lim) 10))}))
 
 (defn handler-projects-get [ctx]
-  (tryc (generic-get get-projects ctx)))
+  (tryc (generic-get repo/get-projects ctx)))
 
 (defn handler-project-save 
   [{{params :params} :request
-    json :json {user :user} :current-session :as ctx}]
+    json :json {user :user} :current-session}]
   (tryc
     (let [rec {:name (:name json) 
                :description (:description json) 
                :parent_id (:parent_id json)} ]
       (clean-response 
         (if (:id json) 
-          (generic-update projects user (assoc rec :id (:id json))) 
-          (generic-insert projects user (assoc rec :id (uuid))))))))
+          (repo/generic-update models/projects user (assoc rec :id (:id json)))
+          (repo/generic-insert models/projects user (assoc rec :id (uuid))))))))
 
 (defn handler-resources-get [ctx]
-  (tryc (generic-get get-resources ctx)))
+  (tryc (generic-get repo/get-resources ctx)))
 
 (defn handler-user-get
   [{{session :current-session} :request :as ctx}]
@@ -123,39 +124,39 @@
     (if-let [usr (:data ctx)]
       {:data 
        {:email (:login usr)
-        :perm (map :id (get-resources nil usr 0 1000)) }})))
+        :perm (map :id (repo/get-resources nil usr 0 1000)) }})))
 
 (defn get-by-id [ent id] 
-  (if-let [item (generic-get-by-id ent id)]
+  (if-let [item (repo/generic-get-by-id ent id)]
     {:data item}))
 
 #_(get-user-by-email "aaa1@aaa.com")
 
 (defn handler-user-create
-  [{req :request json :json :as ctx}]
+  [{req :request json :json}]
   (tryc
     (let [{e :email p :password} json
-          usr (get-user-by-email e)]
+          usr (repo/get-user-by-email e)]
       (if usr
         {:er "Email already exists" :ec (:email-exists errors)}
-        {:data (clean-response (create-user
+        {:data (clean-response (repo/create-user
                                  {:id (uuid)
                                   :login e
                                   :password (cluser/bcrypt p)}))}))))
 
 (defn handler-user-update
-  [{req :request json :json :as ctx}]
+  [{req :request json :json}]
   (tryc
     (let [{e :email p :password} json
-          usr (get-user-by-email e)]
+          usr (repo/get-user-by-email e)]
       (if (\= (:id usr) (-> req :current-sesion :user :id))
         {:er "Email already exists" :ec (:email-exists errors)}
-        {:data (update-user (uuid) e (cluser/bcrypt p) (:openid_type usr) e)}))))
+        {:data (repo/update-user (uuid) e (cluser/bcrypt p) (:openid_type usr) e)}))))
 
 (defn check-user-access
   "evaluates access to the route and verb"
   [uid]
-  (when-let [actions (get-all-actions)] ))
+  (when-let [actions (repo/get-all-actions)] ))
 
 (defn check-user
   [{req :request}]
@@ -169,22 +170,19 @@
            :groups (clojure.string/split (:g session) #",")}}} ))
     (catch Exception e nil)))
 
-(defn handler-load-test [ctx]
-  #_(repo/load-test)
-  "no test"
-  )
-
 (defn handler-create-project [ctx]
   (let [{json :json} ctx
         project-id (uuid) 
         project-group-id (uuid)
+        project-admin-group-id (uuid)
         user-id (-> ctx :request :current-session :user :id)
-        groups(-> ctx :request :current-sesison :user :groups )
         ]
-    (all
-      (let [ret (store-insert-project project-id (:name json) (:desc json) (:parent json) user-id)]
-        (store-insert-group project-group-id project-id "users" 1)
-        (store-add-user-to-group user-id project-group-id)
+    (repo/all
+      (let [ret (repo/insert-project project-id (:name json) (:desc json) (:parent json) user-id)]
+        (repo/insert-group project-group-id project-id "users" 1)
+        (repo/insert-group project-admin-group-id project-id "admin" 1)
+        (repo/add-user-to-group user-id project-group-id)
+        (repo/add-user-to-group user-id project-admin-group-id)
         {:data {:id (:id ret) :name (:name ret) :desc (:description ret) :parent (:parent_id ret)}}
         ))))
 
