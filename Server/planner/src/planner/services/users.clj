@@ -1,4 +1,4 @@
-(ns planner.services.impl
+(ns planner.services.users
   (:use
         validateur.validation
         planner.repos.redis
@@ -15,14 +15,11 @@
             [hiccup.core :as hiccup]
             [clauth.user :as cluser]
             [clauth.token :as cltoken]
-            [clauth.endpoints :as ep]
-            ))
+            [clauth.endpoints :as ep] ))
 
 (def master-client (repo/get-client "1"))
 
 (def web-client-id (:client-id master-client))
-
-(planner.repos.oauth/init-auth)
 
 (defn dev-req [uid groups params json]
   "request structure"
@@ -35,14 +32,9 @@
                      :groups groups}} 
              :params params }})
 
-(defn clean-response [data]
-  {:data (dissoc data :created :updated :user_id 
-                 :group_id :perm_public :perm_group 
-                 :perm_owner :status)})
-
 (defn handler-login-get
   "show login form"
-  []
+  [ctx]
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (hiccup/html viewLogin) })
@@ -87,36 +79,6 @@
   [{req :request}]
   (comment "do logout"))
 
-(defn generic-get 
-  [getter 
-   {session :current-session 
-    {params :params} :request} ]
-  (let [off (:offset params)
-        lim (:limit params)]
-    {:data (getter 
-             (:id params) 
-             (:user  session)
-             (if off (to-int off) 0)
-             (if lim (to-int lim) 10))}))
-
-(defn handler-projects-get [ctx]
-  (tryc (generic-get repo/get-projects ctx)))
-
-(defn handler-project-save 
-  [{{params :params} :request
-    json :json {user :user} :current-session}]
-  (tryc
-    (let [rec {:name (:name json) 
-               :description (:description json) 
-               :parent_id (:parent_id json)} ]
-      (clean-response 
-        (if (:id json) 
-          (repo/generic-update models/projects user (assoc rec :id (:id json)))
-          (repo/generic-insert models/projects user (assoc rec :id (uuid))))))))
-
-(defn handler-resources-get [ctx]
-  (tryc (generic-get repo/get-resources ctx)))
-
 (defn handler-user-get
   [{{session :current-session} :request :as ctx}]
   (prn ctx)
@@ -125,10 +87,6 @@
       {:data 
        {:email (:login usr)
         :perm (map :id (repo/get-resources nil usr 0 1000)) }})))
-
-(defn get-by-id [ent id] 
-  (if-let [item (repo/generic-get-by-id ent id)]
-    {:data item}))
 
 #_(get-user-by-email "aaa1@aaa.com")
 
@@ -170,20 +128,5 @@
            :groups (clojure.string/split (:g session) #",")}}} ))
     (catch Exception e nil)))
 
-(defn handler-create-project [ctx]
-  (let [{json :json} ctx
-        project-id (uuid) 
-        project-group-id (uuid)
-        project-admin-group-id (uuid)
-        user-id (-> ctx :request :current-session :user :id)
-        ]
-    (repo/all
-      (let [ret (repo/insert-project project-id (:name json) (:desc json) (:parent json) user-id)]
-        (repo/insert-group project-group-id project-id "users" 1)
-        (repo/insert-group project-admin-group-id project-id "admin" 1)
-        (repo/add-user-to-group user-id project-group-id)
-        (repo/add-user-to-group user-id project-admin-group-id)
-        {:data {:id (:id ret) :name (:name ret) :desc (:description ret) :parent (:parent_id ret)}}
-        ))))
-
-
+(defn handler-resources-get [ctx]
+  (tryc (generic-get repo/get-resources ctx)))

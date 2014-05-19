@@ -1,4 +1,4 @@
-(ns planner.routes.auth
+(ns planner.routes.main
   (:use compojure.core
         planner.actions))
 

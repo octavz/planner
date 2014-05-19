@@ -2,7 +2,8 @@
   (:use midje.sweet
         ring.mock.request
         planner.util
-        planner.services.impl
+        planner.services.users
+        planner.services.projects
         planner.repos.redis
         planner.repos.sql
         korma.core

@@ -9,7 +9,8 @@
 
 ;(use 'midje.repl)
 ;(autotest)
-(use 'planner.services.impl)
+(use 'planner.services.users)
+(use 'planner.services.projects)
 
 ;(use 'ragtime.core)
 ;(require 'ragtime.sql.database)

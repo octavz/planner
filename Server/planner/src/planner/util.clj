@@ -24,3 +24,20 @@
 
 (def rex-email #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
 
+(defn generic-get 
+  [getter 
+   {session :current-session 
+    {params :params} :request} ]
+  (let [off (:offset params)
+        lim (:limit params)]
+    {:data (getter 
+             (:id params) 
+             (:user  session)
+             (if off (to-int off) 0)
+             (if lim (to-int lim) 10))}))
+
+(defn clean-response [data]
+  {:data (dissoc data :created :updated :user_id 
+                 :group_id :perm_public :perm_group 
+                 :perm_owner :status)})
+

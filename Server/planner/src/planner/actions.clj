@@ -4,7 +4,9 @@
         clojure.walk
         planner.models.schema
         planner.services.validation
-        planner.services.impl)
+        planner.services.users
+        planner.services.projects
+        )
   (:require
     [compojure.route :as route]
     [clauth.endpoints :as ep ]
