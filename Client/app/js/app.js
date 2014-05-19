@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('myApp', [
+var app = angular.module('myApp', [
     'ngRoute',
     'myApp.filters',
     'myApp.services',
@@ -13,3 +13,17 @@ angular.module('myApp', [
 ]);
 
 angular.module('myApp.controllers', []);
+
+//see https://coderwall.com/p/y0zkiw
+app.config(function ($controllerProvider, $compileProvider, $filterProvider, $provide) {
+    // save references to the providers
+    app.lazy = {
+        controller: $controllerProvider.register,
+        directive: $compileProvider.directive,
+        filter: $filterProvider.register,
+        factory: $provide.factory,
+        service: $provide.service
+    };
+
+    // define routes, etc.
+});
