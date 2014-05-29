@@ -14,8 +14,27 @@ var app = angular.module('myApp', [
 
 angular.module('myApp.controllers', []);
 
+
 //see https://coderwall.com/p/y0zkiw
-app.config(function ($controllerProvider, $compileProvider, $filterProvider, $provide) {
+app.config(function ($controllerProvider, $compileProvider, $filterProvider, $provide, $logProvider, SiteMapProvider) {
+
+    SiteMapProvider.RegisterLinks([
+                {
+                    'title': 'Home',
+                    'link': '#/Home'
+                }, {
+                    'title': 'Projects',
+                    'link': '#/Projects'
+                }, {
+                    'title': 'New Project',
+                    'link': '#/ProjectNew'
+                }, {
+                    'title': 'Other',
+                    'link': '#/Other'
+                }
+    ]);
+
+
     // save references to the providers
     app.lazy = {
         controller: $controllerProvider.register,
@@ -27,3 +46,7 @@ app.config(function ($controllerProvider, $compileProvider, $filterProvider, $pr
 
     // define routes, etc.
 });
+
+
+//todo cip find a better way to register modules/plugins to load
+var ModulesToLoad = ['myAppDev'];

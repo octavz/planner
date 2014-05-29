@@ -4,12 +4,15 @@
 
 angular.module('myApp.controllers')
 
-.controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap',
-    function(Auth, $rootScope, $scope, $location, SiteMap) {
+.controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap','$log',
+    function(Auth, $rootScope, $scope, $location, SiteMap, $log) {
 
-        SiteMap.getLinks().then(function(links) {
-            console.log("TopMenuCtrl has some links", links);
-            $scope.menuItems = links;
+        SiteMap.init().then(function () {
+            $log.log("a");
+            $log.debug("d");
+            $log.warn("aw");
+            console.log("SiteMap was initialized");
+            $scope.SiteMap = SiteMap;
         })
 
         $scope.isActive = function(menuItem) {

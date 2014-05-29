@@ -16,7 +16,11 @@ myAppDev.run(function ($httpBackend) {
             calcMD5("/Home"),
             calcMD5("/Projects"),
             calcMD5("/ProjectNew"),
-            calcMD5("/Tasks")]
+
+            calcMD5("/Tasks"),
+            calcMD5("/TaskNew"),
+            calcMD5("/Tasks/items")
+        ]
     };
 
     $httpBackend.whenGET(/users/).respond(users);
