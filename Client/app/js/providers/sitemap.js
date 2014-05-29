@@ -4,7 +4,7 @@
 
 angular.module('myApp.services')
 
-.provider('SiteMap', function SiteMapProvider() {
+.provider('SiteMap', function () {
     var currentLinks = { items: [] };
 
     var registeredLinks = [];
@@ -14,8 +14,8 @@ angular.module('myApp.services')
     }
 
     this.$get = [
-        '$q', 'RouteAccessApi',
-        function ($q, RouteAccessApi) {
+        '$q', 'RouteAccessApi', '$log',
+        function ($q, RouteAccessApi, $log) {
 
             var calculateAllowedMenuLinks = function (allLinks, allowedRoutes) {
                 var filtererLinks = _(allLinks).filter(function (linkItem) {
@@ -26,7 +26,7 @@ angular.module('myApp.services')
                     var ret = _(allowedRoutes).contains(lnkHashed);
                     return ret;
                 })
-                console.log("calculateAllowedMenuLinks", filtererLinks);
+                $log.debug("calculateAllowedMenuLinks", filtererLinks);
                 return filtererLinks;
             };
 
@@ -34,7 +34,7 @@ angular.module('myApp.services')
 
                 return RouteAccessApi.get().$promise
                     .then(function (res) {
-                        console.log("RouteAccessApi", res);
+                        $log.debug("RouteAccessApi", res);
                         currentLinks.items = currentLinks.items.concat(calculateAllowedMenuLinks(registeredLinks, res.data));
                     });
             };
@@ -46,5 +46,4 @@ angular.module('myApp.services')
         }
     ];
 
-}
-);
+});

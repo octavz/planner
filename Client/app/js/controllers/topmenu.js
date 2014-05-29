@@ -7,11 +7,10 @@ angular.module('myApp.controllers')
 .controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap','$log',
     function(Auth, $rootScope, $scope, $location, SiteMap, $log) {
 
+        //todo cip is it ok to init here?
         SiteMap.init().then(function () {
-            $log.log("a");
-            $log.debug("d");
-            $log.warn("aw");
-            console.log("SiteMap was initialized");
+
+            $log.debug("SiteMap was initialized");
             $scope.SiteMap = SiteMap;
         })
 

@@ -49,4 +49,5 @@ app.config(function ($controllerProvider, $compileProvider, $filterProvider, $pr
 
 
 //todo cip find a better way to register modules/plugins to load
+//todo cip ! now how to load myAppDev or myApp?
 var ModulesToLoad = ['myAppDev'];

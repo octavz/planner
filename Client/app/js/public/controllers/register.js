@@ -4,8 +4,8 @@
 
 angular.module('myAppPublic.controllers')
 
-.controller('RegisterCtrl', ['$scope', '$location', 'UsersApi',
-    function ($scope, $location, UsersApi) {
+.controller('RegisterCtrl', ['$scope', '$location', 'UsersApi', '$log',
+    function ($scope, $location, UsersApi, $log) {
 
         $scope.alerts = [];
 
@@ -30,7 +30,7 @@ angular.module('myAppPublic.controllers')
                 }
                 $location.path('/RegisterOk');
             }, function (error) {
-                console.error(error);
+                $log.error(error);
                 $scope.alerts.push({ type: 'danger', msg: 'Something went wrong, try again.' });
             });
         };
