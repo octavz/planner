@@ -14,9 +14,7 @@ var app = angular.module('myApp', [
 
 angular.module('myApp.controllers', []);
 
-
-//see https://coderwall.com/p/y0zkiw
-app.config(function ($controllerProvider, $compileProvider, $filterProvider, $provide, $logProvider, SiteMapProvider) {
+app.config(function ($logProvider, SiteMapProvider) {
 
     SiteMapProvider.RegisterLinks([
                 {
@@ -35,16 +33,6 @@ app.config(function ($controllerProvider, $compileProvider, $filterProvider, $pr
     ]);
 
 
-    // save references to the providers
-    app.lazy = {
-        controller: $controllerProvider.register,
-        directive: $compileProvider.directive,
-        filter: $filterProvider.register,
-        factory: $provide.factory,
-        service: $provide.service
-    };
-
-    // define routes, etc.
 });
 
 
