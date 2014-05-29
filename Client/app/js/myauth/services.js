@@ -52,7 +52,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
     function () {
         var skipRoutes = ["/", "/Error", "/AppBootstrap"];
 
-        var hasAccess = function ($q, $route, RouteAccessApi) {
+        var hasAccess = function ($q, $route, RouteAccessApi, $log) {
 
             var routeToVerify = $route.current.originalPath;
             if (_(skipRoutes).contains(routeToVerify))
@@ -67,7 +67,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
                 if (isAllowed)
                     asyncVerify.resolve();
                 else {
-                    console.log("no right for this route", $route);
+                    $log.debug("no right for this route", $route);
                     asyncVerify.reject();
                 }
             });

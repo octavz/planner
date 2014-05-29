@@ -4,7 +4,8 @@ angular.module('myApp')
 
 
 .config(['$routeProvider', 'RouteAccessProvider',
-    function ($routeProvider, RouteAccessProvider) {
+    function($routeProvider, RouteAccessProvider) {
+
         $routeProvider.when('/', {
             redirectTo: '/AppBootstrap'
         });
@@ -36,21 +37,13 @@ angular.module('myApp')
             controller: 'ProjectsCtrl',
             resolve: RouteAccessProvider.routeResolvers
         });
-        $routeProvider.when('/Tasks', {
-            templateUrl: 'partials/Private/Tasks.html',
-            resolve: RouteAccessProvider.routeResolvers
-        });
-        $routeProvider.when('/TaskNew', {
-            templateUrl: 'partials/Private/TaskNew.html',
-            resolve: RouteAccessProvider.routeResolvers
-        });
         $routeProvider.when('/Logout', {
             controller: "LogoutCtrl",
             template: "<div></div>"
         });
         $routeProvider.when('/Exit', {
-            controller: function () {
-                window.setTimeout(function () {
+            controller: function() {
+                window.setTimeout(function() {
                     window.location = "Public.html";
                 }, 100);
             },
