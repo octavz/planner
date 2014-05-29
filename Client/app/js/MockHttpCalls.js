@@ -16,6 +16,7 @@ myAppDev.run(function ($httpBackend) {
             calcMD5("/Home"),
             calcMD5("/Projects"),
             calcMD5("/ProjectNew"),
+            calcMD5("/ProjectEdit/:id"),
             calcMD5("/Tasks")]
     };
 
@@ -38,6 +39,44 @@ myAppDev.run(function ($httpBackend) {
         return [200, {
             ok: true
         }, {}];
+    });
+
+    // Projects mock.
+    var currentIdx = 0;
+    var projects = [];
+    projects.push({ id: ++currentIdx, name: "proj 1", desc: "a descr", parent: "" });
+    projects.push({ id: ++currentIdx, name: "proj 2", desc: "a descr", parent: "" });
+
+    $httpBackend.whenGET(/projects\?id\=1/).respond({ data: _.findWhere(projects, { id: 1 }) });
+    $httpBackend.whenGET(/projects\?id\=2/).respond({ data: _.findWhere(projects, { id: 2 }) });
+
+    $httpBackend.whenGET(/projects/).respond({ data: projects });
+    $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
+
+        var jsondata = angular.fromJson(data);
+        jsondata.id = ++currentIdx;
+        projects.push(jsondata);
+
+        return [200, { ok: true, o: jsondata }];
+    });
+
+    $httpBackend.whenPUT(/projects/).respond(function (method, url, data) {
+
+        var jsondata = angular.fromJson(data);
+        var id = parseInt(jsondata.id);
+        //find the object in our array
+        var o = _.findWhere(projects, { id: id });
+        if (o != undefined) {
+            o.name = jsondata.name;
+            o.desc = jsondata.desc;
+            o.parent = jsondata.parent;
+        } else {
+            console.warn("mock: project not found for edit", data);
+            //?
+            return [404];
+        }
+
+        return [200, { ok: true, o: jsondata }];
     });
 
     $httpBackend.whenGET(/.*/).passThrough();
