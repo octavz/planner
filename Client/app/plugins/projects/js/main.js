@@ -4,8 +4,6 @@ var plugin = angular.module('myApp.plugins.projects', [
     'myApp.plugins.projects.controllers'
 ]);
 
-angular.module('myApp.plugins.projects.controllers', []);
-
 plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
 
     $routeProvider.when('/Projects', {

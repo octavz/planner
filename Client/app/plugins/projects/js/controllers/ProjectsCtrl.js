@@ -1,6 +1,8 @@
 ﻿'use strict';
 
-angular.module('myApp.plugins.projects.controllers')
+angular.module('myApp.plugins.projects.controllers', [
+    'myApp.plugins.projects.rest'
+])
 
 .controller('ProjectsCtrl', ['$scope', '$location', '$routeParams', 'ProjectsApi', function ($scope, $location, $routeParams, ProjectsApi) {
 
