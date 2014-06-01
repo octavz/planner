@@ -14,7 +14,10 @@ var app = angular.module('myApp', [
 
 angular.module('myApp.controllers', []);
 
-app.config(function ($logProvider, SiteMapProvider) {
+app.config(function ($logProvider, SiteMapProvider, $locationProvider) {
+
+    // use the HTML5 History API
+    $locationProvider.html5Mode(true);
 
     SiteMapProvider.RegisterLinks([
                 {
