@@ -19,16 +19,11 @@ app.config(function ($logProvider, SiteMapProvider, $locationProvider) {
     // use the HTML5 History API
     $locationProvider.html5Mode(true);
 
+    $logProvider.debugEnabled(true);
     SiteMapProvider.RegisterLinks([
                 {
                     'title': 'Home',
                     'link': '#/Home'
-                }, {
-                    'title': 'Projects',
-                    'link': '#/Projects'
-                }, {
-                    'title': 'New Project',
-                    'link': '#/ProjectNew'
                 }, {
                     'title': 'Other',
                     'link': '#/Other'

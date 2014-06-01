@@ -11,14 +11,6 @@ services.factory('UsersApi', function ($resource) {
     });
 });
 
-services.factory('ProjectsApi', function ($resource) {
-    return $resource('/projects', {}, {
-        insertProject: { method: 'POST' },
-        updateProject: { method: 'PUT' },
-    });
-});
-
-
 services.factory('LoggedUserApi', function ($resource) {
     return $resource('/users', {}, {
         myDetails: { method: 'GET', params: { id: '@id' } },
