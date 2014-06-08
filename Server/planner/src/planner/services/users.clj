@@ -5,8 +5,7 @@
         planner.views.login
         planner.services.validation
         planner.repos.oauth
-        planner.util
-        )
+        planner.util)
   (:require
             [planner.models.schema :as models]
             [planner.repos.sql :as repo]

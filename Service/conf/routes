@@ -1,0 +1,10 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+POST         /oauth2/access_token        @controllers.UserController.accessToken
+GET          /                           @controllers.MainController.index
+GET          /build                      @controllers.MainController.build
+GET          /login                      @controllers.UserController.login
+POST         /login                      @controllers.UserController.loginPost
+GET          /client/*file               controllers.Assets.at(path="/public/client", file)
