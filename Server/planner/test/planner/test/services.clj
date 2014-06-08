@@ -6,6 +6,7 @@
         planner.services.projects
         planner.repos.redis
         planner.repos.sql
+        planner.services.validation
         korma.core
         korma.db
         planner.core)
@@ -116,14 +117,21 @@
       (add-user-to-group "1" "gid1") => anything :times 1
       (insert-project "pid" "name" "desc" "parent" "1") =>
       {:updated "" :created "" :description "desc" :id "pid" :name "name" :parent_id "parent" :perm_public 1 :status 0 :user_id "1"} :times 1
-      )
-    )
+      ))
   
+  (fact "should not allowed modifying the project if the user is not admin"
+    (handler-update-project (dev-req "1" ["1"] {} {:id "030c196a-32bc-4f04-b00c-a72cf192c263" :name "name" :desc "desc" :parent "parent"})) =>
+      (contains {:ec (:not-allowed errors)} )
+    (provided 
+      
+      )
+    
+    )
   )
 
 (facts "repo"
   (fact "should create project group with name users, add user to group, add project in a single transaction"
-        (:data (handler-create-project (dev-req "1" ["1"] {} {:name "name" :desc "desc" :parent nil}))) =>
+        (:data (handler-create-project (dev-req "1" ["1"] {} {:id 1 :name "name" :desc "desc" :parent nil}))) =>
     (contains {:name "name" :desc "desc" :parent nil})
     )
   
