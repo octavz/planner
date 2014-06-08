@@ -1,0 +1,14 @@
+﻿<div ng-controller="TopMenuCtrl">
+    <h2>Super Planner</h2>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li ng-repeat="item in SiteMap.LinksUser.items" ng-class="isActive(item)">
+                        <a ng-href="{{item.link}}">{{item.title}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>

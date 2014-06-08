@@ -110,6 +110,12 @@ function HasAlternativePath(path) {
         )
         return null;
 
+    //if (path.match(/^\/[^\/]*\/$/i)
+    //    ||
+    //    path.match(/^\/[^\/]*\/$/i)
+    //    )
+    //    return "./app/index_user.html";
+
     util.puts("has alt path");
     return "./app/index.html";
 }

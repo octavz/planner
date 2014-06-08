@@ -4,7 +4,11 @@ angular.module('myApp.plugins.projects.controllers', [
     'myApp.plugins.projects.rest'
 ])
 
-.controller('ProjectsCtrl', ['$scope', '$location', '$routeParams', 'ProjectsApi', function ($scope, $location, $routeParams, ProjectsApi) {
+.controller('ProjectsCtrl', ['$scope', '$location', '$window', '$routeParams', 'ProjectsApi', 'SiteMap', function ($scope, $location, $window, $routeParams, ProjectsApi, SiteMap) {
+
+    $scope.RedirectProject = function (prj) {
+        SiteMap.SwitchToProject(prj.id);
+    }
 
     var id = $routeParams.id;
     if (id != null) {
@@ -17,6 +21,7 @@ angular.module('myApp.plugins.projects.controllers', [
                 Name: resp.data.name,
                 Description: resp.data.desc,
                 Parent: resp.data.parent
+
             }
         });
 
@@ -63,7 +68,7 @@ angular.module('myApp.plugins.projects.controllers', [
                     return;
                 }
                 if (data.ok) {
-                    $location.path('/Projects');
+                    $scope.RedirectProject(data.o);
                 }
             });
         }
