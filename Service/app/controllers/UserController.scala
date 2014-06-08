@@ -21,8 +21,8 @@ class UserController(implicit inj: Injector) extends Controller with OAuth2Provi
 
   val loginForm = Form (
       tuple(
-        "email" -> text,
-        "password" -> text
+        "email" -> email,
+        "password" -> nonEmptyText(5)
         )
       )
 
