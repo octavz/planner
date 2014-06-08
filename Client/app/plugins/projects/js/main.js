@@ -44,6 +44,9 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
         {
             'title': 'Project Home',
             'link': projMenuPrefix + ''
+        }, {
+            'title': 'Edit',
+            'link': projMenuPrefix + '/Edit'
         }
     ]);
 
