@@ -60,5 +60,7 @@
 
 (defentity actions)
 (defentity resources)
-(defentity projects)
+
+(defentity projects
+  (has-many groups {:fk :project_id}))
 

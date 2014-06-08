@@ -36,6 +36,7 @@
     (delete oauth-tokens (where {:user_id (:subject rec) 
                                  :client_id (:client rec) }) ) 
     (insert oauth-tokens (values rec))))
+
 (defn update-token [id token user-id subject expires scope object]
   (update oauth-tokens
           (set-fields {:id token :client_id user-id
@@ -43,6 +44,7 @@
                        :updated (now-ts)
                        :scope scope :object object})
           (where {:id id})))
+
 (defn get-token [id] 
   (first (select oauth-tokens (where {:id id}) (limit 1))))
 
@@ -57,6 +59,7 @@
   (update oauth-tokens
           (set-fields {:secret id :updated (now-ts)} )
           (where {:id id})))
+
 (defn get-client [id] 
   (first (select oauth-clients (where {:id id}) (limit 1))))
 
@@ -179,3 +182,12 @@
 #_(store-add-user-to-group "1" "test11")
 
 (defmacro all [& body] `(transaction ~@body))
+
+
+(defn get-project-by-id 
+  [pid]
+  (select projects 
+          (with groups)
+          (where {:id pid})))
+
+#_(get-project-by-id "030c196a-32bc-4f04-b00c-a72cf192c263")

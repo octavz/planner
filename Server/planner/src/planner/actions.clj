@@ -94,8 +94,7 @@
   :post! handler-user-create
   :respond-with-entity? true
   :handle-ok handler-user-get
-  :handle-created ret-handler
-  )
+  :handle-created ret-handler)
   
 
 (defresource action-projects [id]
