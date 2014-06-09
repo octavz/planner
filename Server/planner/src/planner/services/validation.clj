@@ -18,5 +18,7 @@
   {
    :unknown 1
    :email-exists 2   
+   :not-allowed 3
    })
 
+(defn err[c m] {:ec c :er m})
