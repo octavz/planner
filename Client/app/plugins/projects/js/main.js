@@ -14,8 +14,8 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     var projMenuPrefix = SiteMapProvider.GetBaseUrlForProject();
 
     $routeProvider.when(userRoutePrefix + '', {
-        templateUrl: 'plugins/projects/html/Projects.html',
-        controller: 'ProjectsCtrl',
+        templateUrl: 'plugins/projects/html/User.html',
+        controller: 'UserCtrl',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(userRoutePrefix + '/Projects', {
@@ -53,9 +53,6 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     //register links in the menu
     SiteMapProvider.RegisterLinksUser([
         {
-            'title': 'Home',
-            'link': userMenuPrefix + ''
-        }, {
             'title': 'Projects',
             'link': userMenuPrefix + '/Projects'
         }, {

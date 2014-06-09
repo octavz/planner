@@ -7,6 +7,8 @@ angular.module('myApp.controllers')
 .controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap', '$log',
     function (Auth, $rootScope, $scope, $location, SiteMap, $log) {
 
+        $scope.homelink = SiteMap.getCurrentUserLink();
+        
         //todo cip is it ok to init here?
         SiteMap.init().then(function () {
 

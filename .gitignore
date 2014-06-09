@@ -7,3 +7,4 @@ tmp
 Client/coverage/
 *.log
 *.suo
+/Client/ClientLayout

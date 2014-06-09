@@ -64,13 +64,13 @@ angular.module('myApp.services')
             };
 
             //todo cip !!! handle this hard coded values
-            var getCurrentProjectLink = function (projectCode) {
-                return "/app/User1/" + projectCode;
-            }
-
             var getCurrentUserLink = function () {
                 return "/app/User1/";
             }
+            var getProjectLink = function (projectCode) {
+                return getCurrentUserLink() + projectCode;
+            }
+
 
             return {
                 init: init,
@@ -78,11 +78,12 @@ angular.module('myApp.services')
                 LinksUser: currentLinksUser,
                 //todo cip is it good to have switch here?
                 SwitchToProject: function (projectCode) {
-                    $window.location = getCurrentProjectLink(projectCode);
+                    $window.location = getProjectLink(projectCode);
                 },
                 SwitchToUser: function () {
                     $window.location = getCurrentUserLink();
-                }
+                },
+                getCurrentUserLink: getCurrentUserLink 
             };
         }
     ];

@@ -107,6 +107,8 @@ function HasAlternativePath(path) {
         path.match(/^\/app\/public\.html/i)
         ||
         path.match(/^\/app\/autologin\.html/i)
+        ||
+        path.match(/^\/ClientLayout/i)
         )
         return null;
 

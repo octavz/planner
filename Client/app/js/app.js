@@ -21,7 +21,6 @@ app.config(function ($logProvider, SiteMapProvider, $locationProvider) {
 
     $logProvider.debugEnabled(true);
 
-
 });
 
 app.run([
