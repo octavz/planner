@@ -22,10 +22,15 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     SiteMapProvider.RegisterLinks([
         {
             'title': 'Tasks',
-            'link': projMenuPrefix + '/Tasks'
-        }, {
-            'title': 'New Task',
-            'link': projMenuPrefix + '/TaskNew'
+            'items': [
+                {
+                    'title': 'Show All',
+                    'link': projMenuPrefix + '/Tasks'
+                }, {
+                    'title': 'Add New Task',
+                    'link': projMenuPrefix + '/TaskNew'
+                }
+            ]
         }
     ]);
 });

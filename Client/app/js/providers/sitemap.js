@@ -7,9 +7,11 @@ angular.module('myApp.services')
 .provider('SiteMap', function () {
     var currentLinks = { items: [] };
     var currentLinksUser = { items: [] };
+    var currentLinksSettings = { items: [] };
 
     var registeredLinks = [];
     var registeredLinksUser = [];
+    var registeredLinksSettings = [];
 
     this.RegisterLinks = function (links) {
         registeredLinks = registeredLinks.concat(links);
@@ -17,6 +19,10 @@ angular.module('myApp.services')
 
     this.RegisterLinksUser = function (links) {
         registeredLinksUser = registeredLinksUser.concat(links);
+    }
+
+    this.RegisterLinksSettings = function (links) {
+        registeredLinksSettings = registeredLinksSettings.concat(links);
     }
 
     //todo cip !!! handle this hard coded values
@@ -52,14 +58,14 @@ angular.module('myApp.services')
                 $log.debug("calculateAllowedMenuLinks", filtererLinks);
                 return filtererLinks;
             };
-
             var init = function () {
-
+                $log.debug("init");
                 return RouteAccessApi.get().$promise
                     .then(function (res) {
                         $log.debug("RouteAccessApi", res);
                         currentLinks.items = currentLinks.items.concat(calculateAllowedMenuLinks(registeredLinks, res.data));
                         currentLinksUser.items = registeredLinksUser;
+                        currentLinksSettings.items = registeredLinksSettings;
                     });
             };
 
@@ -71,11 +77,11 @@ angular.module('myApp.services')
                 return getCurrentUserLink() + projectCode;
             }
 
-
             return {
                 init: init,
                 Links: currentLinks,
                 LinksUser: currentLinksUser,
+                LinksSettings: currentLinksSettings,
                 //todo cip is it good to have switch here?
                 SwitchToProject: function (projectCode) {
                     $window.location = getProjectLink(projectCode);
@@ -83,7 +89,7 @@ angular.module('myApp.services')
                 SwitchToUser: function () {
                     $window.location = getCurrentUserLink();
                 },
-                getCurrentUserLink: getCurrentUserLink 
+                getCurrentUserLink: getCurrentUserLink
             };
         }
     ];

@@ -42,12 +42,15 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     //register links in the menu
     SiteMapProvider.RegisterLinks([
         {
-            'title': 'Project Home',
-            'link': projMenuPrefix + ''
-        }, {
-            'title': 'Edit',
-            'link': projMenuPrefix + '/Edit'
+            'title': 'Project',
+            'items': [
+              {
+                  'title': 'Settings',
+                  'link': projMenuPrefix + '/Edit'
+              }
+            ]
         }
+
     ]);
 
     //register links in the menu

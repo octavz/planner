@@ -16,7 +16,16 @@ angular.module('myApp.controllers')
             $scope.SiteMap = SiteMap;
         })
 
-        $scope.isActive = function (menuItem) {
+        $scope.attachTopNodeClass = function (menuItem) {
+            var cssClasses = [];
+            cssClasses.push(isActive(menuItem));
+            //todo cip wouldnt be better to put this in html?
+            cssClasses.push(menuItem.items != null ? "dropdown" : "");
+
+            return cssClasses.join(" ");
+        }
+
+        var isActive = function (menuItem) {
             var loc = "#" + $location.path();
             if (menuItem.link == loc) {
                 return 'active';
@@ -26,7 +35,6 @@ angular.module('myApp.controllers')
         $scope.RedirectToUser = function () {
             SiteMap.SwitchToUser();
         }
-
 
         $scope.isLoggedIn = Auth.isLoggedIn;
     }
