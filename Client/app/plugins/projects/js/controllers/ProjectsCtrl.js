@@ -7,13 +7,13 @@ angular.module('myApp.plugins.projects.controllers', [
 .controller('ProjectsCtrl', ['$scope', '$location', '$window', '$routeParams', 'ProjectsApi', 'SiteMap', function ($scope, $location, $window, $routeParams, ProjectsApi, SiteMap) {
 
     $scope.RedirectProject = function (prj) {
-        SiteMap.SwitchToProject(prj.id);
+        SiteMap.SwitchToProject(prj.code);
     }
 
-    var id = $routeParams.id;
-    if (id != null) {
+    var projectcode = $routeParams.projectcode;
+    if (projectcode != null) {
         $scope.title = 'Edit project';
-        ProjectsApi.get({ id: id }, function (resp) {
+        ProjectsApi.get({ id: projectcode }, function (resp) {
             console.log("received something", resp);
 
             //fill the scope
@@ -39,10 +39,10 @@ angular.module('myApp.plugins.projects.controllers', [
             return;
         }
 
-        if (id != null) {
+        if (projectcode != null) {
             //make a post
             ProjectsApi.updateProject({
-                id: id,
+                id: projectcode,
                 name: $scope.project.Name,
                 desc: $scope.project.Description,
                 parent: $scope.project.Parent,

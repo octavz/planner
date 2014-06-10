@@ -58,17 +58,19 @@ myAppDev.run(function ($httpBackend) {
 
     //handle possible 10 projects
     for (var i = 0; i < 10; i++) {
-        projects.push({ id: ++currentIdx, name: "proj "+i, desc: "a descr", parent: "" });
+        var idx = ++currentIdx;
+        projects.push({ id: idx, code: "project" + idx, name: "Project " + idx, desc: "a descr", parent: "" });
 
         var regexp = new RegExp('projects\?id\=' + i);
         $httpBackend.whenGET(regexp).respond({ data: _.findWhere(projects, { id: i }) });
     }
-    
+
     $httpBackend.whenGET(/projects/).respond({ data: projects });
     $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
 
         var jsondata = angular.fromJson(data);
         jsondata.id = ++currentIdx;
+        jsondata.code = "project" + id;
         projects.push(jsondata);
 
         return [200, { ok: true, o: jsondata }];
