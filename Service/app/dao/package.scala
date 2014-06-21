@@ -1,6 +1,6 @@
 import scala.concurrent.Future
 
-package object repos {
+package object dao {
 
   type RetRepo[T] = Future[Either[String, T]]
 

@@ -9,7 +9,7 @@ import org.specs2.mock._
 
 import services._
 import services.impl._
-import repos._
+import dao._
 import db._
 
 /** .
@@ -19,7 +19,7 @@ import db._
 @RunWith(classOf[JUnitRunner])
 class UserServiceSpec extends Specification with Mockito with Injectable {
   implicit val modules = new Module{
-    bind[UserRepo] to mock[UserRepo]
+    bind[UserDAO] to mock[UserDAO]
     bind[UserService] to new DefaultUserService
   }
 

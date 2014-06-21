@@ -1,12 +1,15 @@
-package oauth
+package dao.impl
 
+import dao.{RetRepo, UserDAO}
+import db._
 import scalaoauth2.provider.{AuthInfo, DataHandler}
 import java.util.Date
 import java.sql.Timestamp
 import util.Crypto
-import db._
 
-class OAuthDataHandler extends DataHandler[User] with DB {
+class SlickUserDAO extends UserDAO with DB {
+  override def insertSession(us: UserSession): RetRepo[UserSession] = ???
+
   def validateClient(clientId: String, clientSecret: String, grantType: String): Boolean = {
     models.Clients.validate(clientId, clientSecret, grantType)
   }

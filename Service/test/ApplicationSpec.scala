@@ -19,25 +19,25 @@ import services.UserService
 @RunWith(classOf[JUnitRunner])
 class ApplicationSpec extends Specification with Mockito {
 
-  def app = FakeApplication(
+  def app(userService: UserService = mock[UserService]) = FakeApplication(
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
     withGlobal = Some(
       new GlobalSettings with ScaldiSupport {
         def applicationModule = new Module {
           binding to new MainController
         } :: new Module {
-          bind[UserService] to mock[UserService]
+          bind[UserService] to userService
           binding to new UserController
         }
       }))
 
   "Application" should {
 
-    "send 404 on a bad request" in new WithApplication(app) {
+    "send 404 on a bad request" in new WithApplication(app()) {
       route(FakeRequest(GET, "/boum")) must beNone
     }
 
-    "render the index page" in new WithApplication(app) {
+    "render the index page" in new WithApplication(app()) {
       val home = route(FakeRequest(GET, "/")).get
 
       status(home) must equalTo(OK)
@@ -45,7 +45,7 @@ class ApplicationSpec extends Specification with Mockito {
       contentAsString(home) must contain("index")
     }
 
-    "render login page" in new WithApplication(app) {
+    "render login page" in new WithApplication(app()) {
       val page = route(FakeRequest(GET, "/login")).get
       status(page) must equalTo(OK)
       contentType(page) must beSome.which(_ == "text/html")
@@ -53,9 +53,9 @@ class ApplicationSpec extends Specification with Mockito {
 
     }
 
-    "have login route" in new WithApplication(app) {
+    "have login route" in new WithApplication(app()) {
       val page = route(FakeRequest(POST, "/login")
-        .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "test"))
+        .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "12345"))
         .get
       status(page) must equalTo(OK)
     }

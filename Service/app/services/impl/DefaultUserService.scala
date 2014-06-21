@@ -5,14 +5,14 @@ import util.Gen._
 import scala.concurrent._
 import ExecutionContext.Implicits._
 import services._
-import repos._
+import dao._
 import db._
 import scaldi.Injector
 import scaldi.Injectable._
 import play.api.Logger
 
 class DefaultUserService(implicit inj: Injector) extends UserService {
-    val repo = inject [UserRepo]
+    val repo = inject [UserDAO]
 
     override def createSession(uid: String): RetService[String] = {
       try {

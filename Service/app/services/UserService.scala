@@ -1,9 +1,9 @@
 package services
 
-import repos._
+import dao._
 
   trait UserService {
-    val repo: UserRepo
+    val repo: UserDAO
 
     def createSession(uid: String): RetService[String]
   }
