@@ -10,6 +10,7 @@ import controllers._
 class UserModule extends Module {
   bind[UserDAO] to new SlickUserDAO
   bind[UserService] to new DefaultUserService
+  bind[Oauth2DAO] to new SlickOauth2DAO
 
   binding to new UserController
 }

@@ -1,9 +1,9 @@
+import org.openqa.selenium.chrome.ChromeDriver
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 
 import play.api.test._
-import play.api.test.Helpers._
 
 /**
  * add your integration spec here.
@@ -14,10 +14,11 @@ class IntegrationSpec extends Specification {
 
   "Application" should {
 
-    "work from within a browser" in new WithBrowser {
-
-      browser.goTo("http://localhost:" + port)
-
+    "work from within a browser" in new WithBrowser(classOf[ChromeDriver]) {
+      browser.goTo("http://localhost:" + port + "/login")
+      browser.fill("#username").`with`("test@test.com")
+      browser.fill("#password").`with`("123456")
+      browser.submit( "#id")
       browser.pageSource must contain("index")
     }
   }

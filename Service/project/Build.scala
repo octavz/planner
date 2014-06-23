@@ -26,6 +26,7 @@ object AppBuild extends Build {
     "org.scaldi" %% "scaldi" % "0.3.2",
     "org.scaldi" %% "scaldi-play" % "0.3.3",
     "com.wordnik" %% "swagger-play2" % "1.3.5",
+    "net.sourceforge.htmlunit" % "htmlunit" % "2.14" % "test",
     "com.github.nscala-time" %% "nscala-time" % "1.2.0"
   )
 

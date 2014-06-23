@@ -33,16 +33,8 @@ class ApplicationSpec extends Specification with Mockito {
 
   "Application" should {
 
-    "send 404 on a bad request" in new WithApplication(app()) {
-      route(FakeRequest(GET, "/boum")) must beNone
-    }
-
-    "render the index page" in new WithApplication(app()) {
-      val home = route(FakeRequest(GET, "/")).get
-
-      status(home) must equalTo(OK)
-      //contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain("index")
+    "have external static files attached to root" in new WithApplication(app()) {
+      route(FakeRequest(GET, "/boum")) must beSome
     }
 
     "render login page" in new WithApplication(app()) {

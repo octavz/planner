@@ -2,7 +2,8 @@ package controllers
 
 import dao.impl.SlickUserDAO
 import dto.LoginForm
-import play.api.mvc.{Action, Controller}
+import play.api.libs.json.Json
+import play.api.mvc.{Cookie, Action, Controller}
 import scalaoauth2.provider.OAuth2Provider
 import play.api.data._
 import play.api.data.Forms._
@@ -13,7 +14,7 @@ class UserController(implicit inj: Injector) extends Controller with OAuth2Provi
   val userService = inject[UserService]
 
   def accessToken = Action { implicit request =>
-    issueAccessToken(new SlickUserDAO)
+    issueAccessToken(userService.repoAuth)
   }
 
   def login = Action {
@@ -29,7 +30,13 @@ class UserController(implicit inj: Injector) extends Controller with OAuth2Provi
 
   def loginPost = Action {
     implicit request =>
-      val frm = loginForm.bindFromRequest.get
-      Ok(s"${frm.email} ${frm.password}")
+      userService.login(request) match {
+        //        case Left(e) if e.statusCode == 400 => BadRequest(responseOAuthErrorJson(e)).withHeaders(responseOAuthErrorHeader(e))
+        //        case Left(e) if e.statusCode == 401 => Unauthorized(responseOAuthErrorJson(e)).withHeaders(responseOAuthErrorHeader(e))
+        case Right(r) =>
+          Redirect("/public.html").withCookies(Cookie("access_token", r.accessToken))
+        //Ok(Json.toJson(responseAccessToken(r)))
+        case _ => Ok(views.html.users.login.render())
+      }
   }
 }
