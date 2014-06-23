@@ -8,3 +8,5 @@ Client/coverage/
 *.log
 *.suo
 /Client/ClientLayout
+build-test/
+*~

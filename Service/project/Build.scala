@@ -6,13 +6,13 @@ import Keys._
 //resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 //
 //resolvers += "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-//
-//resolvers += "Sedis Repo" at "http://pk11-scratch.googlecode.com/svn/trunk"
+// resolvers += "Sedis Repo" at "http://pk11-scratch.googlecode.com/svn/trunk"
 
 object AppBuild extends Build {
   val appName = "PlannerService"
 
   val appVersion = "0.1-SNAPSHOT"
+
 
   val appDependencies = Seq(
     "com.typesafe.play" %% "play-cache" % "2.2.3",
