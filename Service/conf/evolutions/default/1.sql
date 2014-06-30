@@ -157,9 +157,9 @@ CREATE TABLE user_statuses (
 
 CREATE TABLE users (
     id character varying(40) NOT NULL,
-    login character varying(30),
+    login character varying(255),
     openid_type integer DEFAULT 0 NOT NULL,
-    openid_token character varying(100),
+    openid_token character varying(255),
     created timestamp without time zone DEFAULT now(),
     updated timestamp without time zone DEFAULT now(),
     last_login timestamp without time zone,

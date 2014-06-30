@@ -1,5 +1,6 @@
+import org.planner.services.dto.UserDTO
 import scaldi.{Module, Injectable}
-import util.Gen._
+import org.planner.util.Gen._
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
@@ -7,10 +8,10 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import org.specs2.mock._
 
-import services._
-import services.impl._
-import dao._
-import db._
+import org.planner.services._
+import org.planner.services.impl._
+import org.planner.dao._
+import org.planner.db._
 
 import scalaoauth2.provider.AuthInfo
 
@@ -21,9 +22,9 @@ import scalaoauth2.provider.AuthInfo
 @RunWith(classOf[JUnitRunner])
 class UserServiceSpec extends Specification with Mockito with Injectable {
   implicit val modules = new Module {
-    bind[UserDAO] to mock[UserDAO]
-    bind[Oauth2DAO] to mock[Oauth2DAO]
-    bind[UserService] to new DefaultUserService
+    bind[UserDAO] toProvider mock[UserDAO]
+    bind[Oauth2DAO] toProvider mock[Oauth2DAO]
+    bind[UserService] toProvider new DefaultUserService
   }
 
   val duration = Duration.Inf
@@ -57,7 +58,7 @@ class UserServiceSpec extends Specification with Mockito with Injectable {
       s.value.get === us.id
     }
 
-    "implement get user by id" in {
+    "implement get user by id and call org.planner.dao" in {
       val service = newService
       val id = guid
       service.repo.getUserById(id) returns Future.successful(Right(User(
@@ -71,6 +72,17 @@ class UserServiceSpec extends Specification with Mockito with Injectable {
       )))
       val s = Await.result(service.getUserById(id), duration)
       there was one(service.repo).getUserById(id)
+    }
+
+    "implement register and call org.planner.dao" in {
+      val service = newService
+      val u = UserDTO(login = guid, password = guid)
+      service.repo.insertUser(any[User]) answers (a => retRepo(a.asInstanceOf[User]))
+      service.repo.getUserByEmail(any[String]) returns retRepo(None)
+      val s = Await.result(service.registerUser(u), duration)
+      there was one(service.repo).getUserByEmail(anyString)
+      there was one(service.repo).insertUser(any[User])
+      s must beRight
     }
 
   }
