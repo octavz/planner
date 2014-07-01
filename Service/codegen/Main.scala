@@ -11,9 +11,9 @@ import com.typesafe.config.ConfigFactory
  */
 object SlickGenerator {
   val conf = ConfigFactory.parseFile(new File("conf/application.conf"))
-  val dbUrl = conf.getString("org.planner.db.default.url")
-  val dbUser = conf.getString("org.planner.db.default.user")
-  val dbPassword = conf.getString("org.planner.db.default.password")
+  val dbUrl = conf.getString("db.default.url")
+  val dbUser = conf.getString("db.default.user")
+  val dbPassword = conf.getString("db.default.password")
 
 
   def main(args: Array[String]) = {
@@ -28,7 +28,7 @@ object SlickGenerator {
 
   def getUrl = if (dbUrl.contains("?")) s"$dbUrl&user=$dbUser&password=$dbPassword" else s"$dbUrl?user=$dbUser&password=$dbPassword"
 
-  def getDriver = conf.getString("org.planner.db.default.driver")
+  def getDriver = conf.getString("db.default.driver")
 
   val db = PostgresDriver.simple.Database.forURL(getUrl, driver = getDriver)
   // filter out desired tables
@@ -47,7 +47,7 @@ package ${pkg}
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
 trait ${container} {
-  import play.api.org.planner.db.slick.Config.driver.simple._
+  import play.api.db.slick.Config.driver.simple._
   ${indent(code)}
 }
 ${sb.toString}

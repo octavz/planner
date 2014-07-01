@@ -1,9 +1,9 @@
 package org.planner.controllers
 
-import org.planner.dao.Oauth2DAO
+import org.planner.dal.Oauth2DAL
 import org.planner.db.User
-import org.planner.services.dto.JsonFormats
-import org.planner.services.BaseService
+import org.planner.modules.core.BaseModule
+import org.planner.modules.dto.JsonFormats
 import play.api.mvc._
 import scaldi.{Injectable, Injector}
 
@@ -16,15 +16,15 @@ trait BaseController
   with Injectable
   with JsonFormats {
 
-  val authHandler = inject[Oauth2DAO]
+  val authHandler = inject[Oauth2DAL]
   implicit val inj: Injector
 
-  def authorize[A, B <: BaseService](callback: AuthInfo[User] => Future[SimpleResult])(implicit request: play.api.mvc.Request[A], service: B): Future[SimpleResult] = {
+  def authorize[A, B <: BaseModule](callback: AuthInfo[User] => Future[SimpleResult])(implicit request: play.api.mvc.Request[A], service: B): Future[SimpleResult] = {
     ProtectedResource.handleRequest(request, authHandler) match {
       case Left(e) if e.statusCode == 400 => Future.successful(BadRequest.withHeaders(responseOAuthErrorHeader(e)))
       case Left(e) if e.statusCode == 401 => Future.successful(Unauthorized.withHeaders(responseOAuthErrorHeader(e)))
       case Right(authInfo) =>
-        service.authInfo = authInfo
+        service.authData = authInfo
         callback(authInfo)
     }
   }

@@ -1,7 +1,8 @@
 import controllers._
 import org.planner.controllers.{UserController, MainController}
-import org.planner.dao.Oauth2DAO
-import org.planner.services.dto._
+import org.planner.dal.Oauth2DAL
+import org.planner.modules.core.UserModule
+import org.planner.modules.dto._
 import org.specs2.mock.Mockito
 import org.specs2.mutable._
 import org.specs2.runner._
@@ -13,7 +14,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import scaldi.Module
 import scaldi.play.ScaldiSupport
-import org.planner.services._
+import org.planner.modules._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -26,15 +27,15 @@ import scala.concurrent.duration.Duration
 @RunWith(classOf[JUnitRunner])
 class UserApplicationSpec extends Specification with Mockito {
 
-  def app(userService: UserService = mock[UserService]) = FakeApplication(
+  def app(userService: UserModule = mock[UserModule]) = FakeApplication(
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
     withGlobal = Some(
       new GlobalSettings with ScaldiSupport {
         def applicationModule = new Module {
           binding toProvider new MainController
         } :: new Module {
-          bind[UserService] toProvider userService
-          bind[Oauth2DAO] toProvider mock[Oauth2DAO]
+          bind[UserModule] toProvider userService
+          bind[Oauth2DAL] toProvider mock[Oauth2DAL]
           binding toProvider new UserController
         }
       }))
@@ -61,8 +62,8 @@ class UserApplicationSpec extends Specification with Mockito {
     }
 
     "have register route" in {
-      val service = mock[UserService]
-      service.registerUser(any[UserDTO]) answers (u => retService(u.asInstanceOf[UserDTO]))
+      val service = mock[UserModule]
+      service.registerUser(any[UserDTO]) answers (u => result(u.asInstanceOf[UserDTO]))
       running(app(service)) {
         val page = route(FakeRequest(POST, "/register")
           .withJsonBody(Json.parse(

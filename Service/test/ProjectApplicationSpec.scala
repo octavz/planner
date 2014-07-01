@@ -1,10 +1,11 @@
 import org.planner.controllers.ProjectController
+import org.planner.modules.core.ProjectModule
 import org.planner.util.Gen._
 import org.planner.util.Time._
 import controllers._
-import org.planner.dao.Oauth2DAO
+import org.planner.dal.Oauth2DAL
 import org.planner.db.User
-import org.planner.services.dto._
+import org.planner.modules.dto._
 import org.junit.runner._
 import org.specs2.mock.Mockito
 import org.specs2.mutable._
@@ -15,7 +16,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import scaldi.Module
 import scaldi.play.ScaldiSupport
-import org.planner.services._
+import org.planner.modules._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -29,20 +30,20 @@ import scalaoauth2.provider.{AccessToken, AuthInfo}
 @RunWith(classOf[JUnitRunner])
 class ProjectApplicationSpec extends Specification with Mockito {
 
-  def anUser = User(guid, guido, 0, guido, nowo, nowo, nowo, 0, guido)
+  def anUser = User(guid, guid, 0, guido, now, now, nowo, 0, guid)
 
-  def app(service: ProjectService = mock[ProjectService], u: User = anUser) = FakeApplication(
+  def app(module: ProjectModule = mock[ProjectModule], u: User = anUser) = FakeApplication(
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
     withGlobal = Some(
       new GlobalSettings with ScaldiSupport {
         def applicationModule = {
-          val auth = mock[Oauth2DAO]
+          val auth = mock[Oauth2DAL]
           auth.findAccessToken(anyString) returns Some(AccessToken("token", None, None, None, new java.util.Date()))
           auth.isAccessTokenExpired(any[AccessToken]) returns false
           auth.findAuthInfoByAccessToken(any[AccessToken]) returns Some(authInfo)
           new Module {
-            bind[Oauth2DAO] toProvider auth
-            bind[ProjectService] toProvider service
+            bind[Oauth2DAL] toProvider auth
+            bind[ProjectModule] toProvider module
             binding toProvider new ProjectController
           }
         }
@@ -53,9 +54,9 @@ class ProjectApplicationSpec extends Specification with Mockito {
   "Application" should {
 
     "have create project route and authorize" in {
-      val service = mock[ProjectService]
-      service.insertProject(any[ProjectDTO]) answers (p => retService(p.asInstanceOf[ProjectDTO]))
-      running(app(service)) {
+      val module = mock[ProjectModule]
+      module.insertProject(any[ProjectDTO]) answers (p => result(p.asInstanceOf[ProjectDTO]))
+      running(app(module)) {
         val page = route(FakeRequest(POST, "/project")
           .withHeaders("Authorization" -> "OAuth token")
           .withJsonBody(Json.parse(
@@ -68,8 +69,8 @@ class ProjectApplicationSpec extends Specification with Mockito {
           """)))
         page must beSome
         val res = Await.result(page.get, Duration.Inf)
-        there was one (service).authInfo_=(any[AuthData])
-        there was one(service).insertProject(any[ProjectDTO])
+        there was one (module).authData_=(any[AuthData])
+        there was one(module).insertProject(any[ProjectDTO])
         val json = contentAsJson(page.get)
         json \ "name" === JsString("project")
         json \ "desc" === JsString("123456")

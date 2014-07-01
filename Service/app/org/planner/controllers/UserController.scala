@@ -1,7 +1,7 @@
 package org.planner.controllers
 
-import org.planner.services.dto._
-import org.planner.services.UserService
+import org.planner.modules.core.UserModule
+import org.planner.modules.dto._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.json.Json
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
 class UserController(implicit val inj: Injector) extends BaseController {
-  val userService = inject[UserService]
+  val userService = inject[UserModule]
 
   def accessToken = Action.async { implicit request =>
     issueAccessToken(authHandler) map ( _.asInstanceOf[SimpleResult])

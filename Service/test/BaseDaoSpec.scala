@@ -1,4 +1,4 @@
-import org.planner.dao.impl.{SlickUserDAO}
+import org.planner.dal.impl.{SlickUserDAL}
 import org.planner.db._
 import org.specs2.execute.AsResult
 import org.specs2.mock._

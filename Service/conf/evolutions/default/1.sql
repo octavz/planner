@@ -82,7 +82,6 @@ CREATE TABLE grant_types (
     grant_type character varying(254) NOT NULL
 );
 
-
 CREATE TABLE groups (
     id character varying(40) NOT NULL,
     project_id character varying(40) NOT NULL,
@@ -134,7 +133,8 @@ CREATE TABLE projects (
     status smallint DEFAULT 0 NOT NULL,
     perm_public smallint DEFAULT 2 NOT NULL,
     created timestamp without time zone DEFAULT now(),
-    updated timestamp without time zone DEFAULT now()
+    updated timestamp without time zone DEFAULT now(),
+    UNIQUE(user_id, name)
 );
 
 CREATE TABLE resources (
@@ -157,14 +157,17 @@ CREATE TABLE user_statuses (
 
 CREATE TABLE users (
     id character varying(40) NOT NULL,
-    login character varying(255),
+    login character varying(255) NOT NULL,
+    nick character varying(255) NOT NULL,
     openid_type integer DEFAULT 0 NOT NULL,
     openid_token character varying(255),
     created timestamp without time zone DEFAULT now(),
     updated timestamp without time zone DEFAULT now(),
     last_login timestamp without time zone,
     status integer DEFAULT 0 NOT NULL,
-    password character varying(100)
+    password character varying(100) DEFAULT '' NOT NULL,
+    UNIQUE(login),
+    UNIQUE(nick)
 );
 
 CREATE TABLE verbs (

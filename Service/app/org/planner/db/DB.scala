@@ -448,34 +448,38 @@ trait DB {
   
   /** Table description of table users. Objects of this class serve as prototypes for rows in queries. */
   class Users(tag: Tag) extends Table[User](tag, "users") {
-    def * = (id, login, openidType, openidToken, created, updated, lastLogin, status, password) <> (User.tupled, User.unapply)
+    def * = (id, login, openidType, openidToken, created, updated, lastLogin, status, password, nick) <> (User.tupled, User.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (id.?, login, openidType.?, openidToken, created, updated, lastLogin, status.?, password).shaped.<>({r=>import r._; _1.map(_=> User.tupled((_1.get, _2, _3.get, _4, _5, _6, _7, _8.get, _9)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (id.?, login.?, openidType.?, openidToken, created.?, updated.?, lastLogin, status.?, password.?, nick.?).shaped.<>({r=>import r._; _1.map(_=> User.tupled((_1.get, _2.get, _3.get, _4, _5.get, _6.get, _7, _8.get, _9.get, _10.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
     
     /** Database column id PrimaryKey */
     val id: Column[String] = column[String]("id", O.PrimaryKey)
     /** Database column login  */
-    val login: Column[Option[String]] = column[Option[String]]("login")
+    val login: Column[String] = column[String]("login")
     /** Database column openid_type Default(0) */
     val openidType: Column[Int] = column[Int]("openid_type", O.Default(0))
     /** Database column openid_token  */
     val openidToken: Column[Option[String]] = column[Option[String]]("openid_token")
-    /** Database column created Default(None) */
-    val created: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("created", O.Default(None))
-    /** Database column updated Default(None) */
-    val updated: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("updated", O.Default(None))
+    /** Database column created  */
+    val created: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("created")
+    /** Database column updated  */
+    val updated: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("updated")
     /** Database column last_login  */
     val lastLogin: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("last_login")
     /** Database column status Default(0) */
     val status: Column[Int] = column[Int]("status", O.Default(0))
     /** Database column password  */
-    val password: Column[Option[String]] = column[Option[String]]("password")
+    val password: Column[String] = column[String]("password")
+    /** Database column nick  */
+    val nick: Column[String] = column[String]("nick")
     
     /** Foreign key referencing UserStatuses (database name users_status_fkey) */
     lazy val reluser_status = foreignKey("users_status_fkey", status, UserStatuses)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
     
+    /** Uniqueness Index over (nick) (database name unique_nick) */
+    val index1 = index("unique_nick", nick, unique=true)
     /** Uniqueness Index over (login) (database name users_login_key) */
-    val index1 = index("users_login_key", login, unique=true)
+    val index2 = index("users_login_key", login, unique=true)
   }
   /** Collection-like TableQuery object for table Users */
   lazy val Users = new TableQuery(tag => new Users(tag))
@@ -556,7 +560,7 @@ case class Project(id: String, userId: String, name: String, description: Option
 
 case class Resource(id: String, content: Option[String], entityTypeId: String, userId: String, groupId: String, permOwner: Short = 0, permGroup: Short = 0, permPublic: Short = 2, created: Option[java.sql.Timestamp] = None, updated: Option[java.sql.Timestamp] = None)
 
-case class User(id: String, login: Option[String], openidType: Int = 0, openidToken: Option[String], created: Option[java.sql.Timestamp] = None, updated: Option[java.sql.Timestamp] = None, lastLogin: Option[java.sql.Timestamp], status: Int = 0, password: Option[String])
+case class User(id: String, login: String, openidType: Int = 0, openidToken: Option[String], created: java.sql.Timestamp, updated: java.sql.Timestamp, lastLogin: Option[java.sql.Timestamp], status: Int = 0, password: String, nick: String)
 
 case class UserSession(id: String, userId: String)
 
