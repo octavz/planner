@@ -30,7 +30,7 @@ import scalaoauth2.provider.{AccessToken, AuthInfo}
 @RunWith(classOf[JUnitRunner])
 class ProjectApplicationSpec extends Specification with Mockito {
 
-  def anUser = User(guid, guid, 0, guido, now, now, nowo, 0, guid)
+  def anUser = User(guid, guid, 0, guido, now, now, nowo, 0, guid, guid)
 
   def app(module: ProjectModule = mock[ProjectModule], u: User = anUser) = FakeApplication(
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),

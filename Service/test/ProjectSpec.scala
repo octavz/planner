@@ -35,7 +35,7 @@ class ProjectSpec extends Specification with Mockito with Injectable {
     val ret = inject[ProjectModule]
     ret.authData = AuthInfo[User](user =
       User(id = guid, login = guid, password = guid, created = now, updated = now,
-        lastLogin = nowo, openidToken = guido), "1", None, None)
+        lastLogin = nowo, openidToken = guido, nick = guid), "1", None, None)
     ret
   }
 

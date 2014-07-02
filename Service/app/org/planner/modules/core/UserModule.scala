@@ -10,8 +10,8 @@ import scalaoauth2.provider.{AuthorizationRequest, GrantHandlerResult, OAuthErro
  * Created by Octav on 6/30/2014.
  */
 trait UserModule {
-  val repo: UserDAL
-  val repoAuth: Oauth2DAL
+  val dal: UserDAL
+  val dalAuth: Oauth2DAL
 
   def getUserById(uid: String): Result[UserDTO]
 

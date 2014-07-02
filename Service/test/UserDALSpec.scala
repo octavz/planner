@@ -44,7 +44,7 @@ class UserDALSpec extends BaseDaoSpec {
     }
 
     "insertUser,getUserById, getUserByEmail" in new WithApplication {
-      val usr = User(guid, guid, 0, guido, now, now, nowo, 0, guid)
+      val usr = User(guid, guid, 0, guido, now, now, nowo, 0, guid, guid)
       val res = Await.result(dao.insertUser(usr), Duration.Inf)
       res must beRight
       val ret = Await.result(dao.getUserById(usr.id), Duration.Inf)

@@ -17,17 +17,17 @@ import java.util.Date
 import scalaoauth2.provider._
 
 class DefaultUserModule(implicit inj: Injector) extends UserModule {
-  val repo = inject[UserDAL]
-  val repoAuth = inject[Oauth2DAL]
+  val dal = inject[UserDAL]
+  val dalAuth = inject[Oauth2DAL]
 
   override def createSession(accessToken: String): Result[String] = {
     try {
-      val authInfo = repoAuth.findAuthInfoByAccessToken(scalaoauth2.provider.AccessToken(accessToken, None, None, None, new Date()))
+      val authInfo = dalAuth.findAuthInfoByAccessToken(scalaoauth2.provider.AccessToken(accessToken, None, None, None, new Date()))
       if (authInfo.isEmpty) throw new Exception("Access token not found!")
       val model = UserSession(userId = authInfo.get.user.id, id = accessToken)
-      repo.deleteSessionByUser(model.userId) flatMap {
+      dal.deleteSessionByUser(model.userId) flatMap {
         case Right(_) =>
-          repo.insertSession(model) map {
+          dal.insertSession(model) map {
             case Right(m) => Right(m.id)
             case Left(err) => Left(1, err)
           }
@@ -41,7 +41,7 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
   }
 
   override def login(request: AuthorizationRequest) = {
-    val ret = TokenEndpoint.handleRequest(request, repoAuth)
+    val ret = TokenEndpoint.handleRequest(request, dalAuth)
     ret match {
       case Right(v) =>
         createSession(v.accessToken)
@@ -52,7 +52,7 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
 
   override def getUserById(id: String) = {
     try {
-      repo.getUserById(id) map {
+      dal.getUserById(id) map {
         case Right(u) => Right(new UserDTO(u))
         case Left(err) => Left(404, err)
       } recover {
@@ -65,12 +65,12 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
 
   def registerUser(u: UserDTO): Result[UserDTO] = {
     try {
-      repo.getUserByEmail(u.login) flatMap {
+      dal.getUserByEmail(u.login) flatMap {
         case Right(o) =>
           if (o.isDefined) resultError(400, "User already exists")
           else {
             val model = u.toModel
-            repo.insertUser(model) map (_ => Right(new UserDTO(model)))
+            dal.insertUser(model) map (_ => Right(new UserDTO(model)))
           }
         case Left(err) => resultError(400, err)
       }
