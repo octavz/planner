@@ -1,0 +1,46 @@
+﻿<!-- Static navbar -->
+<div class="navbar navbar-default" role="navigation" ng-controller="TopMenuCtrl">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{homelink}}">Planner</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+
+                <li ng-repeat="item in SiteMap.Links.items" ng-class="attachTopNodeClass(item)">
+                    <a ng-if="item.items==null" ng-href="{{item.link}}">{{item.title}}</a>
+                    <a ng-if="item.items!=null" href="#" class="dropdown-toggle" data-toggle="dropdown">{{item.title}} <b class="caret"></b></a>
+                    <ul ng-if="item.items!=null" class="dropdown-menu">
+                        <li ng-repeat="subitem in item.items" ng-class="attachTopNodeClass(subitem)">
+                            <a ng-href="{{subitem.link}}">{{subitem.title}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><p class="navbar-text navbar-right">Signed in as <a href="" ng-click="RedirectToUser()" class="navbar-link">Mark Otto</a></p></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="" ng-click="RedirectToUser()">My Settings</a>
+                        </li>
+                        <li>
+                            <a href="" ng-click="RedirectToUser()">Add new project</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a ng-href="#/Logout"><span class="glyphicon glyphicon-off"></span></a>
+                </li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</div>
+

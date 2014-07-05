@@ -4,19 +4,36 @@ var plugin = angular.module('myApp.plugins.projects', [
     'myApp.plugins.projects.controllers'
 ]);
 
+
 plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
 
-    $routeProvider.when('/Projects', {
+    var userRoutePrefix = SiteMapProvider.GetBaseRouteUrlForUser();
+    var userMenuPrefix = SiteMapProvider.GetBaseUrlForUser();
+
+    var projRouterPrefix = SiteMapProvider.GetBaseRouteUrlForProject();
+    var projMenuPrefix = SiteMapProvider.GetBaseUrlForProject();
+
+    $routeProvider.when(userRoutePrefix + '', {
+        templateUrl: 'plugins/projects/html/User.html',
+        controller: 'UserCtrl',
+        resolve: RouteAccessProvider.routeResolvers
+    });
+    $routeProvider.when(userRoutePrefix + '/Projects', {
         templateUrl: 'plugins/projects/html/Projects.html',
         controller: 'ProjectsCtrl',
         resolve: RouteAccessProvider.routeResolvers
     });
-    $routeProvider.when('/ProjectNew', {
+    $routeProvider.when(userRoutePrefix + '/ProjectNew', {
         templateUrl: 'plugins/projects/html/ProjectNew.html',
         controller: 'ProjectsCtrl',
         resolve: RouteAccessProvider.routeResolvers
     });
-    $routeProvider.when('/ProjectEdit/:id', {
+    $routeProvider.when(projRouterPrefix + '', {
+        templateUrl: 'plugins/projects/html/ProjectHome.html',
+        controller: 'ProjectsCtrl',
+        resolve: RouteAccessProvider.routeResolvers
+    });
+    $routeProvider.when(projRouterPrefix + '/Edit', {
         templateUrl: 'plugins/projects/html/ProjectNew.html',
         controller: 'ProjectsCtrl',
         resolve: RouteAccessProvider.routeResolvers
@@ -25,11 +42,25 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     //register links in the menu
     SiteMapProvider.RegisterLinks([
         {
+            'title': 'Project',
+            'items': [
+              {
+                  'title': 'Settings',
+                  'link': projMenuPrefix + '/Edit'
+              }
+            ]
+        }
+
+    ]);
+
+    //register links in the menu
+    SiteMapProvider.RegisterLinksUser([
+        {
             'title': 'Projects',
-            'link': '#/Projects'
+            'link': userMenuPrefix + '/Projects'
         }, {
             'title': 'New Project',
-            'link': '#/ProjectNew'
+            'link': userMenuPrefix + '/ProjectNew'
         }
     ]);
 });

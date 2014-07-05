@@ -17,13 +17,17 @@ myAppDev.run(function ($httpBackend) {
 
     var routes = {
         data: [
+            //todo cip what is this?
             calcMD5("/Home"),
-            calcMD5("/Projects"),
-            calcMD5("/ProjectNew"),
-            calcMD5("/ProjectEdit/:id"),
-            calcMD5("/Tasks"),
-            calcMD5("/TaskNew"),
-            calcMD5("/Tasks/items")
+
+            calcMD5("/:usercode"),
+            calcMD5("/:usercode/Projects"),
+            calcMD5("/:usercode/ProjectNew"),
+
+            calcMD5("/:usercode/:projectcode"),
+            calcMD5("/:usercode/:projectcode/Edit"),
+            calcMD5("/:usercode/:projectcode/Tasks"),
+            calcMD5("/:usercode/:projectcode/TaskNew")
         ]
     };
 
@@ -51,17 +55,22 @@ myAppDev.run(function ($httpBackend) {
     // Projects mock.
     var currentIdx = 0;
     var projects = [];
-    projects.push({ id: ++currentIdx, name: "proj 1", desc: "a descr", parent: "" });
-    projects.push({ id: ++currentIdx, name: "proj 2", desc: "a descr", parent: "" });
 
-    $httpBackend.whenGET(/projects\?id\=1/).respond({ data: _.findWhere(projects, { id: 1 }) });
-    $httpBackend.whenGET(/projects\?id\=2/).respond({ data: _.findWhere(projects, { id: 2 }) });
+    //handle possible 10 projects
+    for (var i = 0; i < 10; i++) {
+        var idx = ++currentIdx;
+        projects.push({ id: idx, code: "project" + idx, name: "Project " + idx, desc: "a descr", parent: "" });
+
+        var regexp = new RegExp('projects\?id\=' + i);
+        $httpBackend.whenGET(regexp).respond({ data: _.findWhere(projects, { id: i }) });
+    }
 
     $httpBackend.whenGET(/projects/).respond({ data: projects });
     $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
 
         var jsondata = angular.fromJson(data);
         jsondata.id = ++currentIdx;
+        jsondata.code = "project" + id;
         projects.push(jsondata);
 
         return [200, { ok: true, o: jsondata }];

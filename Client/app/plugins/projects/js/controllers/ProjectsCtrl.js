@@ -4,12 +4,16 @@ angular.module('myApp.plugins.projects.controllers', [
     'myApp.plugins.projects.rest'
 ])
 
-.controller('ProjectsCtrl', ['$scope', '$location', '$routeParams', 'ProjectsApi', function ($scope, $location, $routeParams, ProjectsApi) {
+.controller('ProjectsCtrl', ['$scope', '$location', '$window', '$routeParams', 'ProjectsApi', 'SiteMap', function ($scope, $location, $window, $routeParams, ProjectsApi, SiteMap) {
 
-    var id = $routeParams.id;
-    if (id != null) {
+    $scope.RedirectProject = function (prj) {
+        SiteMap.SwitchToProject(prj.code);
+    }
+
+    var projectcode = $routeParams.projectcode;
+    if (projectcode != null) {
         $scope.title = 'Edit project';
-        ProjectsApi.get({ id: id }, function (resp) {
+        ProjectsApi.get({ id: projectcode }, function (resp) {
             console.log("received something", resp);
 
             //fill the scope
@@ -17,6 +21,7 @@ angular.module('myApp.plugins.projects.controllers', [
                 Name: resp.data.name,
                 Description: resp.data.desc,
                 Parent: resp.data.parent
+
             }
         });
 
@@ -34,10 +39,10 @@ angular.module('myApp.plugins.projects.controllers', [
             return;
         }
 
-        if (id != null) {
+        if (projectcode != null) {
             //make a post
             ProjectsApi.updateProject({
-                id: id,
+                id: projectcode,
                 name: $scope.project.Name,
                 desc: $scope.project.Description,
                 parent: $scope.project.Parent,
@@ -63,7 +68,7 @@ angular.module('myApp.plugins.projects.controllers', [
                     return;
                 }
                 if (data.ok) {
-                    $location.path('/Projects');
+                    $scope.RedirectProject(data.o);
                 }
             });
         }

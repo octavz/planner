@@ -4,25 +4,34 @@ var plugin = angular.module('myApp.plugins.tasks', []);
 
 plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
 
+    var projRoutePrefix = SiteMapProvider.GetBaseRouteUrlForProject();
+    var projMenuPrefix = SiteMapProvider.GetBaseUrlForProject();
+
     //register routes
-    $routeProvider.when('/Tasks', {
+    $routeProvider.when(projRoutePrefix + '/Tasks', {
         templateUrl: 'plugins/tasks/html/Tasks.html',
         resolve: RouteAccessProvider.routeResolvers
     });
 
-    $routeProvider.when('/TaskNew', {
+    $routeProvider.when(projRoutePrefix + '/TaskNew', {
         templateUrl: 'plugins/tasks/html/TaskNew.html',
         resolve: RouteAccessProvider.routeResolvers
     });
 
     //register links in the menu
-    SiteMapProvider.RegisterLinks([{
-        'title': 'Tasks',
-        'link': '#/Tasks'
-    }, {
-        'title': 'New Task',
-        'link': '#/TaskNew'
-    }
+    SiteMapProvider.RegisterLinks([
+        {
+            'title': 'Tasks',
+            'items': [
+                {
+                    'title': 'Show All',
+                    'link': projMenuPrefix + '/Tasks'
+                }, {
+                    'title': 'Add New Task',
+                    'link': projMenuPrefix + '/TaskNew'
+                }
+            ]
+        }
     ]);
 });
 

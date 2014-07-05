@@ -1,4 +1,4 @@
-module.exports = function(config) {
+module.exports = function (config) {
     config.set({
         basePath: '../../',
 
@@ -6,7 +6,11 @@ module.exports = function(config) {
             'app/lib/angular/angular.js',
             'app/lib/angular/angular-*.js',
             'app/lib/angular3rdparty/*.js',
+            'app/lib/underscore/underscore.js',
+            'app/lib/underscore/angular-underscore.js',
+            'app/lib/md5.js',
             'test/lib/angular/angular-mocks.js',
+            'app/js/*.js',
             'app/js/**/*.js',
             'test/unit/**/*.js',
         ],

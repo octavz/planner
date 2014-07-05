@@ -1,9 +1,9 @@
 <div>
     <h4>list of projects</h4>
 
-    <ul class="example-animate-container">
-        <li class="animate-repeat" ng-repeat="project in projects">
-            <a href="#ProjectEdit/{{project.id}}"> {{project.name}} {{project.desc}} {{project.parent}}</a>
+    <ul>
+        <li ng-repeat="project in projects">
+            <a href="" ng-click="RedirectProject(project)"> {{project.name}} - {{project.desc}}</a>
         </li>
     </ul>
 </div>
