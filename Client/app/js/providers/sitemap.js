@@ -9,39 +9,33 @@ angular.module('myApp.services')
     var currentLinksUser = { items: [] };
     var currentLinksSettings = { items: [] };
 
-    var registeredLinks = [];
-    var registeredLinksUser = [];
+    var registeredRelativeLinks = [];
+    var registeredUserRelativeLinks = [];
     var registeredLinksSettings = [];
 
-    this.RegisterLinks = function (links) {
-        registeredLinks = registeredLinks.concat(links);
+    this.RegisterLinks = function (relativeLinks) {
+        registeredRelativeLinks = registeredRelativeLinks.concat(relativeLinks);
     }
 
-    this.RegisterLinksUser = function (links) {
-        registeredLinksUser = registeredLinksUser.concat(links);
+    this.RegisterLinksUser = function (relativeLinks) {
+        registeredUserRelativeLinks = registeredUserRelativeLinks.concat(relativeLinks);
     }
 
     this.RegisterLinksSettings = function (links) {
         registeredLinksSettings = registeredLinksSettings.concat(links);
     }
 
-    //todo cip !!! handle this hard coded values
-    this.GetBaseUrlForProject = function () {
-        return '#/User1/Project1';
-    }
     this.GetBaseRouteUrlForProject = function () {
         return '/:usercode/:projectcode';
     }
-    this.GetBaseUrlForUser = function () {
-        return '#/User1';
-    }
+
     this.GetBaseRouteUrlForUser = function () {
         return '/:usercode';
     }
 
     this.$get = [
-        '$q', 'RouteAccessApi', '$log', '$window',
-        function ($q, RouteAccessApi, $log, $window) {
+        '$q', 'RouteAccessApi', '$log', '$window', 'CurrentView', '$route', '$routeParams',
+        function ($q, RouteAccessApi, $log, $window, CurrentView, $route, $routeParams) {
 
             var calculateAllowedMenuLinks = function (allLinks, allowedRoutes) {
                 var filtererLinks = _(allLinks).filter(function (linkItem) {
@@ -63,18 +57,52 @@ angular.module('myApp.services')
                 return RouteAccessApi.get().$promise
                     .then(function (res) {
                         $log.debug("RouteAccessApi", res);
-                        currentLinks.items = currentLinks.items.concat(calculateAllowedMenuLinks(registeredLinks, res.data));
-                        currentLinksUser.items = registeredLinksUser;
+                        currentLinks.items = currentLinks.items.concat(calculateAllowedMenuLinks(registeredRelativeLinks, res.data));
+                        currentLinksUser.items = registeredUserRelativeLinks;
                         currentLinksSettings.items = registeredLinksSettings;
                     });
             };
 
+            var GetBaseUrlForProject = function () {
+                if ($routeParams.projectcode == null) {
+                    $log.error("projectcode is missing", $routeParams);
+                    throw "Cannot find project code";
+                }
+                if ($routeParams.usercode == null) {
+                    $log.error("usercode is missing", $routeParams);
+                    throw "Cannot find user code";
+                }
+                return '#/' + $routeParams.usercode + '/' + $routeParams.projectcode;
+            }
+
+            var GetBaseUrlForUser = function () {
+                if ($routeParams.usercode == null) {
+                    $log.error("usercode is missing", $routeParams);
+                    throw "Cannot find user code";
+                }
+                return '#/' + $routeParams.usercode;
+            }
+
             //todo cip !!! handle this hard coded values
             var getCurrentUserLink = function () {
-                return "/app/User1/";
+                return "/app/TheLoggedOne/";
             }
+
             var getProjectLink = function (projectCode) {
                 return getCurrentUserLink() + projectCode;
+            }
+
+            var GetAbsolutePathForUserAndProject = function (relPath) {
+                return GetBaseUrlForProject() + "/" + relPath;
+            }
+            var GetAbsolutePathForUser = function (relPath) {
+               return GetBaseUrlForUser() + "/" + relPath;
+            }
+            var GetAbsolutePath = function (relPath) {
+                if (CurrentView.IsUser())
+                    return GetAbsolutePathForUser(relPath);
+                else
+                    return GetAbsolutePathForUserAndProject(relPath);
             }
 
             return {
@@ -89,7 +117,10 @@ angular.module('myApp.services')
                 SwitchToUser: function () {
                     $window.location = getCurrentUserLink();
                 },
-                getCurrentUserLink: getCurrentUserLink
+                getCurrentUserLink: getCurrentUserLink,
+                GetAbsolutePathForUserAndProject: GetAbsolutePathForUserAndProject,
+                GetAbsolutePathForUser: GetAbsolutePathForUser,
+                GetAbsolutePath: GetAbsolutePath
             };
         }
     ];

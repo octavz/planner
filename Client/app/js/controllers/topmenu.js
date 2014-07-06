@@ -4,11 +4,15 @@
 
 angular.module('myApp.controllers')
 
-.controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap', '$log',
-    function (Auth, $rootScope, $scope, $location, SiteMap, $log) {
+.controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap', '$log', '$route', '$routeParams',
+    function (Auth, $rootScope, $scope, $location, SiteMap, $log, $route, $routeParams) {
 
         $scope.homelink = SiteMap.getCurrentUserLink();
-        
+
+        $scope.applyAbsolutePath = function (link) {
+            return SiteMap.GetAbsolutePath(link);
+        }
+
         //todo cip is it ok to init here?
         SiteMap.init().then(function () {
 

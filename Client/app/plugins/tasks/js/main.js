@@ -5,7 +5,6 @@ var plugin = angular.module('myApp.plugins.tasks', []);
 plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
 
     var projRoutePrefix = SiteMapProvider.GetBaseRouteUrlForProject();
-    var projMenuPrefix = SiteMapProvider.GetBaseUrlForProject();
 
     //register routes
     $routeProvider.when(projRoutePrefix + '/Tasks', {
@@ -25,10 +24,10 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
             'items': [
                 {
                     'title': 'Show All',
-                    'link': projMenuPrefix + '/Tasks'
+                    'link': 'Tasks'
                 }, {
                     'title': 'Add New Task',
-                    'link': projMenuPrefix + '/TaskNew'
+                    'link':  'TaskNew'
                 }
             ]
         }

@@ -8,10 +8,7 @@ var plugin = angular.module('myApp.plugins.projects', [
 plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
 
     var userRoutePrefix = SiteMapProvider.GetBaseRouteUrlForUser();
-    var userMenuPrefix = SiteMapProvider.GetBaseUrlForUser();
-
     var projRouterPrefix = SiteMapProvider.GetBaseRouteUrlForProject();
-    var projMenuPrefix = SiteMapProvider.GetBaseUrlForProject();
 
     $routeProvider.when(userRoutePrefix + '', {
         templateUrl: 'plugins/projects/html/User.html',
@@ -46,7 +43,7 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
             'items': [
               {
                   'title': 'Settings',
-                  'link': projMenuPrefix + '/Edit'
+                  'link':  'Edit'
               }
             ]
         }
@@ -57,10 +54,10 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     SiteMapProvider.RegisterLinksUser([
         {
             'title': 'Projects',
-            'link': userMenuPrefix + '/Projects'
+            'link': 'Projects'
         }, {
             'title': 'New Project',
-            'link': userMenuPrefix + '/ProjectNew'
+            'link':  'ProjectNew'
         }
     ]);
 });

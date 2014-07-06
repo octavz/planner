@@ -8,6 +8,7 @@ var app = angular.module('myApp', [
     'myApp.directives',
     'myApp.controllers',
     'myAuth.services',
+    'myApp.utils',
     'ngStorage',
     'ui.bootstrap'
 ]);
@@ -24,19 +25,10 @@ app.config(function ($logProvider, SiteMapProvider, $locationProvider) {
 });
 
 app.run([
-    '$rootScope', '$location', '$http', '$log',
-    function ($rootScope, $location, $http, $log) {
+    '$rootScope', 'CurrentView',
+    function ($rootScope, CurrentView) {
 
-        var userUrlMatches = [];
-        userUrlMatches.push(/^\/[^\/]+\/Projects[\/]{0,1}$/);
-        userUrlMatches.push(/^\/[^\/]+\/ProjectNew[\/]{0,1}$/);
-        userUrlMatches.push(/^\/[^\/]+\/Details[\/]{0,1}$/);
-        userUrlMatches.push(/^\/[^\/]*[\/]{0,1}$/);
-
-        var $bIsUser = false;
-        var i, l;
-        for (i = 0; i < (l = userUrlMatches.length) ; i++)
-            $bIsUser = $bIsUser || userUrlMatches[i].test($location.$$path);
+        var $bIsUser = CurrentView.IsUser();
 
         if ($bIsUser) {
             $rootScope.TmplMain = 'partials/User.html';
@@ -44,8 +36,7 @@ app.run([
             $rootScope.TmplMain = 'partials/UserProject.html';
         }
 
-        $log.debug($location);
-    }
+   }
 ]);
 
 //todo cip find a better way to register modules/plugins to load
