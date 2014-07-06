@@ -6,8 +6,8 @@ angular.module('myApp.plugins.projects.controllers', [
 
 .controller('ProjectsCtrl', ['$scope', '$location', '$window', '$routeParams', 'ProjectsApi', 'SiteMap', function ($scope, $location, $window, $routeParams, ProjectsApi, SiteMap) {
 
-    $scope.RedirectProject = function (prj) {
-        SiteMap.SwitchToProject(prj.code);
+    $scope.ProjectLink = function (prj) {
+        return SiteMap.GetAbsolutePath(prj.code);
     }
 
     var projectcode = $routeParams.projectcode;

@@ -2,7 +2,7 @@
 
 var module = angular.module('myApp.utils', []);
 module.service('CurrentView', [
-    '$location', '$http', '$log', function ($location, $http, $log) {
+    '$location', '$http', '$log', '$route', function ($location, $http, $log, $route) {
         var detect = function () {
 
             var userUrlMatches = [];
@@ -15,14 +15,36 @@ module.service('CurrentView', [
             var i, l;
             for (i = 0; i < (l = userUrlMatches.length) ; i++)
                 $bIsUser = $bIsUser || userUrlMatches[i].test($location.$$path);
-            $log.debug($location);
+            $log.debug($location, $bIsUser);
             return $bIsUser;
         };
 
+        //var detect2 = function () {
+
+        //    var IsUserRoute = function (routeParams) {
+        //        //var routeParams = route.params;
+        //        return routeParams.usercode != null && routeParams.projectcode == null;
+        //    }
+        //    var IsUserProjectRoute = function (routeParams) {
+        //        //var routeParams = route.params;
+        //        return routeParams.usercode != null && routeParams.projectcode != null;
+        //    }
+        //    var currentRouteParams = $route.current.params;
+
+        //    if (IsUserRoute(currentRouteParams))
+        //        return true;
+        //    else if (IsUserProjectRoute(currentRouteParams))
+        //        return false;
+        //    else {
+        //        $log.error("no user no project");
+        //        return false;
+        //    }
+
+        //}
         return {
             IsUser: function () {
                 return detect();
-            },
+            }
         }
     }
 ]);

@@ -34,8 +34,8 @@ angular.module('myApp.services')
     }
 
     this.$get = [
-        '$q', 'RouteAccessApi', '$log', '$window', 'CurrentView', '$route', '$routeParams',
-        function ($q, RouteAccessApi, $log, $window, CurrentView, $route, $routeParams) {
+        '$q', 'RouteAccessApi', '$log', '$window', 'CurrentView', '$route',
+        function ($q, RouteAccessApi, $log, $window, CurrentView, $route) {
 
             var calculateAllowedMenuLinks = function (allLinks, allowedRoutes) {
                 var filtererLinks = _(allLinks).filter(function (linkItem) {
@@ -49,7 +49,7 @@ angular.module('myApp.services')
                     var ret = _(allowedRoutes).contains(lnkHashed);
                     return ret;
                 })
-                $log.debug("calculateAllowedMenuLinks", filtererLinks);
+                //$log.debug("calculateAllowedMenuLinks", filtererLinks);
                 return filtererLinks;
             };
             var init = function () {
@@ -63,29 +63,32 @@ angular.module('myApp.services')
                     });
             };
 
+
             var GetBaseUrlForProject = function () {
+                var $routeParams = $route.current.params;
                 if ($routeParams.projectcode == null) {
-                    $log.error("projectcode is missing", $routeParams);
-                    throw "Cannot find project code";
+                    $log.error("projectcode is missing", $routeParams, $route);
+                    //throw "Cannot find project code";
                 }
                 if ($routeParams.usercode == null) {
-                    $log.error("usercode is missing", $routeParams);
-                    throw "Cannot find user code";
+                    $log.error("usercode is missing", $routeParams, $route);
+                    //throw "Cannot find user code";
                 }
                 return '#/' + $routeParams.usercode + '/' + $routeParams.projectcode;
             }
 
             var GetBaseUrlForUser = function () {
+                var $routeParams = $route.current.params;
                 if ($routeParams.usercode == null) {
-                    $log.error("usercode is missing", $routeParams);
-                    throw "Cannot find user code";
+                    $log.error("usercode is missing", $routeParams, $route);
+                    //throw "Cannot find user code";
                 }
                 return '#/' + $routeParams.usercode;
             }
 
             //todo cip !!! handle this hard coded values
             var getCurrentUserLink = function () {
-                return "/app/TheLoggedOne/";
+                return '#/' + 'TheLoggedOne';
             }
 
             var getProjectLink = function (projectCode) {
@@ -96,9 +99,10 @@ angular.module('myApp.services')
                 return GetBaseUrlForProject() + "/" + relPath;
             }
             var GetAbsolutePathForUser = function (relPath) {
-               return GetBaseUrlForUser() + "/" + relPath;
+                return GetBaseUrlForUser() + "/" + relPath;
             }
             var GetAbsolutePath = function (relPath) {
+
                 if (CurrentView.IsUser())
                     return GetAbsolutePathForUser(relPath);
                 else
@@ -118,9 +122,10 @@ angular.module('myApp.services')
                     $window.location = getCurrentUserLink();
                 },
                 getCurrentUserLink: getCurrentUserLink,
-                GetAbsolutePathForUserAndProject: GetAbsolutePathForUserAndProject,
+                GetAbsolutePath: GetAbsolutePath,
                 GetAbsolutePathForUser: GetAbsolutePathForUser,
-                GetAbsolutePath: GetAbsolutePath
+                GetBaseUrlForUser: GetBaseUrlForUser,
+                GetAbsolutePathForUserAndProject: GetAbsolutePathForUserAndProject
             };
         }
     ];

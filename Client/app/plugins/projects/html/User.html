@@ -7,9 +7,9 @@
     <div class="panel-heading">Latest news</div>
     <div class="panel-body">
         <ul class="list-group">
-            <li class="list-group-item">Something happend in <a href="">project 1</a></li>
-            <li class="list-group-item">Something happend in <a href="">project 2</a></li>
-            <li class="list-group-item">Something happend in <a href="">project 3</a></li>
+            <li ng-repeat="project in projects" class="list-group-item">
+                Something happend in <a ng-href="{{ProjectLink(project)}}"> {{project.name}}</a>
+            </li>
         </ul>
     </div>
 </div>

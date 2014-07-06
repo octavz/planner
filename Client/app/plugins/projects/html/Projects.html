@@ -3,7 +3,7 @@
 
     <ul>
         <li ng-repeat="project in projects">
-            <a href="" ng-click="RedirectProject(project)"> {{project.name}} - {{project.desc}}</a>
+            <a href="" ng-href="{{ProjectLink(project)}}"> {{project.name}} - {{project.desc}}</a>
         </li>
     </ul>
 </div>

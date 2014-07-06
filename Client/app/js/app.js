@@ -25,9 +25,10 @@ app.config(function ($logProvider, SiteMapProvider, $locationProvider) {
 });
 
 app.run([
-    '$rootScope', 'CurrentView',
-    function ($rootScope, CurrentView) {
+    '$rootScope', 'CurrentView', '$route',
+    function ($rootScope, CurrentView, $route) {
 
+        console.log("APPJS");
         var $bIsUser = CurrentView.IsUser();
 
         if ($bIsUser) {
@@ -36,7 +37,7 @@ app.run([
             $rootScope.TmplMain = 'partials/UserProject.html';
         }
 
-   }
+    }
 ]);
 
 //todo cip find a better way to register modules/plugins to load
