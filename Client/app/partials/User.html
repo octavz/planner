@@ -12,8 +12,8 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li ng-repeat="item in SiteMap.LinksUser.items" ng-class="isActive(item)">
-                    <a ng-href="{{applyUserPath(item.link)}}">{{item.title}}</a>
+                <li ng-repeat="item in menuItemsUser" ng-class="isActive(item)">
+                    <a ng-href="{{item.link}}">{{item.title}}</a>
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>

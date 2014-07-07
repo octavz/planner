@@ -68,11 +68,11 @@ angular.module('myApp.services')
                 var $routeParams = $route.current.params;
                 if ($routeParams.projectcode == null) {
                     $log.error("projectcode is missing", $routeParams, $route);
-                    //throw "Cannot find project code";
+
                 }
                 if ($routeParams.usercode == null) {
                     $log.error("usercode is missing", $routeParams, $route);
-                    //throw "Cannot find user code";
+
                 }
                 return '#/' + $routeParams.usercode + '/' + $routeParams.projectcode;
             }

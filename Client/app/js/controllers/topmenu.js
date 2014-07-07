@@ -4,35 +4,53 @@
 
 angular.module('myApp.controllers')
 
-.controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap', '$log', '$route', '$routeParams',
-    function (Auth, $rootScope, $scope, $location, SiteMap, $log, $route, $routeParams) {
+.controller('TopMenuCtrl', ['Auth', '$rootScope', '$scope', '$location', 'SiteMap', '$log', 'CurrentView', '$route', '$routeParams',
+    function (Auth, $rootScope, $scope, $location, SiteMap, $log, CurrentView, $route, $routeParams) {
 
-        $log.debug("CTRRLLLLLLLL");
+        var tranformProjectLinks = function (item) {
+            var newitem = {
+                link: applyProjectPath(item.link),
+                title: item.title,
+            };
+            if (item.items == null)
+                return newitem;
+            else
+                newitem.items = _(item.items).map(tranformProjectLinks);
+            return newitem;
+        }
+        var tranformUserLinks = function (item) {
+            var newitem = {
+                link: applyUserPath(item.link),
+                title: item.title,
+            };
+            if (item.items == null)
+                return newitem;
+            else
+                newitem.items = _(item.items).map(tranformProjectLinks);
+            return newitem;
+        }
+ 
+        var applyProjectPath = function (link) {
 
-        $scope.ProjectLink = function (prj) {
-            $log.debug("ProjectLink");
-            return SiteMap.GetAbsolutePath(prj.code);
-        }
-        
-        $scope.applyUserPath = function (link) {
-            $log.debug("applyUserPath", link);
-            return SiteMap.GetAbsolutePathForUser(link);
-        }
-        $scope.applyProjectPath = function (link) {
-            $log.debug("applyProjectPath", link);
             return SiteMap.GetAbsolutePathForUserAndProject(link);
         }
+        var applyUserPath = function (link) {
 
-        $scope.Home = SiteMap.getCurrentUserLink();
-        $scope.MyHomePage = SiteMap.GetBaseUrlForUser();
-        $scope.MySettings = $scope.applyUserPath('MySettings');
-        $scope.ProjectNew = $scope.applyUserPath('ProjectNew');
-
-        //todo cip is it ok to init here?
+            return SiteMap.GetAbsolutePathForUser(link);
+        }
         SiteMap.init().then(function () {
 
             $log.debug("SiteMap was initialized");
-            $scope.SiteMap = SiteMap;
+            if (CurrentView.IsUser()) {
+                $scope.menuItemsUser = _(SiteMap.LinksUser.items).map(tranformUserLinks);
+            } else {
+                $scope.menuItems = _(SiteMap.Links.items).map(tranformProjectLinks);
+            }
+
+            $scope.Home = SiteMap.getCurrentUserLink();
+            $scope.MyHomePage = SiteMap.GetBaseUrlForUser();
+            $scope.MySettings = applyUserPath('MySettings');
+            $scope.ProjectNew = applyUserPath('ProjectNew');
         })
 
         $scope.attachTopNodeClass = function (menuItem) {
@@ -51,9 +69,6 @@ angular.module('myApp.controllers')
             }
         }
 
-        $scope.RedirectToUser = function () {
-            SiteMap.SwitchToUser();
-        }
 
         $scope.isLoggedIn = Auth.isLoggedIn;
     }

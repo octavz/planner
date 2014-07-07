@@ -7,12 +7,10 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 .run(['$rootScope', '$location', 'Auth', '$window', '$log',
     function ($rootScope, $location, Auth, $window, $log) {
         $rootScope.$on("$routeChangeError", function (event, current, zet, ex) {
-            if (ex == "red") {
-                //$window.location = $window.location;
-                //$location.url("/Error");
-                $log.debug("reload");
+            if (ex == "MustReload") {
+
                 $window.location.reload();
-                //$log.debug("reload2");
+
                 return;
             }
 
@@ -63,7 +61,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
         
 
         var hasAccess = function ($q, $route, RouteAccessApi, $log) {
-            $log.debug('hasAccess');
+
 
             var skipRoutes = ["/", "/Error", "/AppBootstrap"];
 
@@ -90,7 +88,7 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
 
         var isaSwitchBetweenUserAndProject = function ($q, $route, RouteAccessApi, $log, $routeParams) {
 
-            $log.debug('isaSwitchBetweenUserAndProject');
+
 
             var asyncVerify = $q.defer();
             RouteAccessApi.get().$promise.then(function (res) {
@@ -108,10 +106,10 @@ angular.module('myAuth.services', ['ngCookies', 'ngStorage', 'ngResource'])
                 var prevRouteParams = $routeParams;
 
                 if (IsUserRoute(currentRouteParams) && IsUserProjectRoute(prevRouteParams)) {
-                    return asyncVerify.reject('red');
+                    return asyncVerify.reject('MustReload');
                 }
                 if (IsUserProjectRoute(currentRouteParams) && IsUserRoute(prevRouteParams)) {
-                    return asyncVerify.reject('red');
+                    return asyncVerify.reject('MustReload');
                 }
                 asyncVerify.resolve();
             });

@@ -13,12 +13,12 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
 
-                <li ng-repeat="item in SiteMap.Links.items" ng-class="attachTopNodeClass(item)">
-                    <a ng-if="item.items==null" ng-href="{{applyProjectPath(item.link)}}">{{item.title}}</a>
+                <li ng-repeat="item in menuItems" ng-class="attachTopNodeClass(item)">
+                    <a ng-if="item.items==null" ng-href="{{item.link}}">{{item.title}}</a>
                     <a ng-if="item.items!=null" href="#" class="dropdown-toggle" data-toggle="dropdown">{{item.title}} <b class="caret"></b></a>
                     <ul ng-if="item.items!=null" class="dropdown-menu">
                         <li ng-repeat="subitem in item.items" ng-class="attachTopNodeClass(subitem)">
-                            <a ng-href="{{applyProjectPath(subitem.link)}}">{{subitem.title}}</a>
+                            <a ng-href="{{subitem.link}}">{{subitem.title}}</a>
                         </li>
                     </ul>
                 </li>

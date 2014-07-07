@@ -6,8 +6,11 @@ angular.module('myApp.plugins.projects.controllers', [
 
 .controller('ProjectsCtrl', ['$scope', '$location', '$window', '$routeParams', 'ProjectsApi', 'SiteMap', function ($scope, $location, $window, $routeParams, ProjectsApi, SiteMap) {
 
-    $scope.ProjectLink = function (prj) {
-        return SiteMap.GetAbsolutePath(prj.code);
+
+    var TransformProjects = function(proj) {
+        var ret = proj;
+        ret.link = SiteMap.GetAbsolutePath(proj.code);
+        return ret;
     }
 
     var projectcode = $routeParams.projectcode;
@@ -30,7 +33,7 @@ angular.module('myApp.plugins.projects.controllers', [
     }
 
     ProjectsApi.get(function (resp) {
-        $scope.projects = resp.data;
+        $scope.projects = _(resp.data).map(TransformProjects);
     });
 
     $scope.save = function () {
