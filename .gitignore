@@ -10,3 +10,5 @@ Client/coverage/
 /Client/ClientLayout
 build-test/
 *~
+Client/app/obj/
+*.csproj.user
