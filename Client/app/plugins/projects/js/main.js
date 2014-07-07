@@ -1,8 +1,6 @@
 'use strict';
 
-var plugin = angular.module('myApp.plugins.projects', [
-    'myApp.plugins.projects.controllers'
-]);
+var plugin = angular.module('myApp.plugins.projects', ['ngResource']);
 
 
 plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
@@ -17,22 +15,22 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     });
     $routeProvider.when(userRoutePrefix + '/Projects', {
         templateUrl: 'plugins/projects/html/Projects.html',
-        controller: 'ProjectsCtrl',
+        controller: 'Projects',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(userRoutePrefix + '/ProjectNew', {
         templateUrl: 'plugins/projects/html/ProjectNew.html',
-        controller: 'ProjectsCtrl',
+        controller: 'ProjectInsert',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(projRouterPrefix + '', {
         templateUrl: 'plugins/projects/html/ProjectHome.html',
-        controller: 'ProjectsCtrl',
+        controller: 'Projects',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(projRouterPrefix + '/Edit', {
         templateUrl: 'plugins/projects/html/ProjectNew.html',
-        controller: 'ProjectsCtrl',
+        controller: 'ProjectEdit',
         resolve: RouteAccessProvider.routeResolvers
     });
 

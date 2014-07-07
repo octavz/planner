@@ -15,7 +15,7 @@ module.service('CurrentView', [
             var i, l;
             for (i = 0; i < (l = userUrlMatches.length) ; i++)
                 $bIsUser = $bIsUser || userUrlMatches[i].test($location.$$path);
-            $log.debug($location, $bIsUser);
+            //$log.debug($location, $bIsUser);
             return $bIsUser;
         };
 

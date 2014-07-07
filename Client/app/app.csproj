@@ -369,10 +369,13 @@
     <Content Include="plugins\projects\html\ProjectNew.html" />
     <Content Include="plugins\projects\html\Projects.html" />
     <Content Include="plugins\projects\html\User.html" />
-    <Content Include="plugins\projects\js\controllers\ProjectsCtrl.js" />
+    <Content Include="plugins\projects\js\controllers\ProjectEdit.js" />
+    <Content Include="plugins\projects\js\controllers\ProjectInsert.js" />
+    <Content Include="plugins\projects\js\controllers\Projects.js" />
     <Content Include="plugins\projects\js\controllers\UserCtrl.js" />
     <Content Include="plugins\projects\js\main.js" />
     <Content Include="plugins\projects\js\services\ProjectsApi.js" />
+    <Content Include="plugins\projects\js\services\ProjectsSrv.js" />
     <Content Include="plugins\tasks\html\TaskNew.html" />
     <Content Include="plugins\tasks\html\Tasks.html" />
     <Content Include="plugins\tasks\js\main.js" />

@@ -2,12 +2,13 @@
 
 /* Services */
 
-angular.module('myApp.plugins.projects.rest', ['ngResource'])
+angular.module('myApp.plugins.projects')
 
 .factory('ProjectsApi', function ($resource) {
-    return $resource('/projects', {}, {
-        insertProject: { method: 'POST' },
-        updateProject: { method: 'PUT' },
-    });
+    return $resource('/projects/:id', {},
+            {
+                insertProject: { method: 'POST' },
+                updateProject: { method: 'PUT' },
+            });
 });
 

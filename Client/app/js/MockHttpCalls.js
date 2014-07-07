@@ -59,18 +59,18 @@ myAppDev.run(function ($httpBackend) {
     //handle possible 10 projects
     for (var i = 0; i < 10; i++) {
         var idx = ++currentIdx;
-        projects.push({ id: idx, code: "project" + idx, name: "Project " + idx, desc: "a descr", parent: "" });
+        projects.push({ id: "project" + idx, name: "Project " + idx, desc: "a descr", parent: "" });
 
         var regexp = new RegExp('projects\?id\=' + i);
         $httpBackend.whenGET(regexp).respond({ data: _.findWhere(projects, { id: i }) });
     }
 
-    $httpBackend.whenGET(/projects/).respond({ data: projects });
+    $httpBackend.whenGET("/projects").respond({ data: projects });
+    $httpBackend.whenGET("/projects/project2").respond({ data: projects[1] });
     $httpBackend.whenPOST(/projects/).respond(function (method, url, data) {
 
         var jsondata = angular.fromJson(data);
         jsondata.id = ++currentIdx;
-        jsondata.code = "project" + id;
         projects.push(jsondata);
 
         return [200, { ok: true, o: jsondata }];
@@ -79,7 +79,7 @@ myAppDev.run(function ($httpBackend) {
     $httpBackend.whenPUT(/projects/).respond(function (method, url, data) {
 
         var jsondata = angular.fromJson(data);
-        var id = parseInt(jsondata.id);
+        var id = jsondata.id;
         //find the object in our array
         var o = _.findWhere(projects, { id: id });
         if (o != undefined) {
@@ -95,5 +95,5 @@ myAppDev.run(function ($httpBackend) {
         return [200, { ok: true, o: jsondata }];
     });
 
-    $httpBackend.whenGET(/.*/).passThrough();
+    //$httpBackend.whenGET(/.*/).passThrough();
 })
