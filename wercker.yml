@@ -6,8 +6,8 @@ services:
 build:
   steps:
     - script:
-        name: compile
-        code: play dist
+        name: cd
+        code: cd Service
     - script:
         name: test
-        code: play test
+        code: sbt clean test
