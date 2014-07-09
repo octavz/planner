@@ -1,14 +1,19 @@
 package org.planner.dal.impl
 
 import org.planner.dal.{DAO, UserDAL}
+import scaldi.Injector
 import scala.concurrent._
 import play.api.db.slick.Config.driver.simple._
 import play.api.Play.current
 import org.planner.db._
 import play.api.db.slick.DB
 import org.planner.dal._
+import scaldi.Injectable._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
-class SlickUserDAL extends UserDAL with DB {
+class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
+  val cache = inject[Caching]
 
   override def create =
     DB.withSession {
@@ -24,9 +29,14 @@ class SlickUserDAL extends UserDAL with DB {
 
   override def findSessionById(id: String): DAO[Option[UserSession]] = DB.withSession {
     implicit session =>
-      val q = for {a <- UserSessions if (a.id === id)} yield a
-      val res = q.list()
-      Future.successful(Right(if (res.isEmpty) None else Some(res.head)))
+      cache.getOrElse(CacheKeys.session(id)) {
+        val q = for {a <- UserSessions if (a.id === id)} yield a
+        val res = q.list()
+        Future.successful(if (res.isEmpty) None else Some(res.head))
+      } map {
+        case v@Some(_) => Right(v)
+        case _ => Left("Not found")
+      }
   }
 
   override def deleteSessionByUser(uid: String): DAO[Int] = DB.withSession {

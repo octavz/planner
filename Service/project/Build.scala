@@ -1,6 +1,7 @@
 import sbt._
 import play.Project._
 import Keys._
+
 //import play.Play.autoImport._
 
 //resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
@@ -27,10 +28,12 @@ object AppBuild extends Build {
     "org.scaldi" %% "scaldi-play" % "0.3.3",
     "com.wordnik" %% "swagger-play2" % "1.3.5",
     "net.sourceforge.htmlunit" % "htmlunit" % "2.14" % "test",
-    "com.github.nscala-time" %% "nscala-time" % "1.2.0"
+    "com.github.nscala-time" %% "nscala-time" % "1.2.0",
+    "com.livestream" %% "scredis" % "1.1.2"
+
   )
 
-  lazy val main = play.Project(appName, appVersion, appDependencies).dependsOn(codegenProject)./*enablePlugins(play.PlayScala).*/settings(
+  lazy val main = play.Project(appName, appVersion, appDependencies).dependsOn(codegenProject). /*enablePlugins(play.PlayScala).*/ settings(
     scalaVersion := "2.10.4",
     slick <<= slickCodeGenTask // register manual sbt command
   )

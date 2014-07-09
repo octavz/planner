@@ -26,3 +26,8 @@ class MainConf extends Module {
 
   binding to new MainController
 }
+
+class UtilsConf extends Module {
+  bind[Caching] to new RedisCaching
+}
+

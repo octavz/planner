@@ -28,7 +28,7 @@ import scalaoauth2.provider.{AccessToken, AuthInfo}
  * For more information, consult the wiki.
  */
 @RunWith(classOf[JUnitRunner])
-class ProjectApplicationSpec extends Specification with Mockito {
+class ProjectAppSpec extends Specification with Mockito {
 
   def anUser = User(guid, guid, 0, guido, now, now, nowo, 0, guid, guid)
 

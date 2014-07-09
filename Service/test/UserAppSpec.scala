@@ -25,7 +25,7 @@ import scala.concurrent.duration.Duration
  * For more information, consult the wiki.
  */
 @RunWith(classOf[JUnitRunner])
-class UserApplicationSpec extends Specification with Mockito {
+class UserAppSpec extends Specification with Mockito {
 
   def app(userService: UserModule = mock[UserModule]) = FakeApplication(
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),

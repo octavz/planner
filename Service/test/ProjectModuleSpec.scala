@@ -23,7 +23,7 @@ import scalaoauth2.provider.AuthInfo
   * it mocks AssetRepoComponent
   */
 @RunWith(classOf[JUnitRunner])
-class ProjectSpec extends Specification with Mockito with Injectable {
+class ProjectModuleSpec extends Specification with Mockito with Injectable {
   implicit val modules = new Module {
     bind[ProjectDAL] toProvider mock[ProjectDAL]
     bind[ProjectModule] toProvider new DefaultProjectModule

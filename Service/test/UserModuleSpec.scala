@@ -20,7 +20,7 @@ import org.planner.util.Time._
   * it mocks AssetRepoComponent
   */
 @RunWith(classOf[JUnitRunner])
-class UserSpec extends Specification with Mockito with Injectable {
+class UserModuleSpec extends Specification with Mockito with Injectable {
   implicit val modules = new Module {
     bind[UserDAL] toProvider mock[UserDAL]
     bind[Oauth2DAL] toProvider mock[Oauth2DAL]

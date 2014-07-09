@@ -16,7 +16,7 @@ import scala.util.Try
 /**
  * Created by Octav on 6/30/2014.
  */
-trait BaseDaoSpec extends Specification with Mockito with Injectable with DB with AroundExample {
+trait BaseDALSpec extends Specification with Mockito with Injectable with DB with AroundExample {
   val duration = Duration.Inf
 
   def around[T: AsResult](t: => T) = {

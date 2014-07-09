@@ -15,18 +15,16 @@ import scala.concurrent._
 class ProjectController(implicit val inj: Injector) extends BaseController {
   implicit val projectService = inject[ProjectModule]
 
-
   @ApiOperation(value = "Create asset", notes = "Create asset", response = classOf[ProjectDTO], httpMethod = "POST", nickname = "createProject")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(value = "The new project to be added",
-      required = true, dataType = "ProjectDTO", paramType = "body")))
+  @ApiImplicitParams(Array(new ApiImplicitParam(value = "The new project to be added", required = true, dataType = "ProjectDTO", paramType = "body")))
   def insertProject = Action.async {
     implicit request =>
       request.body.asJson.map {
         json => try {
-          authorize { implicit authInfo =>
-            val dto = json.as[ProjectDTO]
-            projectService.insertProject(dto) map (r => Ok(Json.toJson(r)))
+          authorize {
+            implicit authInfo =>
+              val dto = json.as[ProjectDTO]
+              projectService.insertProject(dto) map (r => Ok(Json.toJson(r)))
           }
         } catch {
           case e: Throwable =>

@@ -1,5 +1,5 @@
 import org.planner.dal._
-import org.planner.dal.impl.{SlickOauth2DAL, SlickUserDAL}
+import org.planner.dal.impl.{TestCaching, SlickOauth2DAL, SlickUserDAL}
 import org.planner.db._
 import org.junit.runner._
 import org.specs2.execute.AsResult
@@ -8,7 +8,7 @@ import org.specs2.mutable._
 import org.specs2.runner._
 import org.specs2.specification.AroundExample
 import play.api.test.{FakeApplication, WithApplication}
-import scaldi.{Injectable}
+import scaldi.{Module, Injectable}
 import org.planner.util.Gen._
 import org.planner.util.Time._
 import scala.concurrent._
@@ -23,7 +23,10 @@ import scala.util.Try
   * it mocks AssetRepoComponent
   */
 @RunWith(classOf[JUnitRunner])
-class UserDALSpec extends BaseDaoSpec {
+class UserDALSpec extends BaseDALSpec {
+  implicit val modules = new Module {
+    bind[Caching] to new TestCaching
+  }
 
   lazy val dao = new SlickUserDAL
 
