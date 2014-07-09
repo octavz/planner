@@ -1,2 +1,9 @@
+box: wercker/default
+
 services:
   - alejandrito/play@1.1.1
+
+build:
+  - steps:
+          code:|-
+            cd Service
