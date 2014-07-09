@@ -3,3 +3,11 @@ box: wercker/default
 services:
   - alejandrito/play@1.1.1
 
+build:
+  steps:
+    - script:
+        name: compile
+        code: play dist
+    - script:
+        name: test
+        code: play test
