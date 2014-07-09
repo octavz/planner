@@ -1,4 +1,4 @@
-box: pjvds/scala
+box: box: olger/scala@0.1.7
 build:
   steps:
     - script:
