@@ -6,16 +6,16 @@ trait UserDAL {
 
   def create
 
-  def insertSession(us: UserSession): DAO[UserSession]
+  def insertSession(us: UserSession): DAL[UserSession]
 
-  def insertUser(user: User): DAO[User]
+  def insertUser(user: User): DAL[User]
 
-  def findSessionById(id: String): DAO[Option[UserSession]]
+  def findSessionById(id: String): DAL[Option[UserSession]]
 
-  def deleteSessionByUser(uid: String): DAO[Int]
+  def deleteSessionByUser(uid: String): DAL[Int]
 
-  def getUserById(uid: String): DAO[User]
+  def getUserById(uid: String): DAL[User]
 
-  def getUserByEmail(email: String): DAO[Option[User]]
+  def getUserByEmail(email: String): DAL[Option[User]]
 
 }

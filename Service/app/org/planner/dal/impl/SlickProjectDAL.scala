@@ -13,6 +13,6 @@ import scala.concurrent._
 class SlickProjectDAL(implicit inj: Injector) extends ProjectDAL with DB {
   val cache = inject[Caching]
 
-  def insertProject(model: Project): DAO[Project] = ???
+  def insertProject(model: Project): DAL[Project] = ???
 
 }

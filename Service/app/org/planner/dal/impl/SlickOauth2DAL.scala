@@ -1,6 +1,6 @@
 package org.planner.dal.impl
 
-import org.planner.dal.{Oauth2DAL, DAO, UserDAL}
+import org.planner.dal.{Oauth2DAL, DAL, UserDAL}
 import scalaoauth2.provider.{AuthInfo, DataHandler}
 import java.sql.Timestamp
 import org.planner.util.Crypto

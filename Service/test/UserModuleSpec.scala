@@ -68,8 +68,8 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
     "implement register and call dal" in {
       val service = module
       val u = UserDTO(login = guid, password = guid)
-      service.dal.insertUser(any[User]) answers (a => dao(a.asInstanceOf[User]))
-      service.dal.getUserByEmail(any[String]) returns dao(None)
+      service.dal.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
+      service.dal.getUserByEmail(any[String]) returns dal(None)
       val s = Await.result(service.registerUser(u), duration)
       there was one(service.dal).getUserByEmail(anyString)
       there was one(service.dal).insertUser(any[User])

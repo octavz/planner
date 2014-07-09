@@ -47,19 +47,21 @@ package object impl {
       }
     }
 
+    override def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A): Future[A] = getOrElse[A](key, expiration)(Future.successful(orElse))
+
     override def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A]): Future[A] =
       try {
         def save(value: A): A = {
           client.setWithOptions(key, value, if (expiration == 0) None else Some(expiration.seconds))
           value
         }
-
         val f = client.get(key) flatMap {
           case Some(v) => Future.successful(v.asInstanceOf[A])
           case _ =>
             orElse map {
               case None => None.asInstanceOf[A]
-              case v => save(v)
+              case v if v != null => save(v)
+              case v => v
             }
         }
         f recoverWith { case _ => orElse}
@@ -76,6 +78,8 @@ package object impl {
     override def get[A](key: String): Future[Option[A]] = Future.successful(None)
 
     override def getOrElse[A](key: String, expiration: Int)(orElse: => Future[A]): Future[A] = orElse
+
+    override def getOrElseSync[A](key: String, expiration: Int)(orElse: => A): Future[A] = Future.successful(orElse)
   }
 
 }

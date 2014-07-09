@@ -4,6 +4,6 @@ import org.planner.db._
 
 trait ProjectDAL {
 
-  def insertProject(model: Project): DAO[Project]
+  def insertProject(model: Project): DAL[Project]
 
 }
