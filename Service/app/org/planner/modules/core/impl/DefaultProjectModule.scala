@@ -13,10 +13,13 @@ class DefaultProjectModule(implicit inj: Injector) extends ProjectModule {
   override val dal = inject[ProjectDAL]
 
   override def insertProject(project: ProjectDTO): Result[ProjectDTO] = {
-    val userId = authData.user.id
     dal.insertProject(project.toModel(userId)) flatMap {
       case Left(err) => resultError(500, err, "insertProject")
       case Right(v) => result(new ProjectDTO(v))
     }
+  }
+
+  override def getUserProjects(): Result[ProjectListDTO] = {
+    null
   }
 }

@@ -15,4 +15,5 @@ class SlickProjectDAL(implicit inj: Injector) extends ProjectDAL with DB {
 
   def insertProject(model: Project): DAL[Project] = ???
 
+  override def getUserProjects(uid: String): DAL[List[Project]] = ???
 }

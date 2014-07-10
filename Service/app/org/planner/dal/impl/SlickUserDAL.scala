@@ -24,7 +24,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
   override def insertSession(us: UserSession): DAL[UserSession] = DB.withSession {
     implicit session =>
       UserSessions.insert(us)
-      Future.successful(Right(us))
+      dal(us)
   }
 
   override def findSessionById(id: String): DAL[Option[UserSession]] = DB.withSession {
@@ -39,7 +39,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
 
   override def deleteSessionByUser(uid: String): DAL[Int] = DB.withSession {
     implicit session =>
-      Future.successful(Right(UserSessions.where(_.userId === uid).delete))
+      dal(UserSessions.where(_.userId === uid).delete)
   }
 
   override def getUserById(uid: String): DAL[User] = DB.withSession {

@@ -7,4 +7,6 @@ trait BaseModule {
 
   def authData = _authData
   def authData_=(value: AuthData): Unit = _authData = value
+
+  def userId = authData.user.id
 }

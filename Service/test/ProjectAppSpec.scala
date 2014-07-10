@@ -51,7 +51,7 @@ class ProjectAppSpec extends Specification with Mockito {
 
   implicit val authInfo = new AuthData(anUser, "1", None, None)
 
-  "Application" should {
+  "Project controller" should {
 
     "have create project route and authorize" in {
       val module = mock[ProjectModule]
@@ -69,7 +69,7 @@ class ProjectAppSpec extends Specification with Mockito {
           """)))
         page must beSome
         val res = Await.result(page.get, Duration.Inf)
-        there was one (module).authData_=(any[AuthData])
+        there was one(module).authData_=(any[AuthData])
         there was one(module).insertProject(any[ProjectDTO])
         val json = contentAsJson(page.get)
         json \ "name" === JsString("project")
@@ -78,6 +78,20 @@ class ProjectAppSpec extends Specification with Mockito {
       }
     }
 
+    "get all projects" in {
+      val module = mock[ProjectModule]
+      module.getUserProjects() returns result(ProjectListDTO(items = List(ProjectDTO(id = guido, name = guid, desc = guido, parent = guido))))
+      running(app(module)) {
+        val page = route(FakeRequest(GET, "/user/uid/projects").withHeaders("Authorization" -> "OAuth token"))
+        page must beSome
+        val res = Await.result(page.get, Duration.Inf)
+        there was one(module).authData_=(any[AuthData])
+        there was one(module).getUserProjects()
+        val json = contentAsJson(page.get)
+        (json \ "items").as[JsArray].value.size === 1
+      }
+
+    }
 
   }
 }

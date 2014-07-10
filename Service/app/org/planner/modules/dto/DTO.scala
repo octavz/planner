@@ -19,22 +19,24 @@ case class UserDTO(login: String, password: String) {
   }
 }
 
-case class ProjectDTO(name: String, desc: Option[String], parent: Option[String]) {
+case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String]) {
 
-  def this(model: Project) = this(model.name, model.description, model.parentId)
+  def this(model: Project) = this(Some(model.id), model.name, model.description, model.parentId)
 
   def toModel(userId: String) = {
     val n = Time.now
-    Project( id = Gen.guid, userId = userId, name = name, description = desc,
+    Project(id = if (id.isDefined) id.get else Gen.guid, userId = userId, name = name, description = desc,
       parentId = parent, created = Some(n), updated = Some(n))
   }
 }
 
+case class ProjectListDTO(items: List[ProjectDTO])
 
 
 trait JsonFormats extends BaseFormats {
 
   implicit val userDto = Json.format[UserDTO]
   implicit val projectDto = Json.format[ProjectDTO]
+  implicit val projectListDto = Json.format[ProjectListDTO]
 
 }

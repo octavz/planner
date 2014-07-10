@@ -1,5 +1,6 @@
 package org.planner.controllers
 
+import com.wordnik.swagger.annotations.{ApiImplicitParam, ApiImplicitParams, ApiOperation, Api}
 import org.planner.modules.core.UserModule
 import org.planner.modules.dto._
 import play.api.data.Forms._
@@ -11,11 +12,13 @@ import scaldi.Injector
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
+@Api(value = "/user", description = "User operations")
 class UserController(implicit val inj: Injector) extends BaseController {
   val userService = inject[UserModule]
 
+  @ApiOperation(value = "Issue access token", notes = """{"token_type": "Bearer","access_token": "MDEwNTBkNDgtNDhkNC00YmNhLWJiMjktMzVhMTJkMjMwNDBk","expires_in": 3600,"refresh_token": "NzVmYjQ4ZDMtMjY3NS00NDA4LTkyZTgtNmNjOTNlNjRhNDZl"}""", response = classOf[String], httpMethod = "POST", nickname = "createAccessToken")
   def accessToken = Action.async { implicit request =>
-    issueAccessToken(authHandler) map ( _.asInstanceOf[SimpleResult])
+    issueAccessToken(authHandler) map (_.asInstanceOf[SimpleResult])
   }
 
   def login = Action {
@@ -41,6 +44,8 @@ class UserController(implicit val inj: Injector) extends BaseController {
       }
   }
 
+  @ApiOperation(value = "Register user", notes = "Create new user", response = classOf[ProjectDTO], httpMethod = "POST", nickname = "registerUser")
+  @ApiImplicitParams(Array(new ApiImplicitParam(value = "User to be registered", required = true, dataType = "UserDTO", paramType = "body")))
   def register = Action.async {
     implicit request =>
       request.body.asJson.map {

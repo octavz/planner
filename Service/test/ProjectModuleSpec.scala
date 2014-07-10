@@ -50,7 +50,7 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
 
     "implement save project and call dal" in {
       val m = module
-      val dto = ProjectDTO(name = guid, desc = guido, parent = None)
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None)
       m.dal.insertProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
       val s = Await.result(m.insertProject(dto), duration)
       there was one(m.dal).insertProject(any[Project])

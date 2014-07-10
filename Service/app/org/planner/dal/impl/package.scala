@@ -11,6 +11,8 @@ import scala.concurrent.duration._
  */
 package object impl {
 
+  def async[T](result: T): Future[T] = Future.successful(result)
+
   class RedisCaching extends Caching {
 
     lazy val client = Redis()

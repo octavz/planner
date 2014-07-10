@@ -6,4 +6,6 @@ trait ProjectDAL {
 
   def insertProject(model: Project): DAL[Project]
 
+  def getUserProjects(uid: String): DAL[List[Project]]
+
 }
