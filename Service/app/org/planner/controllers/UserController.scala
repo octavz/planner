@@ -58,4 +58,19 @@ class UserController(implicit val inj: Injector) extends BaseController {
         }
       }.getOrElse(Future.successful(BadRequest("Wrong json")))
   }
+
+  @ApiOperation(value = "Add user group", notes = "Add user group", response = classOf[GroupDTO], httpMethod = "POST", nickname = "createGroup")
+  @ApiImplicitParams(Array(new ApiImplicitParam(value = "New group", required = true, dataType = "GroupDTO", paramType = "body")))
+  def addGroup = Action.async {
+    implicit request =>
+      request.body.asJson.map {
+        json => try {
+          val dto = json.as[GroupDTO]
+          userService.addGroup(dto) map (r => Ok(Json.toJson(r)))
+        } catch {
+          case e: Throwable =>
+            Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+        }
+      }.getOrElse(Future.successful(BadRequest("Wrong json")))
+  }
 }

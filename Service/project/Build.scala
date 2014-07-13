@@ -20,14 +20,14 @@ object AppBuild extends Build {
     "com.typesafe.play" %% "play-jdbc" % "2.2.3",
     "postgresql" % "postgresql" % "9.1-901.jdbc4",
     "com.typesafe.play" %% "play-slick" % "0.6.0.1",
-    "com.nulab-inc" %% "play2-oauth2-provider" % "0.7.1",
+    "com.nulab-inc" %% "play2-oauth2-provider" % "0.7.2",
     "org.mockito" % "mockito-all" % "1.9.5",
     //"com.wix" %% "accord-core" % "0.4-SNAPSHOT",
-    "com.typesafe" %% "play-plugins-redis" % "2.2.1",
+//    "com.typesafe" %% "play-plugins-redis" % "2.2.1",
     "org.scaldi" %% "scaldi" % "0.3.2",
     "org.scaldi" %% "scaldi-play" % "0.3.3",
     "com.wordnik" %% "swagger-play2" % "1.3.5",
-    "net.sourceforge.htmlunit" % "htmlunit" % "2.14" % "test",
+    "net.sourceforge.htmlunit" % "htmlunit" % "2.15" % "test",
     "com.github.nscala-time" %% "nscala-time" % "1.2.0",
     "com.livestream" %% "scredis" % "1.1.2"
 

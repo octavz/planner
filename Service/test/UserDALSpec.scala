@@ -30,9 +30,9 @@ class UserDALSpec extends BaseDALSpec {
 
   lazy val dao = new SlickUserDAL
 
-  "User org.planner.dao" should {
+  "User DAL" should {
 
-    "insertSession, findSessionById, deleteSessionByUser" in new WithApplication {
+    "insertSession, findSessionById, deleteSessionByUser" in new WithApplication(testApp) {
       val us = UserSession(guid, guid)
       val res = Await.result(dao.insertSession(us), Duration.Inf)
       res must beRight
@@ -46,7 +46,7 @@ class UserDALSpec extends BaseDALSpec {
       retDelete.merge.asInstanceOf[Int] === 1
     }
 
-    "insertUser,getUserById, getUserByEmail" in new WithApplication {
+    "insertUser,getUserById, getUserByEmail" in new WithApplication(testApp) {
       val usr = User(guid, guid, 0, guido, now, now, nowo, 0, guid, guid)
       val res = Await.result(dao.insertUser(usr), Duration.Inf)
       res must beRight

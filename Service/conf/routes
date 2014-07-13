@@ -7,6 +7,7 @@ POST         /project                    @org.planner.controllers.ProjectControl
 GET          /login                      @org.planner.controllers.UserController.login
 POST         /login                      @org.planner.controllers.UserController.loginPost
 POST         /register                   @org.planner.controllers.UserController.register
+POST         /group                   @org.planner.controllers.UserController.addGroup
 GET          /user/:id/projects          @org.planner.controllers.ProjectController.getUserProjects(id: String)
 
 GET         /api-docs                    controllers.ApiHelpController.getResources

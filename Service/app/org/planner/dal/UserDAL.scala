@@ -18,4 +18,8 @@ trait UserDAL {
 
   def getUserByEmail(email: String): DAL[Option[User]]
 
+  def insertGroup(model: Group): DAL[Group]
+
+  def insertGroupsUser(model: GroupsUser): DAL[GroupsUser]
+
 }

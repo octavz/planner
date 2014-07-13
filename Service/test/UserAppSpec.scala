@@ -1,4 +1,5 @@
 import controllers._
+
 import org.planner.controllers.{UserController, MainController}
 import org.planner.dal.Oauth2DAL
 import org.planner.modules.core.UserModule
@@ -8,6 +9,7 @@ import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 import play.api.libs.json._
+import org.planner.util.Gen._
 
 import play.api.GlobalSettings
 import play.api.test._
@@ -28,6 +30,9 @@ import scala.concurrent.duration.Duration
 class UserAppSpec extends Specification with Mockito {
 
   def app(userService: UserModule = mock[UserModule]) = FakeApplication(
+    additionalConfiguration = Map(
+      "db.default.driver" -> "org.h2.Driver",
+      "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"),
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
     withGlobal = Some(
       new GlobalSettings with ScaldiSupport {
@@ -78,6 +83,32 @@ class UserAppSpec extends Specification with Mockito {
         val json = contentAsJson(page.get)
         json \ "login" === JsString("test@test.com")
       }
+    }
+
+    "have add group route" in {
+      val service = mock[UserModule]
+      service.addGroup(any[GroupDTO]) answers {
+        u =>
+          val dto = u.asInstanceOf[GroupDTO].copy(id = guido)
+          result(dto)
+      }
+      running(app(service)) {
+        val page = route(FakeRequest(POST, "/group")
+          .withJsonBody(Json.parse(
+          """
+            {
+            "name":"group name",
+            "projectId" : "pid"
+            }
+          """)))
+        page must beSome
+        val res = Await.result(page.get, Duration.Inf)
+        val json = contentAsJson(page.get)
+        json \ "name" === JsString("group name")
+        json \ "projectId" === JsString("pid")
+        (json \ "id").as[JsString].value must contain("-")
+      }
+
     }
 
   }

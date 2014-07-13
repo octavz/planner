@@ -64,4 +64,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
       dal(ret)
   }
 
+  override def insertGroup(model: Group): DAL[Group] = ???
+
+  override def insertGroupsUser(model: GroupsUser): DAL[GroupsUser] = ???
 }

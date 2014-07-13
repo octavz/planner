@@ -12,3 +12,4 @@ build-test/
 *~
 Client/app/obj/
 *.csproj.user
+Service/bin/

@@ -1,5 +1,6 @@
 import org.planner.modules.core.UserModule
-import org.planner.modules.dto.UserDTO
+import org.planner.modules.dto.{GroupDTO, UserDTO}
+import play.api.http.Status
 import scaldi.{Module, Injectable}
 import org.planner.util.Gen._
 import org.specs2.mutable._
@@ -15,6 +16,8 @@ import org.planner.dal._
 import org.planner.db._
 import org.planner.util.Time._
 
+import scalaoauth2.provider.AuthInfo
+
 /** .
   * main test class for DefaultAssetServiceComponent
   * it mocks AssetRepoComponent
@@ -29,7 +32,13 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
 
   val duration = Duration.Inf
 
-  def module = inject[UserModule]
+  def module = {
+    val ret = inject[UserModule]
+    ret.authData = AuthInfo[User](user =
+      User(id = guid, login = guid, password = guid, created = now, updated = now,
+        lastLogin = nowo, openidToken = guido, nick = guid), "1", None, None)
+    ret
+  }
 
   /**
    * generates  strings to be used in test
@@ -75,6 +84,54 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
       there was one(service.dal).insertUser(any[User])
       s must beRight
     }
+
+    "implement add group and call dal" in {
+      val service = module
+      val u = GroupDTO(id = None, name = guid, projectId = guid)
+
+      service.dal.insertGroup(any[Group]) answers (a => dal(a.asInstanceOf[Group]))
+      service.dal.insertGroupsUser(any[GroupsUser]) answers (a=> dal(a.asInstanceOf[GroupsUser]))
+
+      val s = Await.result(service.addGroup(u), duration)
+      there was one(service.dal).insertGroup(any[Group])
+      s must beRight
+    }
+
+    "handle add group dal error" in {
+      val service = module
+      val u = GroupDTO(id = None, name = guid, projectId = guid)
+      service.dal.insertGroup(any[Group]) returns dalErr("dal test error")
+      val s = Await.result(service.addGroup(u), duration)
+      there was one(service.dal).insertGroup(any[Group])
+      s must beLeft
+      val (code, msg) = s.merge
+      code === Status.INTERNAL_SERVER_ERROR
+      msg === "dal test error"
+    }
+
+    "handle add group future error" in {
+      val service = module
+      val u = GroupDTO(id = None, name = guid, projectId = guid)
+      service.dal.insertGroup(any[Group]) returns Future.failed(new Exception("test"))
+      val s = Await.result(service.addGroup(u), duration)
+      there was one(service.dal).insertGroup(any[Group])
+      s must beLeft
+      val (code, msg) = s.merge
+      code === Status.INTERNAL_SERVER_ERROR
+      msg === "test"
+    }
+
+    "add current user to group upon group creation" in {
+      val service = module
+      val u = GroupDTO(id = None, name = guid, projectId = guid)
+      service.dal.insertGroup(any[Group]) answers (a => dal(a.asInstanceOf[Group]))
+      service.dal.insertGroupsUser(any[GroupsUser]) answers (a=> dal(a.asInstanceOf[GroupsUser]))
+      val s = Await.result(service.addGroup(u), duration)
+      there was one(service.dal).insertGroup(any[Group])
+      there was one(service.dal).insertGroupsUser(any[GroupsUser])
+      s must beRight
+    }
+
 
   }
 }

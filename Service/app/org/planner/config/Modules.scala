@@ -1,11 +1,13 @@
 package org.planner.config
 
 import org.planner.controllers.{ProjectController, UserController, MainController}
+
 import org.planner.modules.core._
 import scaldi.Module
 import org.planner.dal._
 import org.planner.modules.core.impl._
 import org.planner.dal.impl._
+import play.api.Play.current
 
 class UserConf extends Module {
   bind[UserDAL] to new SlickUserDAL

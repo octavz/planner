@@ -1,8 +1,9 @@
 package org.planner.modules.core.impl
 
 import org.planner.modules.core.UserModule
-import org.planner.modules.dto.UserDTO
+import org.planner.modules.dto.{GroupDTO, UserDTO}
 import org.planner.util.Gen._
+import play.api.http.Status
 
 import scala.concurrent._
 import ExecutionContext.Implicits._
@@ -77,8 +78,28 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
     } catch {
       case e: Throwable => resultEx(e, "registerUser")
     }
-
   }
 
+  override def addGroup(dto: GroupDTO): Result[GroupDTO] = {
+    try {
+      val model = dto.toModel
+      val f = dal.insertGroup(model) flatMap {
+        case Left(err) => resultError(Status.INTERNAL_SERVER_ERROR, err)
+        case Right(v) =>
+          dal.insertGroupsUser(GroupsUser(v.id, authData.user.id)) map {
+            case Left(err) => Left(Status.INTERNAL_SERVER_ERROR, err)
+            case _ => Right(new GroupDTO(v))
+          }
+      }
 
+      f recover {
+        case e: Throwable =>
+          resultExSync(e, "addGroup")
+      }
+
+    } catch {
+      case e: Throwable =>
+        resultEx(e, "addGroup")
+    }
+  }
 }

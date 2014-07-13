@@ -18,6 +18,8 @@ package object modules {
 
   def resultEx(ex: Throwable, data: String = "", errCode: Int = 500) = Future.successful(Left(errCode, ex.getMessage))
 
+  def resultExSync(ex: Throwable, data: String = "", errCode: Int = 500) = Left(errCode, ex.getMessage)
+
   implicit class ErrorExtractor[T](val ret: Either[ResultError, T]) {
 
     def errCode = ret match {

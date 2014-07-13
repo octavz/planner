@@ -103,7 +103,6 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def findAuthCode(code: String) = {
     DB.withTransaction { implicit session =>
       val authCode = AuthCodes.where(a => a.authorizationCode === code).firstOption
-
       // filtering out expired authorization codes
       authCode.filter(p => p.createdAt.getTime + (p.expiresIn * 1000) > new Date().getTime)
     }

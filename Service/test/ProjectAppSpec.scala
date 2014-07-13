@@ -33,6 +33,9 @@ class ProjectAppSpec extends Specification with Mockito {
   def anUser = User(guid, guid, 0, guido, now, now, nowo, 0, guid, guid)
 
   def app(module: ProjectModule = mock[ProjectModule], u: User = anUser) = FakeApplication(
+    additionalConfiguration = Map(
+      "db.default.driver" -> "org.h2.Driver",
+      "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"),
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
     withGlobal = Some(
       new GlobalSettings with ScaldiSupport {

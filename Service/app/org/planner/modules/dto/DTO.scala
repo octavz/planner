@@ -19,6 +19,15 @@ case class UserDTO(login: String, password: String) {
   }
 }
 
+case class GroupDTO(id: Option[String], name: String, projectId: String) {
+  def this(model: Group) = this(Some(model.id), model.name, model.projectId)
+
+  def toModel = {
+    val n = Time.now
+    Group(id = if (id.isDefined) id.get else Gen.guid, name = name, projectId = projectId, created = Some(n), updated = Some(n))
+  }
+}
+
 case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String]) {
 
   def this(model: Project) = this(Some(model.id), model.name, model.description, model.parentId)
@@ -38,5 +47,6 @@ trait JsonFormats extends BaseFormats {
   implicit val userDto = Json.format[UserDTO]
   implicit val projectDto = Json.format[ProjectDTO]
   implicit val projectListDto = Json.format[ProjectListDTO]
+  implicit val groupDto = Json.format[GroupDTO]
 
 }

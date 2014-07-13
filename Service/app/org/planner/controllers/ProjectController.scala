@@ -26,6 +26,7 @@ class ProjectController(implicit val inj: Injector) extends BaseController {
           authorize {
             implicit authInfo =>
               val dto = json.as[ProjectDTO]
+
               projectService.insertProject(dto) map (r => Ok(Json.toJson(r)))
           }
         } catch {

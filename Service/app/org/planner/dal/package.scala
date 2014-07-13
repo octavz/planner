@@ -13,6 +13,8 @@ package object dal {
 
   def dal[T](v: T): DAL[T] = Future.successful(Right(v))
 
+  def dalErr[T](error: String): DAL[T] = Future.successful(Left(error))
+
   trait Caching {
     def set[A](key: String, value: A, expiration: Int = 0): Future[Boolean]
 
