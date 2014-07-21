@@ -49,7 +49,7 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def getStoredAccessToken(authInfo: AuthInfo[User]): Option[scalaoauth2.provider.AccessToken] = DB.withTransaction {
     implicit session =>
       AccessTokens.where(a => a.clientId === authInfo.clientId && a.userId === authInfo.user.id).firstOption map { a =>
-        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.createdAt)
+        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
       }
   }
 
@@ -64,7 +64,7 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def findAccessToken(token: String): Option[scalaoauth2.provider.AccessToken] = DB.withTransaction {
     implicit session =>
       AccessTokens.where(a => a.accessToken === token).firstOption map { a =>
-        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.createdAt)
+        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
       }
   }
 

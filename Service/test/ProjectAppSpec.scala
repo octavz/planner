@@ -2,7 +2,6 @@ import org.planner.controllers.ProjectController
 import org.planner.modules.core.ProjectModule
 import org.planner.util.Gen._
 import org.planner.util.Time._
-import controllers._
 import org.planner.dal.Oauth2DAL
 import org.planner.db.User
 import org.planner.modules.dto._
@@ -30,10 +29,11 @@ import scalaoauth2.provider.{AccessToken, AuthInfo}
 @RunWith(classOf[JUnitRunner])
 class ProjectAppSpec extends Specification with Mockito {
 
-  def anUser = User(guid, guid, 0, guido, now, now, nowo, 0, guid, guid)
+  def anUser = User(id = guid, login = guid, providerToken = None, created = now, userId = None, groupId = None, updated = now, lastLogin = None, password = guid, nick = guid)
 
   def app(module: ProjectModule = mock[ProjectModule], u: User = anUser) = FakeApplication(
     additionalConfiguration = Map(
+      "evolutionplugin" -> "disabled",
       "db.default.driver" -> "org.h2.Driver",
       "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"),
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
@@ -67,11 +67,12 @@ class ProjectAppSpec extends Specification with Mockito {
             {
             "name":"project",
             "desc":"123456",
-            "parent":"parent"
+            "parent":"parent",
+            "public" : true 
             }
           """)))
         page must beSome
-        val res = Await.result(page.get, Duration.Inf)
+        Await.result(page.get, Duration.Inf)
         there was one(module).authData_=(any[AuthData])
         there was one(module).insertProject(any[ProjectDTO])
         val json = contentAsJson(page.get)
@@ -83,15 +84,23 @@ class ProjectAppSpec extends Specification with Mockito {
 
     "get all projects" in {
       val module = mock[ProjectModule]
-      module.getUserProjects() returns result(ProjectListDTO(items = List(ProjectDTO(id = guido, name = guid, desc = guido, parent = guido))))
+      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1))
+      module.getUserProjects() returns result(ProjectListDTO(items = List(p)))
       running(app(module)) {
         val page = route(FakeRequest(GET, "/user/uid/projects").withHeaders("Authorization" -> "OAuth token"))
         page must beSome
-        val res = Await.result(page.get, Duration.Inf)
+        Await.result(page.get, Duration.Inf)
         there was one(module).authData_=(any[AuthData])
         there was one(module).getUserProjects()
         val json = contentAsJson(page.get)
-        (json \ "items").as[JsArray].value.size === 1
+        val arr = (json \ "items").as[JsArray].value
+        arr.size === 1
+        arr(0) \ "id" === JsString(p.id.get)
+        arr(0) \ "name" === JsString(p.name)
+        arr(0) \ "desc" === JsString(p.desc.get)
+        arr(0) \ "parent" === JsString(p.parent.get)
+        arr(0) \ "public" === JsBoolean(true)
+        arr(0) \ "perm" === JsNumber(p.perm.get)
       }
 
     }

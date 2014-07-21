@@ -31,6 +31,7 @@ class UserAppSpec extends Specification with Mockito {
 
   def app(userService: UserModule = mock[UserModule]) = FakeApplication(
     additionalConfiguration = Map(
+      "evolutionplugin" -> "disabled",
       "db.default.driver" -> "org.h2.Driver",
       "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"),
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),

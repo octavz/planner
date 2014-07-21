@@ -1,6 +1,6 @@
 package org.planner.modules.core
 
-import org.planner.dal.ProjectDAL
+import org.planner.dal.{UserDAL, ProjectDAL}
 import org.planner.modules.Result
 import org.planner.modules.dto.{ProjectListDTO, ProjectDTO}
 
@@ -9,8 +9,11 @@ import org.planner.modules.dto.{ProjectListDTO, ProjectDTO}
  */
 trait ProjectModule extends BaseModule {
   val dal: ProjectDAL
+  val userDal: UserDAL
 
   def insertProject(project: ProjectDTO): Result[ProjectDTO]
+
+//  def insertProject1(project: ProjectDTO): Result[ProjectDTO]
 
   def getUserProjects() : Result[ProjectListDTO]
 }

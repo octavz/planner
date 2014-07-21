@@ -31,9 +31,9 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
     implicit session =>
       cache.getOrElseSync(CacheKeys.session(id)) {
         UserSessions.where(_.id === id).firstOption
-      } map {
-        case v@Some(_) => Right(v)
-        case _ => Left("Not found")
+      } flatMap {
+        case v@Some(_) => dal(v)
+        case _ => dalErr("Not found")
       }
   }
 
@@ -46,9 +46,9 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
     implicit session =>
       cache.getOrElseSync[Option[User]](CacheKeys.user(uid)) {
         Users.where(_.id === uid).firstOption
-      } map {
-        case Some(v) => Right(v)
-        case _ => Left("Not found")
+      } flatMap {
+        case Some(v) => dal(v)
+        case _ => dalErr("Not found")
       }
   }
 
@@ -64,7 +64,29 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
       dal(ret)
   }
 
-  override def insertGroup(model: Group): DAL[Group] = ???
+  override def insertGroup(model: Group): DAL[Group] = DB.withSession {
+    implicit session =>
+      Groups.insert(model)
+      dal(model)
+  }
 
-  override def insertGroupsUser(model: GroupsUser): DAL[GroupsUser] = ???
+  override def insertGroupsUser(model: GroupsUser): DAL[GroupsUser] = DB.withSession {
+    implicit session =>
+      GroupsUsers.insert(model)
+      dal(model)
+  }
+  
+  override def insertGroupWithUser(model: Group, userId: String): DAL[Group] = DB.withTransaction {
+    implicit session =>
+      Groups.insert(model)
+      GroupsUsers.insert(GroupsUser(model.id, userId))
+      dal(model)
+  }
+
+  override def getUserGroups(userId: String): DAL[List[String]] = DB.withSession {
+    implicit session =>
+      cache.getOrElse[List[String]](CacheKeys.userGroups(userId)){
+        dal(GroupsUsers.where(_.userId === userId).list map (gu => gu.groupId))
+      }
+  }
 }

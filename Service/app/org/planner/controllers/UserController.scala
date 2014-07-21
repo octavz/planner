@@ -51,6 +51,7 @@ class UserController(implicit val inj: Injector) extends BaseController {
       request.body.asJson.map {
         json => try {
           val dto = json.as[UserDTO]
+
           userService.registerUser(dto) map (r => Ok(Json.toJson(r)))
         } catch {
           case e: Throwable =>

@@ -21,5 +21,9 @@ trait UserDAL {
   def insertGroup(model: Group): DAL[Group]
 
   def insertGroupsUser(model: GroupsUser): DAL[GroupsUser]
+  
+  def insertGroupWithUser(model: Group, userId: String): DAL[Group]
+
+  def getUserGroups(userId: String): DAL[List[String]]
 
 }

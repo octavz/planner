@@ -19,7 +19,7 @@ class UserConf extends Module {
 
 class ProjectConf extends Module {
   bind[ProjectDAL] to new SlickProjectDAL
-  bind[ProjectConf] to new ProjectConf
+  bind[ProjectModule] to new DefaultProjectModule
 
   binding to new ProjectController
 }

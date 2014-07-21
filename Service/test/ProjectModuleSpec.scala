@@ -27,6 +27,7 @@ import scalaoauth2.provider.AuthInfo
 class ProjectModuleSpec extends Specification with Mockito with Injectable {
   implicit val modules = new Module {
     bind[ProjectDAL] toProvider mock[ProjectDAL]
+    bind[UserDAL] toProvider mock[UserDAL]
     bind[ProjectModule] toProvider new DefaultProjectModule
   }
 
@@ -34,7 +35,7 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
     val ret = inject[ProjectModule]
     ret.authData = AuthInfo[User](user =
       User(id = guid, login = guid, password = guid, created = now, updated = now,
-        lastLogin = nowo, openidToken = guido, nick = guid), "1", None, None)
+        lastLogin = nowo, providerToken = guido, nick = guid, userId = None, groupId = None), "1", None, None)
     ret
   }
 
@@ -45,29 +46,47 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
    */
   def genString(size: Int): String = (for (i <- 1 to size) yield "a").mkString
 
-  "Project service" should {
+  "Project module" should {
 
-    "implement save project and call dal" in {
+    "implement insertProject and call dal" in {
       val m = module
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None)
-      m.dal.insertProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None)
+
+      m.dal.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
       val s = Await.result(m.insertProject(dto), Duration.Inf)
-      there was one(m.dal).insertProject(any[Project])
+      there was one(m.dal).insertProject(any[Project], any[Group])
       s must beRight
+    }
+
+    "return right error when dal crashes" in {
+      val m = module
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = Some(1))
+
+      m.dal.insertProject(any[Project], any[Group]) returns Future.failed(new Exception("test"))
+      val s = Await.result(m.insertProject(dto), Duration.Inf)
+      there was one(m.dal).insertProject(any[Project], any[Group])
+      s must beLeft
+      val (code, message) = s.merge.asInstanceOf[ResultError]
+      code === Status.INTERNAL_SERVER_ERROR
+      message === "test"
     }
 
     "implement get user projects" in {
       val m = module
       m.dal.getUserProjects(anyString) returns dal(List())
+      m.userDal.getUserGroups(any) returns dal(List("g1", "g2"))
       val s = m.getUserProjects()
       s must not be (null)
     }
 
     "get user projects and call dal" in {
       val m = module
-      val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido)
-      m.dal.getUserProjects(anyString) returns dal(List(p1))
+      val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
+      val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
+      m.dal.getUserProjects(anyString) returns dal(List((g1,p1)))
+
       val s = Await.result(m.getUserProjects(), Duration.Inf)
+
       there was one(m.dal).getUserProjects(m.authData.user.id)
       s must beRight
       val ret = s.merge.asInstanceOf[ProjectListDTO]

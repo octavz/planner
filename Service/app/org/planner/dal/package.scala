@@ -9,11 +9,12 @@ import scala.concurrent.duration.Duration
 
 package object dal {
 
-  type DAL[T] = Future[Either[String, T]]
+  type DAL[T] = Future[T]
 
-  def dal[T](v: T): DAL[T] = Future.successful(Right(v))
+  def dal[T](v: T): DAL[T] = Future.successful(v)
 
-  def dalErr[T](error: String): DAL[T] = Future.successful(Left(error))
+  def dalErr[T](error: String): DAL[T] = Future.failed(new Exception(error))
+
 
   trait Caching {
     def set[A](key: String, value: A, expiration: Int = 0): Future[Boolean]
@@ -27,7 +28,10 @@ package object dal {
 
   object CacheKeys {
     def session(id: String): String = s"session:$id"
+
     def user(id: String): String = s"user:$id"
+
+    def userGroups(id: String): String = s"userGroup:$id"
   }
 
 }
