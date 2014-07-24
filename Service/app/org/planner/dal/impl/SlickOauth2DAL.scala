@@ -1,6 +1,6 @@
 package org.planner.dal.impl
 
-import org.planner.dal.{Oauth2DAL, DAO, UserDAL}
+import org.planner.dal.{Oauth2DAL, DAL, UserDAL}
 import scalaoauth2.provider.{AuthInfo, DataHandler}
 import java.sql.Timestamp
 import org.planner.util.Crypto
@@ -49,7 +49,7 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def getStoredAccessToken(authInfo: AuthInfo[User]): Option[scalaoauth2.provider.AccessToken] = DB.withTransaction {
     implicit session =>
       AccessTokens.where(a => a.clientId === authInfo.clientId && a.userId === authInfo.user.id).firstOption map { a =>
-        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.createdAt)
+        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
       }
   }
 
@@ -64,7 +64,7 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def findAccessToken(token: String): Option[scalaoauth2.provider.AccessToken] = DB.withTransaction {
     implicit session =>
       AccessTokens.where(a => a.accessToken === token).firstOption map { a =>
-        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.createdAt)
+        scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
       }
   }
 
@@ -103,7 +103,6 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def findAuthCode(code: String) = {
     DB.withTransaction { implicit session =>
       val authCode = AuthCodes.where(a => a.authorizationCode === code).firstOption
-
       // filtering out expired authorization codes
       authCode.filter(p => p.createdAt.getTime + (p.expiresIn * 1000) > new Date().getTime)
     }

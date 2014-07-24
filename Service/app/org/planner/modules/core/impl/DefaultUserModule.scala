@@ -1,9 +1,10 @@
 package org.planner.modules.core.impl
 
+import akka.actor.Status.Success
 import org.planner.modules.core.UserModule
-import org.planner.modules.dto.UserDTO
+import org.planner.modules.dto.{GroupDTO, UserDTO}
 import org.planner.util.Gen._
-
+import play.api.http.Status
 import scala.concurrent._
 import ExecutionContext.Implicits._
 import org.planner.modules._
@@ -13,30 +14,25 @@ import scaldi.Injector
 import scaldi.Injectable._
 import play.api.Logger
 import java.util.Date
-
 import scalaoauth2.provider._
+import org.planner.modules.dto.GroupDTO
 
 class DefaultUserModule(implicit inj: Injector) extends UserModule {
   val dal = inject[UserDAL]
   val dalAuth = inject[Oauth2DAL]
 
   override def createSession(accessToken: String): Result[String] = {
-    try {
-      val authInfo = dalAuth.findAuthInfoByAccessToken(scalaoauth2.provider.AccessToken(accessToken, None, None, None, new Date()))
-      if (authInfo.isEmpty) throw new Exception("Access token not found!")
+    val authInfo = dalAuth.findAuthInfoByAccessToken(scalaoauth2.provider.AccessToken(accessToken, None, None, None, new Date()))
+    if (authInfo.isEmpty) {
+      resultError(Status.NOT_FOUND, "Session not found")
+    } else {
       val model = UserSession(userId = authInfo.get.user.id, id = accessToken)
-      dal.deleteSessionByUser(model.userId) flatMap {
-        case Right(_) =>
-          dal.insertSession(model) map {
-            case Right(m) => Right(m.id)
-            case Left(err) => Left(1, err)
-          }
-        case _ => Future.successful(Left(2, "Cannot delete existing session"))
-      }
-    } catch {
-      case e: Throwable =>
-        Logger.error("createSession", e)
-        Future.successful(Left(2, e.getMessage))
+      val f = for {
+        fDelete <- dal.deleteSessionByUser(model.userId)
+        fInsert <- dal.insertSession(model)
+      } yield resultSync(model.id)
+
+      f recover { case e: Throwable => resultErrorSync(Status.INTERNAL_SERVER_ERROR, e.getMessage)}
     }
   }
 
@@ -52,11 +48,8 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
 
   override def getUserById(id: String) = {
     try {
-      dal.getUserById(id) map {
-        case Right(u) => Right(new UserDTO(u))
-        case Left(err) => Left(404, err)
-      } recover {
-        case e: Throwable => Left(501, e.getMessage)
+      dal.getUserById(id) map (u => resultSync(new UserDTO(u))) recover {
+        case e: Throwable => resultExSync(e, "getUserById")
       }
     } catch {
       case e: Throwable => resultEx(e, "getUserById")
@@ -65,20 +58,27 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
 
   def registerUser(u: UserDTO): Result[UserDTO] = {
     try {
-      dal.getUserByEmail(u.login) flatMap {
-        case Right(o) =>
-          if (o.isDefined) resultError(400, "User already exists")
-          else {
-            val model = u.toModel
-            dal.insertUser(model) map (_ => Right(new UserDTO(model)))
-          }
-        case Left(err) => resultError(400, err)
+      val model = u.toModel
+
+      val f = dal.getUserByEmail(u.login) flatMap {
+        case Some(_) => resultError(Status.INTERNAL_SERVER_ERROR, "Email already exists")
+        case _ => dal.insertUser(model) map (a => resultSync(new UserDTO(a)))
       }
+
+      f recover { case e: Throwable => resultExSync(e, "registerUser")}
     } catch {
       case e: Throwable => resultEx(e, "registerUser")
     }
-
   }
 
-
+  override def addGroup(dto: GroupDTO): Result[GroupDTO] = {
+    try {
+      val model = dto.toModel(authData.user.id)
+      val f = dal.insertGroupWithUser(model, authData.user.id) map (_ => resultSync(new GroupDTO(model)))
+      f recover { case e: Throwable => resultExSync(e, "addGroup")}
+    } catch {
+      case e: Throwable =>
+        resultEx(e, "addGroup")
+    }
+  }
 }
