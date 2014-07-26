@@ -14,12 +14,12 @@ class MainController(implicit inj: Injector) extends Controller with OAuth2Provi
 
   def indexUser(user: String) = Action.async {
     implicit request =>
-      Assets.at("/public/client", "/index.html")(request)
+      Assets.at("/public/client", "index.html")(request)
   }
 
   def indexProject(user: String, project: String) = Action.async {
     implicit request =>
-      Assets.at("/public/client", "/index.html")(request)
+      Assets.at("/public/client", "index.html")(request)
       //Ok(views.html.users.index.render())
   }
 }
