@@ -1,10 +1,5 @@
 # --- !Ups
 
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
 CREATE TABLE user_statuses (
     id INTEGER PRIMARY KEY,
     description CHARACTER VARYING(100)
