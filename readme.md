@@ -1,20 +1,6 @@
-Tools:
+# About
+Planner service
 
-Server
 
-- Clojure
-- Leiningen
-- IDE(NetBeans, IntelliJ, Eclipse)
-- Http-kit - middleware
-- Compojure - routing
-- Unit Testing framework ???
-- others
+# Notes
 
-Client
-
-- Javascript
-- Angular JS
-- VS.net (NetBeans)
-- JQuery
-- QUnit
-- others

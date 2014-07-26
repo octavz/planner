@@ -1,6 +1,0 @@
-box: olger/scala@0.1.7
-build:
-  steps:
-    - script:
-        name: test
-        code: sbt test

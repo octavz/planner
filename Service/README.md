@@ -1,6 +1,0 @@
-# About
-Planner service
-
-
-# Notes
-
