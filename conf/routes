@@ -14,7 +14,8 @@ GET         /api-docs                    controllers.ApiHelpController.getResour
 GET         /api-docs/project            controllers.ApiHelpController.getResource(path = "/project")
 GET         /api-docs/user               controllers.ApiHelpController.getResource(path = "/user")
 
-GET          /client/*file               controllers.Assets.at(path="/public/client", file)
+# GET          /client/*file               controllers.Assets.at(path="/public/client", file)
 GET          /docs/*file                 controllers.Assets.at(path="/public/docs", file)
-GET          /*file                      controllers.ExternalAssets.at(path="../Client/app",file)
+# GET          /*file                      controllers.ExternalAssets.at(path="../Client/app",file)
+GET          /*file                      controllers.Assets.at(path="/public/client/app",file)
 
