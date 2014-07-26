@@ -14,8 +14,10 @@ GET         /api-docs                    controllers.ApiHelpController.getResour
 GET         /api-docs/project            controllers.ApiHelpController.getResource(path = "/project")
 GET         /api-docs/user               controllers.ApiHelpController.getResource(path = "/user")
 
-# GET          /client/*file               controllers.Assets.at(path="/public/client", file)
 GET          /docs/*file                 controllers.Assets.at(path="/public/docs", file)
-# GET          /*file                      controllers.ExternalAssets.at(path="../Client/app",file)
-GET          /*file                      controllers.Assets.at(path="/public/client/app",file)
+GET          /app/*file                      controllers.Assets.at(path="/public/client/app",file)
+GET          /public.html                      controllers.Assets.at(path="/public/client",file="public.html")
+GET          /autologin.html                      controllers.Assets.at(path="/public/client",file="autologin.html")
+GET          /*user/*project             @org.planner.controllers.MainController.indexProject(user: String, project: String)
+GET          /*user                      @org.planner.controllers.MainController.indexUser(user: String)
 
