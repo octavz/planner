@@ -8,12 +8,12 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
 
     //register routes
     $routeProvider.when(projRoutePrefix + '/Tasks', {
-        templateUrl: 'plugins/tasks/html/Tasks.html',
+        templateUrl: 'app/plugins/tasks/html/Tasks.html',
         resolve: RouteAccessProvider.routeResolvers
     });
 
     $routeProvider.when(projRoutePrefix + '/TaskNew', {
-        templateUrl: 'plugins/tasks/html/TaskNew.html',
+        templateUrl: 'app/plugins/tasks/html/TaskNew.html',
         resolve: RouteAccessProvider.routeResolvers
     });
 

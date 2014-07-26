@@ -12,14 +12,14 @@ angular.module('myAppPublic', [
     function($routeProvider) {
 
         $routeProvider.when('/Login', {
-            templateUrl: 'partials/Public/Login.html'
+            templateUrl: 'app/partials/Public/Login.html'
         });
         $routeProvider.when('/Register', {
-            templateUrl: 'partials/Public/Register.html',
+            templateUrl: 'app/partials/Public/Register.html',
             controller: 'RegisterCtrl'
         });
         $routeProvider.when('/RegisterOk', {
-            templateUrl: 'partials/Public/RegisterOk.html',
+            templateUrl: 'app/partials/Public/RegisterOk.html',
         });
         $routeProvider.otherwise({
             redirectTo: '/Login'

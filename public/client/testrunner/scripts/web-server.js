@@ -91,35 +91,23 @@ StaticServlet.MimeMap = {
 //});
 
 function HasAlternativePath(path) {
+        
 
-    if (path.match(/^\/app\/bootstrap\//i)
-        ||
-        path.match(/^\/app\/css\//i)
-        ||
-        path.match(/^\/app\/js\//i)
-        ||
-        path.match(/^\/app\/lib\//i)
-        ||
-        path.match(/^\/app\/partials\//i)
-        ||
-        path.match(/^\/app\/plugins\//i)
-        ||
-        path.match(/^\/app\/public\.html/i)
-        ||
-        path.match(/^\/app\/autologin\.html/i)
-        ||
-        path.match(/^\/ClientLayout/i)
+    if (path.match(/^\/app\//i)
+	||
+	path.match(/\.html/i)
         )
         return null;
 
-    //if (path.match(/^\/[^\/]*\/$/i)
-    //    ||
-    //    path.match(/^\/[^\/]*\/$/i)
-    //    )
-    //    return "./app/index_user.html";
-
+/*
+    if (path.match(/^\/[^\/]*\/$/i)
+        ||
+        path.match(/^\/[^\/]*\/$/i)
+        )
+        return "./app/index_user.html";
+*/
     util.puts("has alt path");
-    return "./app/index.html";
+    return "./index.html";
 }
 
 StaticServlet.prototype.handleRequest = function(req, res) {

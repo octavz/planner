@@ -20,7 +20,7 @@ app.config(function ($logProvider, SiteMapProvider, $locationProvider) {
     // use the HTML5 History API
     $locationProvider.html5Mode(true);
 
-    $logProvider.debugEnabled(true);
+     $logProvider.debugEnabled(true);
 
 });
 
@@ -32,9 +32,9 @@ app.run([
         var $bIsUser = CurrentView.IsUser();
 
         if ($bIsUser) {
-            $rootScope.TmplMain = 'partials/User.html';
+            $rootScope.TmplMain = 'app/partials/User.html';
         } else {
-            $rootScope.TmplMain = 'partials/UserProject.html';
+            $rootScope.TmplMain = 'app/partials/UserProject.html';
         }
 
     }

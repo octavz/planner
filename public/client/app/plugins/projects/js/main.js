@@ -9,27 +9,27 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
     var projRouterPrefix = SiteMapProvider.GetBaseRouteUrlForProject();
 
     $routeProvider.when(userRoutePrefix + '', {
-        templateUrl: 'plugins/projects/html/User.html',
+        templateUrl: 'app/plugins/projects/html/User.html',
         controller: 'UserCtrl',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(userRoutePrefix + '/Projects', {
-        templateUrl: 'plugins/projects/html/Projects.html',
+        templateUrl: 'app/plugins/projects/html/Projects.html',
         controller: 'Projects',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(userRoutePrefix + '/ProjectNew', {
-        templateUrl: 'plugins/projects/html/ProjectNew.html',
+        templateUrl: 'app/plugins/projects/html/ProjectNew.html',
         controller: 'ProjectInsert',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(projRouterPrefix + '', {
-        templateUrl: 'plugins/projects/html/ProjectHome.html',
+        templateUrl: 'app/plugins/projects/html/ProjectHome.html',
         controller: 'Projects',
         resolve: RouteAccessProvider.routeResolvers
     });
     $routeProvider.when(projRouterPrefix + '/Edit', {
-        templateUrl: 'plugins/projects/html/ProjectNew.html',
+        templateUrl: 'app/plugins/projects/html/ProjectNew.html',
         controller: 'ProjectEdit',
         resolve: RouteAccessProvider.routeResolvers
     });

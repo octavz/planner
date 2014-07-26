@@ -10,11 +10,11 @@ angular.module('myApp')
             redirectTo: '/AppBootstrap'
         });
         $routeProvider.when('/Home', {
-            templateUrl: 'partials/Private/Home.html',
+            templateUrl: 'app/partials/Private/Home.html',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/Error', {
-            templateUrl: 'partials/Private/Error.html',
+            templateUrl: 'app/partials/Private/Error.html',
             resolve: RouteAccessProvider.routeResolvers
         });
         $routeProvider.when('/AppBootstrap', {

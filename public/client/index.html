@@ -1,0 +1,71 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Planner App</title>
+
+    <base href="/" />
+
+    <link rel="stylesheet" href="app/bootstrap/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="app/bootstrap/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" href="app/css/app.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div id="tpl-content" ng-include="TmplMain"></div>
+            <div ng-view></div>
+        </div>
+    </div>
+
+    <script src="app/lib/jquery-2.1.0.min.js"></script>
+    <script src="app/lib/md5.js"></script>
+    <script src="app/lib/require.2.1.11.js"></script>
+    <script src="app/bootstrap/js/bootstrap.js"></script>
+    <script src="app/lib/angular/angular.js"></script>
+    <script src="app/lib/angular/angular-route.js"></script>
+    <script src="app/lib/angular/angular-cookies.js"></script>
+    <script src="app/lib/angular/angular-resource.js"></script>
+    <script src="app/lib/angular/angular-mocks.js"></script>
+    <script src="app/lib/angular3rdparty/ui-bootstrap-tpls-0.10.0.min.js"></script>
+    <script src="app/lib/underscore/underscore.js"></script>
+    <script src="app/lib/underscore/angular-underscore.js"></script>
+    <script src="app/lib/angular3rdparty/ngStorage.js"></script>
+
+
+
+    <script src="app/js/app.js"></script>
+    <script src="app/js/routes.js"></script>
+    <script src="app/js/services.js"></script>
+    <script src="app/js/ViewUtils.js"></script>
+    
+    <script src="app/js/providers/sitemap.js"></script>
+    <script src="app/js/controllers/appbootstrap.js"></script>
+    <script src="app/js/controllers/topmenu.js"></script>
+    <script src="app/js/controllers/logout.js"></script>
+    <script src="app/js/filters.js"></script>
+    <script src="app/js/directives.js"></script>
+    <script src="app/js/MockHttpCalls.js"></script>
+    <script src="app/js/myauth/services.js"></script>
+
+    <!-- plugins loading -->
+    <script src="app/plugins/projects/js/main.js"></script>
+    <script src="app/plugins/projects/js/controllers/Projects.js"></script>
+    <script src="app/plugins/projects/js/controllers/ProjectEdit.js"></script>
+    <script src="app/plugins/projects/js/controllers/ProjectInsert.js"></script>
+    <script src="app/plugins/projects/js/controllers/UserCtrl.js"></script>
+    <script src="app/plugins/projects/js/services/ProjectsApi.js"></script>
+    <script src="app/plugins/projects/js/services/ProjectsSrv.js"></script>
+    <script src="app/plugins/tasks/js/main.js"></script>
+    
+
+    <script>
+        angular.bootstrap(document, ModulesToLoad);
+    </script>
+</body>
+
+</html>

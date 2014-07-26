@@ -7,8 +7,8 @@ var myAppDev = angular.module('myAppDev', ['myApp', 'ngMockE2E', 'angular-unders
 //for additional examples see http://docs.angularjs.org/api/ngMockE2E.$httpBackend and http://docs.angularjs.org/api/ngResource.$resource
 myAppDev.run(function ($httpBackend) {
 
-    $httpBackend.whenGET(/^\/templates\//).passThrough();
-    $httpBackend.whenGET(/^partials\//).passThrough();
+    $httpBackend.whenGET(/^\/app\//).passThrough();
+    $httpBackend.whenGET(/^app\//).passThrough();
     $httpBackend.whenGET(/html/).passThrough();
 
     var users = [{

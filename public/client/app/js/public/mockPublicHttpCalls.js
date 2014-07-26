@@ -27,7 +27,7 @@ myAppLoginDev.run(function ($httpBackend) {
         return [200, {}, {}];
     });
 
-    $httpBackend.whenGET(/^\/templates\//).passThrough();
-    $httpBackend.whenGET(/^partials\//).passThrough();
+    $httpBackend.whenGET(/^\/app\//).passThrough();
+    $httpBackend.whenGET(/^app\//).passThrough();
 
 })
