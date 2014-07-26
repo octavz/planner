@@ -7,9 +7,11 @@ import play.api.Play.current
 
 object include {
 
-  def apply(absolutePath: String): Html = {
+  def apply(path: String): Html = {
     val p =  Play.application.path
-    val source = Source.fromFile(s"$p/$absolutePath", "UTF-8").getLines().mkString("\n")
+    val p1 = Play.resource("/index.html")
+//    println(p1)
+    val source = Source.fromFile(p, "UTF-8").getLines().mkString("\n")
     Html(source)
   }
 
