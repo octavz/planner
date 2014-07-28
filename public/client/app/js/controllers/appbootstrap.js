@@ -4,11 +4,16 @@
 
 angular.module('myApp.controllers')
 
-.controller('AppBootstrapCtrl', ['Auth', '$scope', '$location',
-    function(Auth, $scope, $location) {
+.controller('AppBootstrapCtrl', ['Auth', '$scope', '$location','SiteMap','$log',
+    function(Auth, $scope, $location, SiteMap,$log) {
 
         if (Auth.isLoggedIn()) {
-            $location.path('/Home');
+            $log.debug("SiteMap was initialized");
+
+   	        SiteMap.init().then(function () {
+	            $location.path(SiteMap.getCurrentUserLink());
+	        })
+
         } else {
             $location.path('/Exit');
         }

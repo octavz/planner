@@ -88,7 +88,7 @@ angular.module('myApp.services')
 
             //todo cip !!! handle this hard coded values
             var getCurrentUserLink = function () {
-                return '#/' + 'TheLoggedOne';
+                return  'TheLoggedOne';
             }
 
             var getProjectLink = function (projectCode) {
