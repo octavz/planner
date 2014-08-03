@@ -23,6 +23,7 @@ myAppDev.run(function ($httpBackend) {
             calcMD5("/:usercode"),
             calcMD5("/:usercode/Projects"),
             calcMD5("/:usercode/ProjectNew"),
+            calcMD5("/:usercode/MySettings"),
 
             calcMD5("/:usercode/:projectcode"),
             calcMD5("/:usercode/:projectcode/Edit"),
