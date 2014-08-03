@@ -20,12 +20,12 @@ angular.module('myAppPublic.controllers')
             }
 
             UsersApi.register({
-                email: user.Email,
+                login: user.Email,
                 password: user.Password,
             }, function (data, headers) {
                 //if we have the error property, than we have an error
-                if (typeof (data.error) !== "undefined") {
-                    $scope.alerts.push({ type: 'danger', msg: data.error });
+                if (typeof (data.errMessage) !== "undefined") {
+                    $scope.alerts.push({ type: 'danger', msg: data.errMessage });
                     return;
                 }
                 $location.path('/RegisterOk');
