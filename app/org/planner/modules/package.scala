@@ -27,10 +27,15 @@ package object modules {
   def resultExSync(ex: Throwable, data: String = "", errCode: Int = 500) = Left(errCode, ex.getMessage)
 
   object PermProject {
-    val Admin = 1
-    val ReadOnly = 2
-    val ReadWrite = 4
-    val Delete = 8
+    val OwnerRead = 1
+    val OwnerReadWrite = 2
+    val OwnerReadWriteDelete = 4
+    val GroupRead = 8
+    val GroupReadWrite = 16
+    val GroupReadWriteDelete = 32
+    val PublicRead = 64
+    val PublicReadWrite = 128
+    val PublicReadWriteDelete = 256
   }
 
   implicit class CustomFuture[S, T](val f: Future[Either[String, S]]) {

@@ -13,7 +13,6 @@ trait ProjectModule extends BaseModule {
 
   def insertProject(project: ProjectDTO): Result[ProjectDTO]
 
-//  def insertProject1(project: ProjectDTO): Result[ProjectDTO]
+  def getUserProjects(id: String, offset: Int, count: Int) : Result[ProjectListDTO]
 
-  def getUserProjects() : Result[ProjectListDTO]
 }

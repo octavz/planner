@@ -20,16 +20,15 @@ class DefaultProjectModule(implicit inj: Injector) extends ProjectModule {
 
   override def insertProject(dto: ProjectDTO): Result[ProjectDTO] = {
     val project = dto.toModel(userId)
-    val group = Group(id = guid, projectId = project.id, name = project.name, created = now, updated = now, userId = authData.user.id, groupId = None, perm = PermProject.Admin)
+    val group = Group(id = guid, projectId = project.id, name = project.name, created = now, updated = now, userId = authData.user.id, groupId = None, perm = PermProject.OwnerReadWriteDelete)
     val f = dal.insertProject(project, group) map (p => resultSync(new ProjectDTO(p, group)))
-
     f recover { case e: Throwable => resultExSync(e, "addGroup")}
   }
 
-  override def getUserProjects(): Result[ProjectListDTO] = {
+  override def getUserProjects(id: String, offset: Int, count: Int): Result[ProjectListDTO] = {
     val f = for {
-      projects <- dal.getUserProjects(authData.user.id)
-    } yield resultSync(ProjectListDTO(items = projects.map( p => new ProjectDTO(p._2, p._1))) )
+      projects <- if (id == userId) dal.getUserProjects(userId, offset, count) else dal.getUserPublicProjects(id, offset, count)
+    } yield resultSync(ProjectListDTO(items = projects.map(p => new ProjectDTO(p._2, p._1))))
 
     f recover { case e: Throwable => resultExSync(e, "getUserProject")}
   }

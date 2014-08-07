@@ -25,7 +25,6 @@ class ProjectConf extends Module {
 }
 
 class MainConf extends Module {
-
   binding to new MainController
 }
 

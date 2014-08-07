@@ -89,4 +89,5 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
         dal(GroupsUsers.where(_.userId === userId).list map (gu => gu.groupId))
       }
   }
+
 }

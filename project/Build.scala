@@ -2,6 +2,9 @@ import sbt._
 import play.Project._
 import Keys._
 
+import org.ensime.sbt.Plugin.Settings.ensimeConfig
+import org.ensime.sbt.util.SExp._
+
 //import play.Play.autoImport._
 
 //resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
@@ -12,12 +15,12 @@ import Keys._
 object AppBuild extends Build {
   val appName = "PlannerService"
 
-  val appVersion = "0.1-SNAPSHOT"
+  val appVersion = "0.1"
 
 
   val appDependencies = Seq(
-    "com.typesafe.play" %% "play-cache" % "2.2.3",
-    "com.typesafe.play" %% "play-jdbc" % "2.2.3",
+    "com.typesafe.play" %% "play-cache" % "2.2.4",
+    "com.typesafe.play" %% "play-jdbc" % "2.2.4",
     "postgresql" % "postgresql" % "9.1-901.jdbc4",
     "com.typesafe.play" %% "play-slick" % "0.6.0.1",
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.7.2",
@@ -36,6 +39,7 @@ object AppBuild extends Build {
 
   lazy val main = play.Project(appName, appVersion, appDependencies).dependsOn(codegenProject). /*enablePlugins(play.PlayScala).*/ settings(
     scalaVersion := "2.10.4",
+     ensimeConfig := sexp(key(":only-include-in-index"),sexp("controllers\\..*","models\\..*","views\\..*","play\\..*")),
     slick <<= slickCodeGenTask // register manual sbt command
   )
 

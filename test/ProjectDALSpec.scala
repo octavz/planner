@@ -3,7 +3,7 @@ import org.planner.util.Gen._
 import org.junit.runner._
 import org.planner.dal._
 import org.planner.dal.impl.{SlickProjectDAL, TestCaching}
-import org.planner.db.{Group, Project}
+import org.planner.db.{User, Group, Project}
 import org.specs2.runner._
 import play.api.test.WithApplication
 import scaldi.Module
@@ -22,6 +22,21 @@ import org.planner.util.Time._
 class ProjectDALSpec extends BaseDALSpec {
   implicit val modules = new Module {
     bind[Caching] to new TestCaching
+  }
+
+
+  def insertRandomUser()(implicit s: Session): User = {
+    val u = randUser
+    Users.insert(u)
+    u
+  }
+
+  def insertRandomProject(uid: String)(implicit s: Session): (Project, Group) = {
+    val p = randProject(uid)
+    val g = randGroup(p)
+    Projects.insert(p)
+    Groups.insert(g)
+    (p,g)
   }
 
   "Project DAL" should {
@@ -50,10 +65,20 @@ class ProjectDALSpec extends BaseDALSpec {
       DB.withSession {
         implicit s =>
           val dal = new SlickProjectDAL()
-          val resGet = Await.result(dal.getUserProjects(testUser.id), Duration.Inf)
+          val resGet = Await.result(dal.getUserProjects(testUser.id, 0, 100), Duration.Inf)
           val ret = resGet.asInstanceOf[List[(Group,Project)]]
           ret.size === 1
           ret(0)._2 === testProject 
+      }
+    }
+
+    "get projects by user" in new WithApplication {
+      DB.withSession {
+        implicit s =>
+          val dal = new SlickProjectDAL()
+          val resGet = Await.result(dal.getUserPublicProjects("1", 0, 1), Duration.Inf)
+          val ret = resGet.asInstanceOf[List[(Group,Project)]]
+          ret.size === 1
       }
     }
 
@@ -63,7 +88,6 @@ class ProjectDALSpec extends BaseDALSpec {
       projects must beAnInstanceOf[List[String]]
       projects.size === 1
     }
-
   }
 }
 

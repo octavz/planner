@@ -15,3 +15,4 @@ Client/app/obj/
 Service/bin/
 target/
 bin/
+.*

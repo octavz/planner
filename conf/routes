@@ -1,24 +1,25 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
+OPTIONS      /*path                      @org.planner.controllers.MainController.options(path)
 
 POST         /oauth2/access_token        @org.planner.controllers.UserController.accessToken
 POST         /project                    @org.planner.controllers.ProjectController.insertProject
 GET          /login                      @org.planner.controllers.UserController.login
 POST         /login                      @org.planner.controllers.UserController.loginPost
 POST         /register                   @org.planner.controllers.UserController.register
-POST         /group                   @org.planner.controllers.UserController.addGroup
-GET          /user/:id/projects          @org.planner.controllers.ProjectController.getUserProjects(id: String)
+POST         /group                      @org.planner.controllers.UserController.addGroup
+GET          /user/:id/projects          @org.planner.controllers.ProjectController.getUserProjects(id: String, offset: Int, count: Int)
 
-GET         /api-docs                    controllers.ApiHelpController.getResources
-GET         /api-docs/project            controllers.ApiHelpController.getResource(path = "/project")
-GET         /api-docs/user               controllers.ApiHelpController.getResource(path = "/user")
+GET          /api-docs                   controllers.ApiHelpController.getResources
+GET          /api-docs/project           controllers.ApiHelpController.getResource(path = "/project")
+GET          /api-docs/user              controllers.ApiHelpController.getResource(path = "/user")
 
 GET          /docs/*file                 controllers.Assets.at(path="/public/docs", file)
-GET          /app/*file                      controllers.Assets.at(path="/public/client/app",file)
-GET          /public.html                      controllers.Assets.at(path="/public/client",file="public.html")
-GET          /autologin.html                      controllers.Assets.at(path="/public/client",file="autologin.html")
-GET          /index.html                      controllers.Assets.at(path="/public/client",file="index.html")
+GET          /app/*file                  controllers.Assets.at(path="/public/client/app",file)
+GET          /public.html                controllers.Assets.at(path="/public/client",file="public.html")
+GET          /autologin.html             controllers.Assets.at(path="/public/client",file="autologin.html")
+GET          /index.html                 controllers.Assets.at(path="/public/client",file="index.html")
 GET          /*user/*project             @org.planner.controllers.MainController.indexProject(user: String, project: String)
 GET          /*user                      @org.planner.controllers.MainController.indexUser(user: String)
 

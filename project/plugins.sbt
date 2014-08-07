@@ -13,7 +13,7 @@ resolvers += "Maven mirror" at "http://mirrors.ibiblio.org/pub/mirrors/maven2"
 resolvers += "Maven" at "http://repo1.maven.org/maven2/"
 
 // Use the Play sbt plugin for Play projects
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.2.3")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.2.4")
 
 //addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.4.0")
 

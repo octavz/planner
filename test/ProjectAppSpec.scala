@@ -85,13 +85,14 @@ class ProjectAppSpec extends Specification with Mockito {
     "get all projects" in {
       val module = mock[ProjectModule]
       val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1))
-      module.getUserProjects() returns result(ProjectListDTO(items = List(p)))
+      module.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p)))
       running(app(module)) {
-        val page = route(FakeRequest(GET, "/user/uid/projects").withHeaders("Authorization" -> "OAuth token"))
+        val page = route(FakeRequest(GET, "/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
         page must beSome
-        Await.result(page.get, Duration.Inf)
+        status(page.get) === OK
+        Await.ready(page.get, Duration.Inf)
         there was one(module).authData_=(any[AuthData])
-        there was one(module).getUserProjects()
+        there was one(module).getUserProjects("id",0, 10)
         val json = contentAsJson(page.get)
         val arr = (json \ "items").as[JsArray].value
         arr.size === 1

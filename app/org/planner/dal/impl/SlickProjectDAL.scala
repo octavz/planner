@@ -2,12 +2,13 @@ package org.planner.dal.impl
 
 import org.planner.dal._
 import org.planner.db._
+import org.planner.modules.PermProject
 import play.api.db.slick.Config.driver.simple._
+import scala.slick.jdbc.{GetResult, StaticQuery => Q}
+import Q.interpolation
 import play.api.db.slick.DB
 import scaldi.Injector
 import scaldi.Injectable._
-
-import scala.concurrent._
 
 class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends ProjectDAL with DB {
   val cache = inject[Caching]
@@ -21,7 +22,7 @@ class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends
         dal(model)
     }
 
-  override def getUserProjects(uid: String): DAL[List[(Group,Project)]] =
+  override def getUserProjects(uid: String, offset: Int, count: Int): DAL[List[(Group,Project)]] =
     DB.withSession {
       implicit session =>
         val q = for { 
@@ -39,4 +40,22 @@ class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends
         val ret = Groups.where(_.projectId === projectId).list()
         dal(ret map (_.id))
     }
+
+  override def getUserPublicProjects(
+    uid: String, offset: Int, count: Int): DAL[List[(Group, Project)]] = 
+    DB.withSession {
+      implicit session =>
+        val projectsByUser = sql"""
+            SELECT g.*, p.* FROM projects p
+            INNER JOIN groups g ON g.project_id = p.id
+            INNER JOIN groups_users gu ON gu.group_id = g.id
+            WHERE
+            gu.user_id = $uid AND
+            (p.perm & 64 <> 0 OR p.perm & 128 <> 0)
+            offset $offset limit $count
+            """.as[(Group, Project)]
+        val ret = projectsByUser.list
+        dal(ret)
+  }
+
 }

@@ -20,13 +20,19 @@ trait BaseDALSpec extends Specification with Mockito with Injectable with DB wit
   def testApp = FakeApplication(additionalConfiguration = Map(
     "evolutionplugin" -> "disabled",
     "db.default.driver" -> "org.h2.Driver",
-    "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
+    "db.default.url" -> "jdbc:h2:mem:test;DATABASE_TO_UPPER=false;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
 
   val testUser = User(id = guid, login = guid, providerToken = Some("test"), created = now, updated = now, lastLogin = None, password = guid, nick = guid, userId = None, groupId = None)
 
   val testProject = Project(id = guid, userId = testUser.id, name = guid, description = guido, parentId = None, created = now, updated = now)
 
   val testGroup = Group(id = guid, projectId = testProject.id, name = p.name, created = now, updated = now, userId = testUser.id, groupId = None)
+
+  def randUser = User(id = guid, login = guid, providerToken = Some("test"), created = now, updated = now, lastLogin = None, password = guid, nick = guid, userId = None, groupId = None)
+
+  def randProject(uid: String) = Project(id = guid, userId = uid, name = guid, description = guido, parentId = None, created = now, updated = now)
+
+  def randGroup(p: Project) = Group(id = guid, projectId = p.id, name = p.name, created = now, updated = now, userId = testUser.id, groupId = None)
 
   def createTestDB(implicit s: Session) = {
     try {

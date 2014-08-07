@@ -7,6 +7,7 @@ import scaldi.{Injectable, Injector}
 
 import scalaoauth2.provider.OAuth2Provider
 import play.api.Play.current
+import org.planner.config._
 
 class MainController(implicit inj: Injector) extends Controller with OAuth2Provider with Injectable {
 
@@ -22,4 +23,6 @@ class MainController(implicit inj: Injector) extends Controller with OAuth2Provi
       Assets.at("/public/client", "index.html")(request)
       //Ok(views.html.users.index.render())
   }
+
+  def options(path:String) = Action { Ok("")}
 }
