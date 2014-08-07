@@ -23,6 +23,7 @@ myAppDev.run(function ($httpBackend) {
             calcMD5("/:usercode"),
             calcMD5("/:usercode/Projects"),
             calcMD5("/:usercode/ProjectNew"),
+            calcMD5("/:usercode/MySettings"),
 
             calcMD5("/:usercode/:projectcode"),
             calcMD5("/:usercode/:projectcode/Edit"),
@@ -33,24 +34,6 @@ myAppDev.run(function ($httpBackend) {
 
     $httpBackend.whenGET(/users/).respond(users);
     $httpBackend.whenGET(/routes/).respond(routes);
-
-    $httpBackend.whenPOST(/users/).respond(function (method, url, data) {
-        var jsondata = angular.fromJson(data);
-        var existingUsers = _(users).filter(function (o) {
-            return o.Email == jsondata.Email;
-        });
-
-        if (existingUsers.length > 0) {
-            return [200, {
-                error: "User already exists"
-            }, {}];
-        }
-
-        //users.push(angular.fromJson(data));
-        return [200, {
-            ok: true
-        }, {}];
-    });
 
     // Projects mock.
     var currentIdx = 0;

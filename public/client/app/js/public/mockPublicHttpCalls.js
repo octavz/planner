@@ -8,18 +8,18 @@ var myAppLoginDev = angular.module('myAppPublicDev', ['myAppPublic', 'ngMockE2E'
 myAppLoginDev.run(function ($httpBackend) {
 
     var users = [{
-        email: 'existing@mail.com'
+        login: 'existing@mail.com'
     }];
 
-    $httpBackend.whenPOST(/users/).respond(function (method, url, data) {
+    $httpBackend.whenPOST(/register/).respond(function (method, url, data) {
         var jsondata = angular.fromJson(data);
         var existingUsers = _(users).filter(function (o) {
-            return o.email == jsondata.email;
+            return o.login == jsondata.login;
         });
 
         if (existingUsers.length > 0) {
             return [200, {
-                error: "User already exists"
+                errMessage: "User already exists"
             }, {}];
         }
 

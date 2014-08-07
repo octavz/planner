@@ -34,11 +34,11 @@ angular.module('myApp.services')
     }
 
     this.$get = [
-        '$q', 'RouteAccessApi', '$log', '$window', 'CurrentView', '$route',
-        function ($q, RouteAccessApi, $log, $window, CurrentView, $route) {
+    '$q', 'RouteAccessApi', '$log', '$window', 'CurrentView', '$route',
+    function ($q, RouteAccessApi, $log, $window, CurrentView, $route) {
 
-            var calculateAllowedMenuLinks = function (allLinks, allowedRoutes) {
-                var filtererLinks = _(allLinks).filter(function (linkItem) {
+        var calculateAllowedMenuLinks = function (allLinks, allowedRoutes) {
+            var filtererLinks = _(allLinks).filter(function (linkItem) {
 
                     //todo cip !!! fix this!
                     return true;
@@ -55,12 +55,12 @@ angular.module('myApp.services')
             var init = function () {
                 $log.debug("init");
                 return RouteAccessApi.get().$promise
-                    .then(function (res) {
-                        $log.debug("RouteAccessApi", res);
-                        currentLinks.items = currentLinks.items.concat(calculateAllowedMenuLinks(registeredRelativeLinks, res.data));
-                        currentLinksUser.items = registeredUserRelativeLinks;
-                        currentLinksSettings.items = registeredLinksSettings;
-                    });
+                .then(function (res) {
+                    $log.debug("RouteAccessApi", res);
+                    currentLinks.items = currentLinks.items.concat(calculateAllowedMenuLinks(registeredRelativeLinks, res.data));
+                    currentLinksUser.items = registeredUserRelativeLinks;
+                    currentLinksSettings.items = registeredLinksSettings;
+                });
             };
 
 
@@ -88,7 +88,7 @@ angular.module('myApp.services')
 
             //todo cip !!! handle this hard coded values
             var getCurrentUserLink = function () {
-                return '#/' + 'TheLoggedOne';
+                return  'TheLoggedOne';
             }
 
             var getProjectLink = function (projectCode) {
@@ -128,6 +128,6 @@ angular.module('myApp.services')
                 GetAbsolutePathForUserAndProject: GetAbsolutePathForUserAndProject
             };
         }
-    ];
+        ];
 
-});
+    });

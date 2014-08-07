@@ -8,6 +8,7 @@ module.service('CurrentView', [
             var userUrlMatches = [];
             userUrlMatches.push(/^\/[^\/]+\/Projects[\/]{0,1}$/);
             userUrlMatches.push(/^\/[^\/]+\/ProjectNew[\/]{0,1}$/);
+            userUrlMatches.push(/^\/[^\/]+\/MySettings[\/]{0,1}$/);
             userUrlMatches.push(/^\/[^\/]+\/Details[\/]{0,1}$/);
             userUrlMatches.push(/^\/[^\/]*[\/]{0,1}$/);
 
@@ -47,4 +48,4 @@ module.service('CurrentView', [
             }
         }
     }
-]);
+    ]);

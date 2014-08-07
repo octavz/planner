@@ -5,7 +5,7 @@
 
 var services = angular.module('myAppPublic.services', ['ngResource']);
 services.factory('UsersApi', function($resource) {
-    return $resource('users', {}, {
+    return $resource('register', {}, {
         register: {
             method: 'POST'
         }

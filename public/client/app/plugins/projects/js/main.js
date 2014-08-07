@@ -23,7 +23,12 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
         controller: 'ProjectInsert',
         resolve: RouteAccessProvider.routeResolvers
     });
-    $routeProvider.when(projRouterPrefix + '', {
+     $routeProvider.when(userRoutePrefix + '/MySettings', {
+        templateUrl: 'app/plugins/projects/html/ProjectNew.html',
+        controller: 'ProjectInsert',
+        resolve: RouteAccessProvider.routeResolvers
+    });
+     $routeProvider.when(projRouterPrefix + '', {
         templateUrl: 'app/plugins/projects/html/ProjectHome.html',
         controller: 'Projects',
         resolve: RouteAccessProvider.routeResolvers
@@ -34,7 +39,7 @@ plugin.config(function (SiteMapProvider, $routeProvider, RouteAccessProvider) {
         resolve: RouteAccessProvider.routeResolvers
     });
 
-    //register links in the menu
+   //register links in the menu
     SiteMapProvider.RegisterLinks([
         {
             'title': 'Project',
