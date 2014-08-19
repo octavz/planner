@@ -24,7 +24,7 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
 
   override def findUser(username: String, password: String): Option[User] =
     DB.withTransaction { implicit session =>
-      Users.where(u => u.login === username && u.password === password).firstOption
+      Users.filter(u => u.login === username && u.password === password).firstOption
     }
 
   override def createAccessToken(authInfo: AuthInfo[User]): scalaoauth2.provider.AccessToken = {
@@ -42,13 +42,13 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
   override def deleteExistingAndCreate(accessToken: AccessToken, userId: String, clientId: String) =
     DB.withTransaction { implicit session =>
       // these two operations should happen inside a transaction
-      AccessTokens.where(a => a.clientId === clientId && a.userId === userId).delete
+      AccessTokens.filter(a => a.clientId === clientId && a.userId === userId).delete
       AccessTokens.insert(accessToken)
     }
 
   override def getStoredAccessToken(authInfo: AuthInfo[User]): Option[scalaoauth2.provider.AccessToken] = DB.withTransaction {
     implicit session =>
-      AccessTokens.where(a => a.clientId === authInfo.clientId && a.userId === authInfo.user.id).firstOption map { a =>
+      AccessTokens.filter(a => a.clientId === authInfo.clientId && a.userId === authInfo.user.id).firstOption map { a =>
         scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
       }
   }
@@ -63,26 +63,26 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
 
   override def findAccessToken(token: String): Option[scalaoauth2.provider.AccessToken] = DB.withTransaction {
     implicit session =>
-      AccessTokens.where(a => a.accessToken === token).firstOption map { a =>
+      AccessTokens.filter(a => a.accessToken === token).firstOption map { a =>
         scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
       }
   }
 
   override def getUserById(id: String): Option[User] = {
     DB.withTransaction { implicit session =>
-      Users.where(u => u.id === id).firstOption
+      Users.filter(u => u.id === id).firstOption
     }
   }
 
   override def getAccessTokenById(token: String): Option[AccessToken] = {
     DB.withTransaction { implicit session =>
-      AccessTokens.where(u => u.accessToken === token).firstOption
+      AccessTokens.filter(u => u.accessToken === token).firstOption
     }
   }
 
   override def findRefreshToken(token: String): Option[AccessToken] = {
     DB.withTransaction { implicit session =>
-      AccessTokens.where(a => a.refreshToken === token).firstOption
+      AccessTokens.filter(a => a.refreshToken === token).firstOption
     }
   }
 
@@ -102,7 +102,7 @@ class SlickOauth2DAL extends Oauth2DAL with DB {
 
   override def findAuthCode(code: String) = {
     DB.withTransaction { implicit session =>
-      val authCode = AuthCodes.where(a => a.authorizationCode === code).firstOption
+      val authCode = AuthCodes.filter(a => a.authorizationCode === code).firstOption
       // filtering out expired authorization codes
       authCode.filter(p => p.createdAt.getTime + (p.expiresIn * 1000) > new Date().getTime)
     }
