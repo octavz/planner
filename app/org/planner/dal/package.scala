@@ -1,11 +1,9 @@
 package org.planner
 
-import org.planner.db.DB
-import play.api.db.DB
-import scaldi.Injector
+
+import play.api.libs.json._
 
 import scala.concurrent.Future
-import scala.concurrent.duration.Duration
 
 package object dal {
 
@@ -17,13 +15,13 @@ package object dal {
 
 
   trait Caching {
-    def set[A](key: String, value: A, expiration: Int = 0): Future[Boolean]
+    def set[A](key: String, value: A, expiration: Int = 0)(implicit w: Writes[A]): Future[Boolean]
 
-    def get[A](key: String): Future[Option[A]]
+    def get[A](key: String)(implicit r: Reads[A]): Future[Option[A]]
 
-    def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A]): Future[A]
+    def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit r: Reads[A], w:Writes[A]): Future[A]
 
-    def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A): Future[A]
+    def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A)(implicit r: Reads[A], w: Writes[A]): Future[A]
   }
 
   object CacheKeys {

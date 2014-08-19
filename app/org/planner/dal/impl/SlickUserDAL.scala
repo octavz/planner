@@ -12,7 +12,7 @@ import scaldi.Injectable._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
-class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
+class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB with ModelJson {
   val cache = inject[Caching]
 
   override def create =
@@ -30,7 +30,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
   override def findSessionById(id: String): DAL[Option[UserSession]] = DB.withSession {
     implicit session =>
       cache.getOrElseSync(CacheKeys.session(id)) {
-        UserSessions.where(_.id === id).firstOption
+        UserSessions.filter(_.id === id).firstOption
       } flatMap {
         case v@Some(_) => dal(v)
         case _ => dalErr("Not found")
@@ -39,13 +39,13 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
 
   override def deleteSessionByUser(uid: String): DAL[Int] = DB.withSession {
     implicit session =>
-      dal(UserSessions.where(_.userId === uid).delete)
+      dal(UserSessions.filter(_.userId === uid).delete)
   }
 
   override def getUserById(uid: String): DAL[User] = DB.withSession {
     implicit session =>
       cache.getOrElseSync[Option[User]](CacheKeys.user(uid)) {
-        Users.where(_.id === uid).firstOption
+        Users.filter(_.id === uid).firstOption
       } flatMap {
         case Some(v) => dal(v)
         case _ => dalErr("Not found")
@@ -60,7 +60,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
 
   override def getUserByEmail(email: String): DAL[Option[User]] = DB.withSession {
     implicit session =>
-      val ret = Users.where(_.login === email).firstOption
+      val ret = Users.filter(_.login === email).firstOption
       dal(ret)
   }
 
@@ -86,7 +86,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB {
   override def getUserGroups(userId: String): DAL[List[String]] = DB.withSession {
     implicit session =>
       cache.getOrElse[List[String]](CacheKeys.userGroups(userId)){
-        dal(GroupsUsers.where(_.userId === userId).list map (gu => gu.groupId))
+        dal(GroupsUsers.filter(_.userId === userId).list map (gu => gu.groupId))
       }
   }
 

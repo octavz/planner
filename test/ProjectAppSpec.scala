@@ -92,7 +92,7 @@ class ProjectAppSpec extends Specification with Mockito {
         status(page.get) === OK
         Await.ready(page.get, Duration.Inf)
         there was one(module).authData_=(any[AuthData])
-        there was one(module).getUserProjects("id",0, 10)
+        there was one(module).getUserProjects("id", 0, 10)
         val json = contentAsJson(page.get)
         val arr = (json \ "items").as[JsArray].value
         arr.size === 1
@@ -102,6 +102,34 @@ class ProjectAppSpec extends Specification with Mockito {
         arr(0) \ "parent" === JsString(p.parent.get)
         arr(0) \ "public" === JsBoolean(true)
         arr(0) \ "perm" === JsNumber(p.perm.get)
+      }
+
+    }
+
+    "update project" in {
+      val module = mock[ProjectModule]
+      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1))
+      module.updateProject(any) returns result(p)
+      running(app(module)) {
+        val page = route(FakeRequest(PUT, "/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
+          s"""
+            {
+            "name":"${p.name}",
+            "desc":"${p.desc}",
+            "parent":"${p.parent}",
+            "public" : true
+            }
+          """)))
+        Await.ready(page.get, Duration.Inf)
+        val json = contentAsJson(page.get)
+        page must beSome
+        status(page.get) === OK
+        there was one(module).authData_=(any[AuthData])
+        there was one(module).updateProject(any)
+        json \ "name" === JsString(p.name)
+        json \ "desc" === JsString(p.desc.get)
+        json \ "parent" === JsString(p.parent.get)
+
       }
 
     }

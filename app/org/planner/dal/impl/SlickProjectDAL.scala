@@ -13,12 +13,18 @@ import scaldi.Injectable._
 class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends ProjectDAL with DB {
   val cache = inject[Caching]
 
-  def insertProject(model: Project, group: Group): DAL[Project] =
+  override def insertProject(model: Project, group: Group): DAL[Project] =
     DB.withTransaction {
       implicit session =>
         Projects.insert(model)
         Groups.insert(group)
         GroupsUsers.insert(GroupsUser(userId = model.userId, groupId = group.id))
+        dal(model)
+    }
+
+  override def updateProject(model: Project): DAL[Project] =
+    DB.withTransaction {
+      implicit session =>
         dal(model)
     }
 
@@ -30,14 +36,14 @@ class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends
           gu <- GroupsUsers if g.id === gu.groupId && gu.userId === uid
           p <- Projects if g.projectId === p.id
         } yield (g,p)
-        val ret = q.list()
+        val ret = q.list
         dal(ret)
     }
 
   override def getProjectGroupIds(projectId: String): DAL[List[String]] =
     DB.withSession {
       implicit session =>
-        val ret = Groups.where(_.projectId === projectId).list()
+        val ret = Groups.where(_.projectId === projectId).list
         dal(ret map (_.id))
     }
 
@@ -56,6 +62,11 @@ class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends
             """.as[(Group, Project)]
         val ret = projectsByUser.list
         dal(ret)
+  }
+
+  override def getProjectById(id: String) = DB.withSession {
+    implicit session =>
+      dal(Projects.where(_.id === id).firstOption)
   }
 
 }

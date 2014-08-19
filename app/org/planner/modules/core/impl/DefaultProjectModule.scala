@@ -33,4 +33,15 @@ class DefaultProjectModule(implicit inj: Injector) extends ProjectModule {
     f recover { case e: Throwable => resultExSync(e, "getUserProject")}
   }
 
+  override def updateProject(dto: ProjectDTO): Result[ProjectDTO] = {
+    if (dto.id.isEmpty) Future.failed(new Exception("Project has empty id"))
+    else {
+      dal.getProjectById(dto.id.get) flatMap {
+        case None => resultError(Status.NOT_FOUND, "Project not found")
+        case Some(project) => dal.updateProject(dto.toModel(authData.user.id)) map { p =>
+          resultSync(new ProjectDTO(p, Group(id = "", projectId = p.id, name = "", userId = "user", groupId = None, created = p.created, updated = p.updated)))
+        }
+      }
+    }
+  }
 }

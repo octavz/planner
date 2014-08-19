@@ -31,6 +31,23 @@ class ProjectController(implicit val inj: Injector) extends BaseController {
       }.getOrElse(asyncBadRequest(new Exception("Bad Json")))
   }
 
+  @ApiOperation(value = "Update project", notes = "update project", response = classOf[ProjectDTO], httpMethod = "PUT", nickname = "updateProject")
+  @ApiImplicitParams(Array(new ApiImplicitParam(value = "The project to be updated", required = true, dataType = "ProjectDTO", paramType = "body")))
+  def updateProject = Action.async {
+    implicit request =>
+      request.body.asJson.map {
+        json => try {
+          authorize {
+            implicit authInfo =>
+              val dto = json.as[ProjectDTO]
+              projectService.updateProject(dto) map (responseOk(_))
+          }
+        } catch {
+          case e: Throwable => asyncBadRequest(e)
+        }
+      }.getOrElse(asyncBadRequest(new Exception("Bad Json")))
+  }
+
   @ApiOperation(value = "Get user projects", notes = "Get user projects", response = classOf[ProjectListDTO], httpMethod = "GET", nickname = "getUserProjects")
   def getUserProjects(id: String, offset: Int, count: Int) =
     Action.async {

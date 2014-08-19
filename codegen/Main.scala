@@ -1,6 +1,6 @@
 import java.io.File
+import scala.slick.codegen.SourceCodeGenerator
 import scala.slick.jdbc.meta.createModel
-import scala.slick.model.codegen.SourceCodeGenerator
 import scala.slick.driver.PostgresDriver
 import mojolly.inflector.Inflector
 import com.typesafe.config.ConfigFactory
