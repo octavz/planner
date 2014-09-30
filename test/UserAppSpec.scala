@@ -18,8 +18,9 @@ import scaldi.Module
 import scaldi.play.ScaldiSupport
 import org.planner.modules._
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent._
+import scala.concurrent.duration._
+import scalaoauth2.provider.GrantHandlerResult
 
 /**
  * Add your spec here.
@@ -29,7 +30,9 @@ import scala.concurrent.duration.Duration
 @RunWith(classOf[JUnitRunner])
 class UserAppSpec extends Specification with Mockito {
 
-  def app(userService: UserModule = mock[UserModule]) = FakeApplication(
+  def waitFor[T](f: Future[T], duration: FiniteDuration = 1000 milli)(implicit ec: ExecutionContext): T = Await.result(f, duration)
+
+  def app(userModule: UserModule = mock[UserModule]) = FakeApplication(
     additionalConfiguration = Map(
       "evolutionplugin" -> "disabled",
       "db.default.driver" -> "org.h2.Driver",
@@ -40,7 +43,7 @@ class UserAppSpec extends Specification with Mockito {
         def applicationModule = new Module {
           binding toProvider new MainController
         } :: new Module {
-          bind[UserModule] toProvider userService
+          bind[UserModule] toProvider userModule
           bind[Oauth2DAL] toProvider mock[Oauth2DAL]
           binding toProvider new UserController
         }
@@ -60,11 +63,16 @@ class UserAppSpec extends Specification with Mockito {
 
     }
 
-    "have login route" in new WithApplication(app()) {
-      val page = route(FakeRequest(POST, "/login")
-        .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "12345"))
-        .get
-      status(page) must equalTo(OK)
+    "have login route" in {
+      val service = mock[UserModule]
+      running(app(service)) {
+        service.login(any) returns Future.successful(Right(GrantHandlerResult(tokenType = "1", accessToken = "at", expiresIn = None, refreshToken = None, scope = None)))
+        val page = route(FakeRequest(POST, "/login")
+          .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "12345"))
+        page must beSome
+        waitFor(page.get)
+        status(page.get) must equalTo(SEE_OTHER)
+      }
     }
 
     "have register route" in {

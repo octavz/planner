@@ -52,11 +52,11 @@ class ProjectDALSpec extends BaseDALSpec {
           val g = Group(id = guid, projectId = p.id, name = p.name, created = now, updated = now, userId = testUser.id, groupId = None)
           val res = Await.result(dal.insertProject(p, g), Duration.Inf)
           res must beAnInstanceOf[Project]
-          val lstProjects = Projects.where(_.id === p.id).list
+          val lstProjects = Projects.filter(_.id === p.id).list
           lstProjects.size === 1 
-          val lstGroups = Groups.where(_.id === g.id).list
+          val lstGroups = Groups.filter(_.id === g.id).list
           lstGroups.size === 1
-          val lstGroupsUsers = GroupsUsers.where(_.groupId === g.id).list
+          val lstGroupsUsers = GroupsUsers.filter(_.groupId === g.id).list
           lstGroupsUsers.size === 1
       }
     }

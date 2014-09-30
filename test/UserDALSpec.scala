@@ -68,9 +68,9 @@ class UserDALSpec extends BaseDALSpec {
           Users.insert(u) === 1
           val model = Group(id = guid, projectId = p.id, name = guid, updated = now, created = now, userId = u.id, groupId = None)
           val res = Await.result(dao.insertGroupWithUser(model, testUser.id), Duration.Inf)
-          Groups.where(_.id === model.id).list.size === 1
+          Groups.filter(_.id === model.id).list.size === 1
           //val res1 = Await.result(dao.insertGroupsUser(GroupsUser(groupId = model.id, userId = u.id)), Duration.Inf)
-          GroupsUsers.where(_.groupId === model.id).list.size === 1
+          GroupsUsers.filter(_.groupId === model.id).list.size === 1
       }
 
       "insertGroup, insertGroupsUser" in new WithApplication(testApp) {
@@ -82,9 +82,9 @@ class UserDALSpec extends BaseDALSpec {
             Users.insert(u) === 1
             val model = Group(id = guid, projectId = p.id, name = guid, updated = now, created = now, userId = u.id, groupId = None)
             val res = Await.result(dao.insertGroup(model), Duration.Inf)
-            Groups.where(_.id === model.id).list.size === 1
+            Groups.filter(_.id === model.id).list.size === 1
             val res1 = Await.result(dao.insertGroupsUser(GroupsUser(groupId = model.id, userId = u.id)), Duration.Inf)
-            GroupsUsers.where(_.groupId === model.id).list.size === 1
+            GroupsUsers.filter(_.groupId === model.id).list.size === 1
         }
       }
     }

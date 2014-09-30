@@ -1,39 +1,21 @@
 package org.planner.dal
 
 import org.planner.db._
-
+import scala.concurrent._
 import scalaoauth2.provider.{AuthInfo, DataHandler}
 
 trait Oauth2DAL extends DataHandler[User] {
 
-  def validateClient(clientId: String, clientSecret: String, grantType: String): Boolean
+  def deleteExistingAndCreate(accessToken: org.planner.db.AccessToken, userId: String, clientId: String): Future[Int]
 
-  def findUser(username: String, password: String): Option[User]
+  def getUserById(id: String): Future[Option[User]]
 
-  def createAccessToken(authInfo: AuthInfo[User]): scalaoauth2.provider.AccessToken
+  def getAccessTokenById(token: String): Future[Option[org.planner.db.AccessToken]]
 
-  def deleteExistingAndCreate(accessToken: org.planner.db.AccessToken, userId: String, clientId: String)
+  def findRefreshToken(token: String): Future[Option[org.planner.db.AccessToken]]
 
-  def getStoredAccessToken(authInfo: AuthInfo[User]): Option[scalaoauth2.provider.AccessToken]
+  def findAuthCode(code: String): Future[Option[AuthCode]]
 
-  def refreshAccessToken(authInfo: AuthInfo[User], refreshToken: String): scalaoauth2.provider.AccessToken
-
-  def findClientUser(clientId: String, clientSecret: String, scope: Option[String]): Option[User]
-
-  def findAccessToken(token: String): Option[scalaoauth2.provider.AccessToken]
-
-  def getUserById(id: String): Option[User]
-
-  def getAccessTokenById(token: String): Option[org.planner.db.AccessToken]
-
-  def findRefreshToken(token: String): Option[org.planner.db.AccessToken]
-
-  def findAuthInfoByAccessToken(accessToken: scalaoauth2.provider.AccessToken): Option[AuthInfo[User]]
-
-  def findAuthInfoByRefreshToken(refreshToken: String): Option[AuthInfo[User]]
-
-  def findAuthCode(code: String): Option[AuthCode]
-
-  def findAuthInfoByCode(code: String): Option[AuthInfo[User]]
+  def findAuthInfoByCode(code: String): Future[Option[AuthInfo[User]]]
 
 }

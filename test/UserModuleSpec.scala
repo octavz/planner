@@ -57,8 +57,8 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
 
       m.dal.insertSession(any[UserSession]) returns Future.successful(us)
       m.dal.deleteSessionByUser(us.userId) returns Future.successful(1)
-      m.dalAuth.findAuthInfoByAccessToken(any[scalaoauth2.provider.AccessToken]) returns Some(
-        AuthInfo(user = newUser.copy(id = us.userId), clientId = "1", scope = None, redirectUri = None))
+      m.dalAuth.findAuthInfoByAccessToken(any[scalaoauth2.provider.AccessToken]) returns Future.successful(Some(
+        AuthInfo(user = newUser.copy(id = us.userId), clientId = "1", scope = None, redirectUri = None)))
 
       val s = Await.result(m.createSession(us.id), duration)
       there was one(m.dal).insertSession(any[UserSession])

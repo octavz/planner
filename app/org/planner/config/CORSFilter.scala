@@ -1,7 +1,8 @@
 package org.planner.config
+
 import controllers.Default
 import play.api.Logger
-import play.api.mvc.{SimpleResult, RequestHeader, Filter}
+import play.api.mvc._
  
 case class CORSFilter() extends Filter{
   import scala.concurrent._
@@ -9,7 +10,7 @@ case class CORSFilter() extends Filter{
   lazy val allowedDomain = play.api.Play.current.configuration.getString("cors.allowed.domain")
   def isPreFlight(r: RequestHeader) =( r.method.toLowerCase.equals("options") && r.headers.get("Access-Control-Request-Method").nonEmpty)
 
-def apply(f: (RequestHeader) => Future[SimpleResult])(request: RequestHeader): Future[SimpleResult] = {
+def apply(f: (RequestHeader) => Future[Result])(request: RequestHeader): Future[Result] = {
   Logger.trace("[cors] filtering request to add cors")
   if (isPreFlight(request)) {
     Logger.trace("[cors] request is preflight")

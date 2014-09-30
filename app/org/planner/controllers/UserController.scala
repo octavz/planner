@@ -6,7 +6,7 @@ import org.planner.modules.dto._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Cookie, SimpleResult}
+import play.api.mvc._
 import scaldi.Injector
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,31 +14,28 @@ import scala.concurrent._
 
 @Api(value = "/user", description = "User operations")
 class UserController(implicit val inj: Injector) extends BaseController {
-  val userService = inject[UserModule]
+  val userModule = inject[UserModule]
 
   @ApiOperation(value = "Issue access token", notes = """{"token_type": "Bearer","access_token": "MDEwNTBkNDgtNDhkNC00YmNhLWJiMjktMzVhMTJkMjMwNDBk","expires_in": 3600,"refresh_token": "NzVmYjQ4ZDMtMjY3NS00NDA4LTkyZTgtNmNjOTNlNjRhNDZl"}""", response = classOf[String], httpMethod = "POST", nickname = "createAccessToken")
   def accessToken = Action.async { implicit request =>
-    issueAccessToken(authHandler) map (_.asInstanceOf[SimpleResult])
+    issueAccessToken(authHandler)
   }
 
   def login = Action {
     Ok(views.html.users.login.render())
   }
 
-//  val loginForm = Form(
-//    mapping(
-//      "email" -> email,
-//      "password" -> nonEmptyText(5)
-//    )(LoginForm.apply)(LoginForm.unapply)
-//  )
+  //  val loginForm = Form(
+  //    mapping(
+  //      "email" -> email,
+  //      "password" -> nonEmptyText(5)
+  //    )(LoginForm.apply)(LoginForm.unapply)
+  //  )
 
-  def loginPost = Action {
+  def loginPost = Action.async {
     implicit request =>
-      userService.login(request) match {
-        //        case Left(e) if e.statusCode == 400 => BadRequest(responseOAuthErrorJson(e)).withHeaders(responseOAuthErrorHeader(e))
-        //        case Left(e) if e.statusCode == 401 => Unauthorized(responseOAuthErrorJson(e)).withHeaders(responseOAuthErrorHeader(e))
-        case Right(r) =>
-          Redirect("/public.html").withCookies(Cookie("access_token", r.accessToken))
+      userModule.login(request) map {
+        case Right(r) => Redirect("/public.html").withCookies(Cookie("access_token", r.accessToken))
         //Ok(Json.toJson(responseAccessToken(r)))
         case _ => Ok(views.html.users.login.render())
       }
@@ -52,7 +49,7 @@ class UserController(implicit val inj: Injector) extends BaseController {
         json => try {
           val dto = json.as[UserDTO]
 
-          userService.registerUser(dto) map (r => Ok(Json.toJson(r)))
+          userModule.registerUser(dto) map (r => Ok(Json.toJson(r)))
         } catch {
           case e: Throwable =>
             Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
@@ -67,7 +64,7 @@ class UserController(implicit val inj: Injector) extends BaseController {
       request.body.asJson.map {
         json => try {
           val dto = json.as[GroupDTO]
-          userService.addGroup(dto) map (r => Ok(Json.toJson(r)))
+          userModule.addGroup(dto) map (r => Ok(Json.toJson(r)))
         } catch {
           case e: Throwable =>
             Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))

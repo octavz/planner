@@ -22,26 +22,27 @@ class DefaultUserModule(implicit inj: Injector) extends UserModule {
   val dalAuth = inject[Oauth2DAL]
 
   override def createSession(accessToken: String): Result[String] = {
-    val authInfo = dalAuth.findAuthInfoByAccessToken(scalaoauth2.provider.AccessToken(accessToken, None, None, None, new Date()))
-    if (authInfo.isEmpty) {
-      resultError(Status.NOT_FOUND, "Session not found")
-    } else {
-      val model = UserSession(userId = authInfo.get.user.id, id = accessToken)
-      val f = for {
-        fDelete <- dal.deleteSessionByUser(model.userId)
-        fInsert <- dal.insertSession(model)
-      } yield resultSync(model.id)
+    dalAuth.findAuthInfoByAccessToken(scalaoauth2.provider.AccessToken(accessToken, None, None, None, new Date())) flatMap {
+      authInfo =>
+        if (authInfo.isEmpty) {
+          resultError(Status.NOT_FOUND, "Session not found")
+        } else {
+          val model = UserSession(userId = authInfo.get.user.id, id = accessToken)
+          val f = for {
+            fDelete <- dal.deleteSessionByUser(model.userId)
+            fInsert <- dal.insertSession(model)
+          } yield resultSync(model.id)
 
-      f recover { case e: Throwable => resultErrorSync(Status.INTERNAL_SERVER_ERROR, e.getMessage)}
+          f recover { case e: Throwable => resultErrorSync(Status.INTERNAL_SERVER_ERROR, e.getMessage)}
+        }
     }
   }
 
-  override def login(request: AuthorizationRequest) = {
+  override def login(request: AuthorizationRequest): Future[Either[OAuthError, GrantHandlerResult]] = {
     val ret = TokenEndpoint.handleRequest(request, dalAuth)
-    ret match {
-      case Right(v) =>
-        createSession(v.accessToken)
-        ret
+    ret flatMap {
+      case r@Right(v) =>
+        createSession(v.accessToken) map (_ => r)
       case _ => ret
     }
   }

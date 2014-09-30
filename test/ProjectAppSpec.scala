@@ -17,7 +17,7 @@ import scaldi.Module
 import scaldi.play.ScaldiSupport
 import org.planner.modules._
 
-import scala.concurrent.Await
+import scala.concurrent._
 import scala.concurrent.duration.Duration
 import scalaoauth2.provider.{AccessToken, AuthInfo}
 
@@ -41,9 +41,9 @@ class ProjectAppSpec extends Specification with Mockito {
       new GlobalSettings with ScaldiSupport {
         def applicationModule = {
           val auth = mock[Oauth2DAL]
-          auth.findAccessToken(anyString) returns Some(AccessToken("token", None, None, None, new java.util.Date()))
+          auth.findAccessToken(anyString) returns Future.successful(Some(AccessToken("token", None, None, None, new java.util.Date())))
           auth.isAccessTokenExpired(any[AccessToken]) returns false
-          auth.findAuthInfoByAccessToken(any[AccessToken]) returns Some(authInfo)
+          auth.findAuthInfoByAccessToken(any[AccessToken]) returns Future.successful(Some(authInfo))
           new Module {
             bind[Oauth2DAL] toProvider auth
             bind[ProjectModule] toProvider module

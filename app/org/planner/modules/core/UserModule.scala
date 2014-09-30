@@ -3,6 +3,7 @@ package org.planner.modules.core
 import org.planner.dal.{Oauth2DAL, UserDAL}
 import org.planner.modules.Result
 import org.planner.modules.dto.{GroupDTO, UserDTO}
+import scala.concurrent._
 
 import scalaoauth2.provider.{AuthorizationRequest, GrantHandlerResult, OAuthError}
 
@@ -17,7 +18,7 @@ trait UserModule extends BaseModule {
 
   def createSession(accessToken: String): Result[String]
 
-  def login(request: AuthorizationRequest): Either[OAuthError, GrantHandlerResult]
+  def login(request: AuthorizationRequest): Future[Either[OAuthError, GrantHandlerResult]]
 
   def registerUser(u: UserDTO): Result[UserDTO]
 

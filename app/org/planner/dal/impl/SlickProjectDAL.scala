@@ -43,7 +43,7 @@ class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends
   override def getProjectGroupIds(projectId: String): DAL[List[String]] =
     DB.withSession {
       implicit session =>
-        val ret = Groups.where(_.projectId === projectId).list
+        val ret = Groups.filter(_.projectId === projectId).list
         dal(ret map (_.id))
     }
 
@@ -66,7 +66,7 @@ class SlickProjectDAL(implicit inj: Injector, app: play.api.Application) extends
 
   override def getProjectById(id: String) = DB.withSession {
     implicit session =>
-      dal(Projects.where(_.id === id).firstOption)
+      dal(Projects.filter(_.id === id).firstOption)
   }
 
 }
