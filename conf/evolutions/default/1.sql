@@ -181,6 +181,10 @@ INSERT INTO resources(id, CONTENT, entity_type_id, user_id, group_id, perm, crea
 INSERT INTO resources(id, CONTENT, entity_type_id, user_id, group_id, perm, created,updated) VALUES ('27a2f1042f8cc4948b554d146300cf79', 'route4', '4', '1', '1',  500, '2014-06-05 11:52:16.904', '2014-06-05 11:52:16.904');
 INSERT INTO resources(id, CONTENT, entity_type_id, user_id, group_id, perm, created,updated) VALUES ('2ef802d042a9b0d12d8853f731a14ec8', 'route5', '4', '1', '1',  500, '2014-06-05 11:52:16.904', '2014-06-05 11:52:16.904');
 
+insert into grant_types(id, grant_type) values(1, 'password');
+insert into clients(id, secret) values(1, 'secret');
+insert into client_grant_types values(1,1);
+
 # --- !Downs
 
 DROP TABLE resources;

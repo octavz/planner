@@ -1,6 +1,5 @@
 import org.planner.util.Gen._
 import org.planner.util.Time._
-import org.planner.dal.impl.{SlickUserDAL}
 import org.planner.db._
 import org.specs2.execute.AsResult
 import org.specs2.mock._
@@ -8,13 +7,12 @@ import org.specs2.mutable._
 import org.specs2.specification.AroundExample
 import play.api.test.{FakeApplication}
 import redis.embedded.RedisServer
-import scaldi.{Injectable}
 import scala.concurrent.duration._
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.test.Helpers._
 
-trait BaseDALSpec extends Specification with Mockito with Injectable with DB with AroundExample {
+trait BaseDALSpec extends Specification with Mockito with DB with AroundExample {
   val duration = Duration.Inf
 
   def testApp = FakeApplication(additionalConfiguration = Map(

@@ -1,15 +1,10 @@
 package org.planner.controllers
 
 import controllers.Assets
-import play.api.Play
-import play.api.mvc.{AnyContent, Action, Controller}
-import scaldi.{Injectable, Injector}
-
+import play.api.mvc.{Action, Controller}
 import scalaoauth2.provider.OAuth2Provider
-import play.api.Play.current
-import org.planner.config._
 
-class MainController(implicit inj: Injector) extends Controller with OAuth2Provider with Injectable {
+class MainController extends Controller with OAuth2Provider {
 
   def build = Action { _ => Ok("build")}
 
@@ -21,8 +16,10 @@ class MainController(implicit inj: Injector) extends Controller with OAuth2Provi
   def indexProject(user: String, project: String) = Action.async {
     implicit request =>
       Assets.at("/public/client", "index.html")(request)
-      //Ok(views.html.users.index.render())
+    //Ok(views.html.users.index.render())
   }
 
-  def options(path:String) = Action { Ok("")}
+  def options(path: String) = Action {
+    Ok("")
+  }
 }

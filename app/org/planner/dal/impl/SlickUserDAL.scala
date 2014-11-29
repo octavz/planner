@@ -1,19 +1,20 @@
 package org.planner.dal.impl
 
-import org.planner.dal.{DAL, UserDAL}
-import scaldi.Injector
+import org.planner.dal.{DAL }
 import scala.concurrent._
 import play.api.db.slick.Config.driver.simple._
 import play.api.Play.current
 import org.planner.db._
 import play.api.db.slick.DB
 import org.planner.dal._
-import scaldi.Injectable._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
-class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB with ModelJson {
-  val cache = inject[Caching]
+trait SlickUserDALComponent extends UserDALComponent with DB with ModelJson{
+  this: Caching =>
+  val dalUser = new SlickUserDAL()
+
+class SlickUserDAL extends UserDAL {
 
   override def create =
     DB.withSession {
@@ -29,7 +30,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB with ModelJso
 
   override def findSessionById(id: String): DAL[Option[UserSession]] = DB.withSession {
     implicit session =>
-      cache.getOrElseSync(CacheKeys.session(id)) {
+      getOrElseSync(CacheKeys.session(id)) {
         UserSessions.filter(_.id === id).firstOption
       } flatMap {
         case v@Some(_) => dal(v)
@@ -44,7 +45,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB with ModelJso
 
   override def getUserById(uid: String): DAL[User] = DB.withSession {
     implicit session =>
-      cache.getOrElseSync[Option[User]](CacheKeys.user(uid)) {
+      getOrElseSync[Option[User]](CacheKeys.user(uid)) {
         Users.filter(_.id === uid).firstOption
       } flatMap {
         case Some(v) => dal(v)
@@ -75,7 +76,7 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB with ModelJso
       GroupsUsers.insert(model)
       dal(model)
   }
-  
+
   override def insertGroupWithUser(model: Group, userId: String): DAL[Group] = DB.withTransaction {
     implicit session =>
       Groups.insert(model)
@@ -85,9 +86,9 @@ class SlickUserDAL(implicit inj: Injector) extends UserDAL with DB with ModelJso
 
   override def getUserGroups(userId: String): DAL[List[String]] = DB.withSession {
     implicit session =>
-      cache.getOrElse[List[String]](CacheKeys.userGroups(userId)){
+      getOrElse[List[String]](CacheKeys.userGroups(userId)) {
         dal(GroupsUsers.filter(_.userId === userId).list map (gu => gu.groupId))
       }
   }
-
+}
 }

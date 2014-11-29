@@ -2,28 +2,33 @@ package org.planner.dal
 
 import org.planner.db._
 
-trait UserDAL {
+trait UserDALComponent {
+  val dalUser: UserDAL
 
-  def create
+  trait UserDAL {
 
-  def insertSession(us: UserSession): DAL[UserSession]
+    def create
 
-  def insertUser(user: User): DAL[User]
+    def insertSession(us: UserSession): DAL[UserSession]
 
-  def findSessionById(id: String): DAL[Option[UserSession]]
+    def insertUser(user: User): DAL[User]
 
-  def deleteSessionByUser(uid: String): DAL[Int]
+    def findSessionById(id: String): DAL[Option[UserSession]]
 
-  def getUserById(uid: String): DAL[User]
+    def deleteSessionByUser(uid: String): DAL[Int]
 
-  def getUserByEmail(email: String): DAL[Option[User]]
+    def getUserById(uid: String): DAL[User]
 
-  def insertGroup(model: Group): DAL[Group]
+    def getUserByEmail(email: String): DAL[Option[User]]
 
-  def insertGroupsUser(model: GroupsUser): DAL[GroupsUser]
-  
-  def insertGroupWithUser(model: Group, userId: String): DAL[Group]
+    def insertGroup(model: Group): DAL[Group]
 
-  def getUserGroups(userId: String): DAL[List[String]]
+    def insertGroupsUser(model: GroupsUser): DAL[GroupsUser]
+
+    def insertGroupWithUser(model: Group, userId: String): DAL[Group]
+
+    def getUserGroups(userId: String): DAL[List[String]]
+
+  }
 
 }

@@ -15,7 +15,7 @@ package object impl {
 
   def async[T](result: T): Future[T] = Future.successful(result)
 
-  class RedisCaching extends Caching {
+  trait RedisCaching extends Caching {
 
     class UTF8Reader extends StringReader("UTF-8")
 
@@ -78,7 +78,7 @@ package object impl {
       }
   }
 
-  class TestCaching extends Caching {
+  trait TestCaching extends Caching {
     override def set[A](key: String, value: A, expiration: Int)(implicit w: Writes[A]): Future[Boolean] = Future.successful(false)
 
     override def get[A](key: String)(implicit w: Reads[A]): Future[Option[A]] = Future.successful(None)

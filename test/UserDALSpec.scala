@@ -1,5 +1,5 @@
 import org.planner.dal._
-import org.planner.dal.impl.{ TestCaching, SlickOauth2DAL, SlickUserDAL }
+import org.planner.dal.impl.{SlickUserDALComponent, TestCaching}
 import org.planner.db._
 import org.junit.runner._
 import org.specs2.execute.AsResult
@@ -8,7 +8,6 @@ import org.specs2.mutable._
 import org.specs2.runner._
 import org.specs2.specification.AroundExample
 import play.api.test.{ FakeApplication, WithApplication }
-import scaldi.{ Module, Injectable }
 import org.planner.util.Gen._
 import org.planner.util.Time._
 import scala.concurrent._
@@ -16,7 +15,6 @@ import scala.concurrent.duration._
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.test.Helpers._
-import scala.util.Try
 import play.api.test.WithApplication
 
 /**
@@ -26,11 +24,8 @@ import play.api.test.WithApplication
  */
 @RunWith(classOf[JUnitRunner])
 class UserDALSpec extends BaseDALSpec {
-  implicit val modules = new Module {
-    bind[Caching] to new TestCaching
-  }
 
-  lazy val dao = new SlickUserDAL
+  lazy val dao = new SlickUserDALComponent with TestCaching {}.dalUser
 
   def newUser = User(id = guid, login = guid, providerToken = None, created = now, userId = None, groupId = None,
     updated = now, lastLogin = None, password = guid, nick = guid)

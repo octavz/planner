@@ -13,8 +13,6 @@ object AppBuild extends Build {
   val appVersion = "0.1"
 
   val appResolvers = Seq(
-    "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
-    Resolver.url("Local Ivy Repository", url("file://" + Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns),
     "sonatype-snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     "sonatype-releases" at "https://oss.sonatype.org/content/repositories/releases",
     "java-net" at "http://download.java.net/maven/2",
@@ -23,35 +21,33 @@ object AppBuild extends Build {
     "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/")
 
   val appDependencies = Seq(
-    "com.typesafe.play" %% "play-cache" % "2.3.4",
-    "com.typesafe.play" %% "play-jdbc" % "2.3.4",
+    "com.typesafe.play" %% "play-cache" % "2.3.6",
+    "com.typesafe.play" %% "play-jdbc" % "2.3.6",
     "postgresql" % "postgresql" % "9.3-1102.jdbc41",
-    "com.typesafe.play" %% "play-slick" % "0.8.0",
-    "com.nulab-inc" %% "play2-oauth2-provider" % "0.9.1",
-    "org.mockito" % "mockito-all" % "1.10.4",
+    "com.typesafe.play" %% "play-slick % "0.8.0",
+    "com.nulab-inc" %% "play2-oauth2-provider" % "0.11.0",
+    "org.mockito" % "mockito-all" % "1.10.10",
     //"com.wix" %% "accord-core" % "0.4-SNAPSHOT",
-    "org.scaldi" %% "scaldi" % "0.4",
-    "org.scaldi" %% "scaldi-play" % "0.4.1",
     "com.wordnik" %% "swagger-play2" % "1.3.10",
     "net.sourceforge.htmlunit" % "htmlunit" % "2.15" % "test",
     "com.github.nscala-time" %% "nscala-time" % "1.4.0",
-    "com.livestream" %% "scredis" % "2.0.2",
+    "com.livestream" %% "scredis" % "2.0.5",
     "redis.embedded" % "embedded-redis" % "0.3"
   )
 
-  lazy val main = Project(appName, file(".")).dependsOn(gen).dependsOn(repo).enablePlugins(play.PlayScala).settings(
-    scalaVersion := "2.11.2",
+  lazy val main = Project(appName, file(".")).dependsOn(gen).enablePlugins(play.PlayScala).settings(
+    scalaVersion := "2.11.4",
     libraryDependencies ++= appDependencies,
     resolvers ++= appResolvers,
     slick <<= slickCodeGenTask // register manual sbt command
-  ).aggregate(repo)
+  )
 
   lazy val gen = Project(
     id = "codegen",
     base = file("codegen")
   ).settings(
       resolvers ++= appResolvers,
-      scalaVersion := "2.11.2",
+      scalaVersion := "2.11.4",
       libraryDependencies ++= Seq(
         "com.typesafe.slick" %% "slick" % "2.1.0",
         "com.typesafe" % "config" % "1.2.1",
@@ -60,13 +56,6 @@ object AppBuild extends Build {
       )
     )
 
-  lazy val repo = Project(
-    id = "repository",
-    base = file("repository")
-  ).settings(
-      resolvers ++= appResolvers,
-      scalaVersion := "2.11.2"
-    )
   //play.Project.playScalaSettings
   // code generation task that calls the customized code generator
   lazy val slick = TaskKey[Seq[File]]("gen-tables")

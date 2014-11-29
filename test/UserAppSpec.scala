@@ -1,8 +1,7 @@
 import controllers._
 
 import org.planner.controllers.{UserController, MainController}
-import org.planner.dal.Oauth2DAL
-import org.planner.modules.core.UserModule
+import org.planner.modules.core.UserModuleComponent
 import org.planner.modules.dto._
 import org.specs2.mock.Mockito
 import org.specs2.mutable._
@@ -14,8 +13,6 @@ import org.planner.util.Gen._
 import play.api.GlobalSettings
 import play.api.test._
 import play.api.test.Helpers._
-import scaldi.Module
-import scaldi.play.ScaldiSupport
 import org.planner.modules._
 
 import scala.concurrent._
@@ -32,22 +29,27 @@ class UserAppSpec extends Specification with Mockito {
 
   def waitFor[T](f: Future[T], duration: FiniteDuration = 1000 milli)(implicit ec: ExecutionContext): T = Await.result(f, duration)
 
-  def app(userModule: UserModule = mock[UserModule]) = FakeApplication(
+  def app(m: UserModuleComponent = mock[UserModuleComponent]) = FakeApplication(
     additionalConfiguration = Map(
       "evolutionplugin" -> "disabled",
       "db.default.driver" -> "org.h2.Driver",
       "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"),
     withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
     withGlobal = Some(
-      new GlobalSettings with ScaldiSupport {
-        def applicationModule = new Module {
-          binding toProvider new MainController
-        } :: new Module {
-          bind[UserModule] toProvider userModule
-          bind[Oauth2DAL] toProvider mock[Oauth2DAL]
-          binding toProvider new UserController
+      new GlobalSettings {
+        override def getControllerInstance[A](clazz: Class[A]) = clazz match {
+          case c if c.isAssignableFrom(classOf[UserController]) => new UserController with UserModuleComponent {
+            override val dalAuth: Oauth2DAL = mock[Oauth2DAL]
+            override val userModule = m.userModule.asInstanceOf[this.UserModule]
+          }.asInstanceOf[A]
+          case _ => super.getControllerInstance(clazz)
         }
       }))
+
+
+  def newComp = new UserModuleComponent {
+    override val userModule: UserModule = mock[UserModule]
+  }
 
   "Application" should {
 
@@ -64,9 +66,9 @@ class UserAppSpec extends Specification with Mockito {
     }
 
     "have login route" in {
-      val service = mock[UserModule]
+      val service = newComp
       running(app(service)) {
-        service.login(any) returns Future.successful(Right(GrantHandlerResult(tokenType = "1", accessToken = "at", expiresIn = None, refreshToken = None, scope = None)))
+        service.userModule.login(any) returns Future.successful(Right(GrantHandlerResult(tokenType = "1", accessToken = "at", expiresIn = None, refreshToken = None, scope = None)))
         val page = route(FakeRequest(POST, "/login")
           .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "12345"))
         page must beSome
@@ -76,8 +78,8 @@ class UserAppSpec extends Specification with Mockito {
     }
 
     "have register route" in {
-      val service = mock[UserModule]
-      service.registerUser(any[UserDTO]) answers (u => result(u.asInstanceOf[UserDTO]))
+      val service = newComp
+      service.userModule.registerUser(any[UserDTO]) answers (u => result(u.asInstanceOf[UserDTO]))
       running(app(service)) {
         val page = route(FakeRequest(POST, "/register")
           .withJsonBody(Json.parse(
@@ -95,8 +97,8 @@ class UserAppSpec extends Specification with Mockito {
     }
 
     "have add group route" in {
-      val service = mock[UserModule]
-      service.addGroup(any[GroupDTO]) answers {
+      val service = newComp
+      service.userModule.addGroup(any[GroupDTO]) answers {
         u =>
           val dto = u.asInstanceOf[GroupDTO].copy(id = guido)
           result(dto)

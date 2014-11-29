@@ -1,7 +1,5 @@
-import org.planner.modules.core.UserModule
 import org.planner.modules.dto.{GroupDTO, UserDTO}
 import play.api.http.Status
-import scaldi.{Module, Injectable}
 import org.planner.util.Gen._
 import org.planner.util.Time._
 import org.specs2.mutable._
@@ -23,20 +21,19 @@ import scalaoauth2.provider.AuthInfo
   * it mocks AssetRepoComponent
   */
 @RunWith(classOf[JUnitRunner])
-class UserModuleSpec extends Specification with Mockito with Injectable {
-  implicit val modules = new Module {
-    bind[UserDAL] toProvider mock[UserDAL]
-    bind[Oauth2DAL] toProvider mock[Oauth2DAL]
-    bind[UserModule] toProvider new DefaultUserModule
-  }
+class UserModuleSpec extends Specification with Mockito {
 
   val duration = Duration.Inf
 
   def module = {
-    val ret = inject[UserModule]
+    val ret = new DefaultUserModuleComponent with UserDALComponent with Oauth2DALComponent{
+      val dalUser = mock[UserDAL]
+      val dalAuth = mock[Oauth2DAL]
+
+    }
     ret.authData = AuthInfo[User](user =
       User(id = guid, login = guid, password = guid, created = now, updated = now, userId = None, groupId = None,
-        lastLogin = nowo, providerToken = guido, nick = guid), "1", None, None)
+        lastLogin = nowo, providerToken = guido, nick = guid), Some("1"), None, None)
     ret
   }
 
@@ -55,13 +52,13 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
       val m = module
       val us = UserSession(userId = guid, id = guid)
 
-      m.dal.insertSession(any[UserSession]) returns Future.successful(us)
-      m.dal.deleteSessionByUser(us.userId) returns Future.successful(1)
+      m.dalUser.insertSession(any[UserSession]) returns Future.successful(us)
+      m.dalUser.deleteSessionByUser(us.userId) returns Future.successful(1)
       m.dalAuth.findAuthInfoByAccessToken(any[scalaoauth2.provider.AccessToken]) returns Future.successful(Some(
-        AuthInfo(user = newUser.copy(id = us.userId), clientId = "1", scope = None, redirectUri = None)))
+        AuthInfo(user = newUser.copy(id = us.userId), clientId = Some("1"), scope = None, redirectUri = None)))
 
-      val s = Await.result(m.createSession(us.id), duration)
-      there was one(m.dal).insertSession(any[UserSession])
+      val s = Await.result(m.userModule.createSession(us.id), duration)
+      there was one(m.dalUser).insertSession(any[UserSession])
       s must beRight
       s.errCode === 0
       s.value.get === us.id
@@ -70,32 +67,32 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
     "implement get user by id and call dal" in {
       val m = module
       val id = guid
-      m.dal.getUserById(id) returns Future.successful(newUser.copy(id = id))
-      val s = Await.result(m.getUserById(id), duration)
-      there was one(m.dal).getUserById(id)
+      m.dalUser.getUserById(id) returns Future.successful(newUser.copy(id = id))
+      val s = Await.result(m.userModule.getUserById(id), duration)
+      there was one(m.dalUser).getUserById(id)
     }
 
     "implement register and call dal" in {
       val service = module
       val u = UserDTO(login = guid, password = guid)
-      service.dal.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
-      service.dal.getUserByEmail(any[String]) returns dal(None)
-      val s = Await.result(service.registerUser(u), duration)
-      there was one(service.dal).getUserByEmail(anyString)
-      there was one(service.dal).insertUser(any[User])
+      service.dalUser.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
+      service.dalUser.getUserByEmail(any[String]) returns dal(None)
+      val s = Await.result(service.userModule.registerUser(u), duration)
+      there was one(service.dalUser).getUserByEmail(anyString)
+      there was one(service.dalUser).insertUser(any[User])
       s must beRight
     }
 
     "not call insert if email already exists" in {
       val service = module
       val u = UserDTO(login = guid, password = guid)
-      service.dal.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
-      service.dal.getUserByEmail(any[String]) returns dal(Some(newUser))
+      service.dalUser.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
+      service.dalUser.getUserByEmail(any[String]) returns dal(Some(newUser))
 
-      val s = Await.result(service.registerUser(u), duration)
+      val s = Await.result(service.userModule.registerUser(u), duration)
 
-      there was one(service.dal).getUserByEmail(anyString)
-      there was no(service.dal).insertUser(any[User])
+      there was one(service.dalUser).getUserByEmail(anyString)
+      there was no(service.dalUser).insertUser(any[User])
       s must beLeft
       s.errCode === 500
       s.errMessage must contain("Email already exists")
@@ -105,20 +102,20 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
       val service = module
       val dto = GroupDTO(id = None, name = guid, projectId = guid)
 
-      service.dal.insertGroupWithUser(any, any) answers (a => dal(a.asInstanceOf[Group]))
+      service.dalUser.insertGroupWithUser(any, any) answers (a => dal(a.asInstanceOf[Group]))
 
-      val s = Await.result(service.addGroup(dto), duration)
+      val s = Await.result(service.userModule.addGroup(dto), duration)
 
-      there was one(service.dal).insertGroupWithUser(any, any)
+      there was one(service.dalUser).insertGroupWithUser(any, any)
       s must beRight
     }
 
     "handle add group dal error" in {
       val service = module
       val u = GroupDTO(id = None, name = guid, projectId = guid)
-      service.dal.insertGroupWithUser(any, any) returns dalErr("dal test error")
-      val s = Await.result(service.addGroup(u), duration)
-      there was one(service.dal).insertGroupWithUser(any, any)
+      service.dalUser.insertGroupWithUser(any, any) returns dalErr("dal test error")
+      val s = Await.result(service.userModule.addGroup(u), duration)
+      there was one(service.dalUser).insertGroupWithUser(any, any)
       s must beLeft
       val (code, msg) = s.merge
       code === Status.INTERNAL_SERVER_ERROR
@@ -128,9 +125,9 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
     "handle add group future error" in {
       val service = module
       val u = GroupDTO(id = None, name = guid, projectId = guid)
-      service.dal.insertGroupWithUser(any[Group], any) returns Future.failed(new Exception("test"))
-      val s = Await.result(service.addGroup(u), duration)
-      there was one(service.dal).insertGroupWithUser(any, any)
+      service.dalUser.insertGroupWithUser(any[Group], any) returns Future.failed(new Exception("test"))
+      val s = Await.result(service.userModule.addGroup(u), duration)
+      there was one(service.dalUser).insertGroupWithUser(any, any)
       s must beLeft
       val (code, msg) = s.merge
       code === Status.INTERNAL_SERVER_ERROR
@@ -140,10 +137,10 @@ class UserModuleSpec extends Specification with Mockito with Injectable {
     "add current user to group upon group creation" in {
       val service = module
       val u = GroupDTO(id = None, name = guid, projectId = guid)
-      service.dal.insertGroupWithUser(any, any) answers (a => dal(a.asInstanceOf[Group]))
+      service.dalUser.insertGroupWithUser(any, any) answers (a => dal(a.asInstanceOf[Group]))
 
-      val s = Await.result(service.addGroup(u), duration)
-      there was one(service.dal).insertGroupWithUser(any[Group], any)
+      val s = Await.result(service.userModule.addGroup(u), duration)
+      there was one(service.dalUser).insertGroupWithUser(any[Group], any)
       s must beRight
     }
 

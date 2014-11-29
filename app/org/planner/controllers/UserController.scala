@@ -1,24 +1,24 @@
 package org.planner.controllers
 
 import com.wordnik.swagger.annotations.{ApiImplicitParam, ApiImplicitParams, ApiOperation, Api}
-import org.planner.modules.core.UserModule
+import org.planner.modules.core.{UserModuleComponent}
 import org.planner.modules.dto._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.json.Json
 import play.api.mvc._
-import scaldi.Injector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
 @Api(value = "/user", description = "User operations")
-class UserController(implicit val inj: Injector) extends BaseController {
-  val userModule = inject[UserModule]
+trait UserController extends BaseController {
+  this: UserModuleComponent =>
+  //val userModule = inject[UserModule]
 
   @ApiOperation(value = "Issue access token", notes = """{"token_type": "Bearer","access_token": "MDEwNTBkNDgtNDhkNC00YmNhLWJiMjktMzVhMTJkMjMwNDBk","expires_in": 3600,"refresh_token": "NzVmYjQ4ZDMtMjY3NS00NDA4LTkyZTgtNmNjOTNlNjRhNDZl"}""", response = classOf[String], httpMethod = "POST", nickname = "createAccessToken")
   def accessToken = Action.async { implicit request =>
-    issueAccessToken(authHandler)
+    issueAccessToken(dalAuth)
   }
 
   def login = Action {

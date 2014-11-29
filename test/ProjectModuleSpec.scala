@@ -1,7 +1,5 @@
-import org.planner.modules.core.ProjectModule
 import org.planner.modules.dto._
 import play.api.http.Status
-import scaldi.{Module, Injectable}
 import org.planner.util.Gen._
 import org.specs2.mutable._
 import org.specs2.runner._
@@ -24,21 +22,19 @@ import scalaoauth2.provider.AuthInfo
   * it mocks AssetRepoComponent
   */
 @RunWith(classOf[JUnitRunner])
-class ProjectModuleSpec extends Specification with Mockito with Injectable {
-  implicit val modules = new Module {
-    bind[ProjectDAL] toProvider mock[ProjectDAL]
-    bind[UserDAL] toProvider mock[UserDAL]
-    bind[ProjectModule] toProvider new DefaultProjectModule
-  }
+class ProjectModuleSpec extends Specification with Mockito {
 
   val authInfo = AuthInfo(user =
     User(id = guid, login = guid, password = guid, created = now, updated = now,
-      lastLogin = nowo, providerToken = guido, nick = guid, userId = None, groupId = None), "1", None, None)
+      lastLogin = nowo, providerToken = guido, nick = guid, userId = None, groupId = None), Some("1"), None, None)
 
   def module = {
-    val ret = inject[ProjectModule]
-    ret.authData = authInfo
-    ret
+    new DefaultProjectModuleComponent with ProjectDALComponent with UserDALComponent {
+      override val projectDal: ProjectDAL = mock[ProjectDAL]
+      override val dalUser: UserDAL = mock[UserDAL]
+
+      _authData = authInfo
+    }
   }
 
   /**
@@ -54,11 +50,12 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
 
     "implement insertProject and call dal" in {
       val m = module
+      m.authData === authInfo
       val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None)
 
-      m.dal.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
-      val s = Await.result(m.insertProject(dto), Duration.Inf)
-      there was one(m.dal).insertProject(any[Project], any[Group])
+      m.projectDal.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
+      val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)
+      there was one(m.projectDal).insertProject(any[Project], any[Group])
       s must beRight
     }
 
@@ -66,11 +63,11 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
       val m = module
       val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None)
 
-      m.dal.updateProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
-      m.dal.getProjectById(any) returns dal(Some(genProject(authInfo.user.id)))
-      val s = Await.result(m.updateProject(dto), Duration.Inf)
-      there was one(m.dal).updateProject(any[Project])
-      there was one(m.dal).getProjectById(dto.id.get)
+      m.projectDal.updateProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
+      m.projectDal.getProjectById(any) returns dal(Some(genProject(authInfo.user.id)))
+      val s = Await.result(m.projectModule.updateProject(dto), Duration.Inf)
+      there was one(m.projectDal).updateProject(any[Project])
+      there was one(m.projectDal).getProjectById(dto.id.get)
       s must beRight
     }
 
@@ -78,9 +75,9 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
       val m = module
       val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = Some(1))
 
-      m.dal.insertProject(any[Project], any[Group]) returns Future.failed(new Exception("test"))
-      val s = Await.result(m.insertProject(dto), Duration.Inf)
-      there was one(m.dal).insertProject(any[Project], any[Group])
+      m.projectDal.insertProject(any[Project], any[Group]) returns Future.failed(new Exception("test"))
+      val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)
+      there was one(m.projectDal).insertProject(any[Project], any[Group])
       s must beLeft
       val (code, message) = s.merge.asInstanceOf[ResultError]
       code === Status.INTERNAL_SERVER_ERROR
@@ -89,8 +86,8 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
 
     "implement get user projects" in {
       val m = module
-      m.dal.getUserProjects(anyString, any, any) returns dal(List())
-      val s = m.getUserProjects(m.userId, 0, 100)
+      m.projectDal.getUserProjects(anyString, any, any) returns dal(List())
+      val s = m.projectModule.getUserProjects(m.userId, 0, 100)
       s must not be (null)
     }
 
@@ -98,11 +95,11 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
       val m = module
       val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
       val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
-      m.dal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)))
+      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)))
 
-      val s = Await.result(m.getUserProjects(m.userId, 0, 100), Duration.Inf)
+      val s = Await.result(m.projectModule.getUserProjects(m.userId, 0, 100), Duration.Inf)
 
-      there was one(m.dal).getUserProjects(m.authData.user.id, 0, 100)
+      there was one(m.projectDal).getUserProjects(m.authData.user.id, 0, 100)
       s must beRight
       val ret = s.merge.asInstanceOf[ProjectListDTO]
       ret.items.size === 1
@@ -113,9 +110,9 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
 
     "get user project should handle dal errors" in {
       val m = module
-      m.dal.getUserProjects(anyString, any, any) returns dalErr("Test error")
-      val s = Await.result(m.getUserProjects(m.authData.user.id, 0, 100), Duration.Inf)
-      there was one(m.dal).getUserProjects(m.authData.user.id, 0, 100)
+      m.projectDal.getUserProjects(anyString, any, any) returns dalErr("Test error")
+      val s = Await.result(m.projectModule.getUserProjects(m.authData.user.id, 0, 100), Duration.Inf)
+      there was one(m.projectDal).getUserProjects(m.authData.user.id, 0, 100)
       s must beLeft
       val (code, message) = s.merge.asInstanceOf[ResultError]
       code === Status.INTERNAL_SERVER_ERROR
@@ -124,9 +121,9 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
 
     "get user projects and handle future failure" in {
       val m = module
-      m.dal.getUserProjects(anyString, any, any) returns Future.failed(new RuntimeException("test future"))
-      val s = Await.result(m.getUserProjects(m.authData.user.id, 0, 100), Duration.Inf)
-      there was one(m.dal).getUserProjects(m.authData.user.id, 0, 100)
+      m.projectDal.getUserProjects(anyString, any, any) returns Future.failed(new RuntimeException("test future"))
+      val s = Await.result(m.projectModule.getUserProjects(m.authData.user.id, 0, 100), Duration.Inf)
+      there was one(m.projectDal).getUserProjects(m.authData.user.id, 0, 100)
       s must beLeft
       val (code, message) = s.merge.asInstanceOf[ResultError]
       code === Status.INTERNAL_SERVER_ERROR
@@ -137,10 +134,10 @@ class ProjectModuleSpec extends Specification with Mockito with Injectable {
       val m = module
       val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
       val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
-      m.dal.getUserPublicProjects(anyString, any, any) returns dal(List((g1, p1)))
-      m.dal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)))
-      val s = Await.result(m.getUserProjects("id", 0, 100), Duration.Inf)
-      there was one(m.dal).getUserPublicProjects("id", 0, 100)
+      m.projectDal.getUserPublicProjects(anyString, any, any) returns dal(List((g1, p1)))
+      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)))
+      val s = Await.result(m.projectModule.getUserProjects("id", 0, 100), Duration.Inf)
+      there was one(m.projectDal).getUserPublicProjects("id", 0, 100)
       s must beRight
     }
 

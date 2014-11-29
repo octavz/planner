@@ -1,12 +1,12 @@
 import org.planner.util.Gen._
 
+
 import org.junit.runner._
 import org.planner.dal._
-import org.planner.dal.impl.{SlickProjectDAL, TestCaching}
+import org.planner.dal.impl.{SlickProjectDALComponent, TestCaching}
 import org.planner.db.{User, Group, Project}
 import org.specs2.runner._
 import play.api.test.WithApplication
-import scaldi.Module
 import scala.concurrent._
 import scala.concurrent.duration._
 import play.api.db.slick.Config.driver.simple._
@@ -20,9 +20,6 @@ import org.planner.util.Time._
  */
 @RunWith(classOf[JUnitRunner])
 class ProjectDALSpec extends BaseDALSpec {
-  implicit val modules = new Module {
-    bind[Caching] to new TestCaching
-  }
 
 
   def insertRandomUser()(implicit s: Session): User = {
@@ -39,6 +36,8 @@ class ProjectDALSpec extends BaseDALSpec {
     (p,g)
   }
 
+  def newDal = new SlickProjectDALComponent with TestCaching{}.projectDal
+
   "Project DAL" should {
 
     "insert project and the default group" in new WithApplication(testApp) {
@@ -47,7 +46,7 @@ class ProjectDALSpec extends BaseDALSpec {
 
       DB.withSession {
         implicit s =>
-          val dal = new SlickProjectDAL()
+          val dal = newDal
           val p = Project(id = guid, userId = testUser.id, name = guid, description = guido, parentId = None, created = now, updated = now)
           val g = Group(id = guid, projectId = p.id, name = p.name, created = now, updated = now, userId = testUser.id, groupId = None)
           val res = Await.result(dal.insertProject(p, g), Duration.Inf)
@@ -64,7 +63,7 @@ class ProjectDALSpec extends BaseDALSpec {
     "get projects by user" in new WithApplication(testApp) {
       DB.withSession {
         implicit s =>
-          val dal = new SlickProjectDAL()
+          val dal = newDal
           val resGet = Await.result(dal.getUserProjects(testUser.id, 0, 100), Duration.Inf)
           val ret = resGet.asInstanceOf[List[(Group,Project)]]
           ret.size === 1
@@ -75,7 +74,7 @@ class ProjectDALSpec extends BaseDALSpec {
     "get projects by user" in new WithApplication {
       DB.withSession {
         implicit s =>
-          val dal = new SlickProjectDAL()
+          val dal = newDal
           val resGet = Await.result(dal.getUserPublicProjects("1", 0, 1), Duration.Inf)
           val ret = resGet.asInstanceOf[List[(Group,Project)]]
           ret.size === 1
@@ -83,7 +82,7 @@ class ProjectDALSpec extends BaseDALSpec {
     }
 
     "get project groups" in new WithApplication(testApp) {
-      val dal = new SlickProjectDAL()   
+      val dal = newDal
       val projects = Await.result(dal.getProjectGroupIds(testProject.id), Duration.Inf)
       projects must beAnInstanceOf[List[String]]
       projects.size === 1
