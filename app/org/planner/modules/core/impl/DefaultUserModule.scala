@@ -39,6 +39,7 @@ trait DefaultUserModuleComponent extends UserModuleComponent{
     }
 
     override def login(request: AuthorizationRequest): Future[Either[OAuthError, GrantHandlerResult]] = {
+      println(request)
       val ret = TokenEndpoint.handleRequest(request, dalAuth)
       ret flatMap {
         case r@Right(v) =>

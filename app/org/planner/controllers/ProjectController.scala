@@ -11,7 +11,7 @@ import org.planner.config._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
-@Api(value = "/project", description = "Project operations")
+@Api(value = "/api/project", description = "Project operations")
 trait ProjectController extends BaseController {
   this: ProjectModuleComponent =>
   implicit val service = projectModule

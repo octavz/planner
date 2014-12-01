@@ -1,0 +1,32 @@
+<div class="modal" >
+        <ion-header-bar>
+        <h1 class="title">Register</h1>
+        </ion-header-bar>
+        <ion-content>
+        <div class="list">
+                <label class="item item-input">
+                        <span class="input-label">Username</span>
+                        <input type="text" ng-model="registerData.username"/>
+                </label>
+                <label class="item item-input">
+                        <span class="input-label">Password</span>
+                        <input type="password" ng-model="registerData.password"/>
+                </label>
+                <label class="item item-input">
+                        <span class="input-label">Confirm Password</span>
+                        <input type="password" ng-model="registerData.passwordConfirm"/>
+                </label>
+                <div class="row">
+                        <div class="col">
+                                <button class="button button-block button-positive" type="button" ng-click="doRegister()">Register
+                                </button>
+                        </div>
+                        <div class="col">
+                                <button class="button button-block button-positive" type="button" ng-click="closeRegister()">Cancel
+                                </button>
+                        </div>
+                </div>
+        </div>
+        </ion-content>
+</div>
+
