@@ -9,7 +9,7 @@ import org.planner.modules.{ResultError, Result}
 
 case class LoginForm(email: String, password: String)
 
-case class UserDTO(login: String, password: String) {
+case class RegisterDTO(login: String, password: String) {
 
   def this(model: User) = this(model.login, model.password)
 
@@ -17,6 +17,17 @@ case class UserDTO(login: String, password: String) {
     val n = Time.now
     User(id = Gen.guid, login = login, providerToken = Some(login), created = n, updated = n, lastLogin = None, password = password, nick = login, userId = None, groupId = None)
   }
+}
+
+case class UserDTO(login: String, password: String, id: String, nick: String) {
+
+  def this(model: User) = this(model.login, model.password, model.id, model.nick)
+
+  def toModel = {
+    val n = Time.now
+    User(id = id, login = login, providerToken = Some(login), created = n, updated = n, lastLogin = None, password = password, nick = nick, userId = None, groupId = None)
+  }
+
 }
 
 case class GroupDTO(id: Option[String], name: String, projectId: String) {
@@ -44,11 +55,12 @@ case class ProjectListDTO(items: List[ProjectDTO])
 
 trait JsonFormats extends BaseFormats with ConstraintReads {
 
+  implicit val userDTO = Json.format[UserDTO]
 
-  implicit val userDto = (
+  implicit val registerDTO = (
     (__ \ 'login).format[String](maxLength[String](200) keepAnd email) ~
       (__ \ 'password).format[String](minLength[String](6) keepAnd maxLength[String](50))
-    )(UserDTO, unlift(UserDTO.unapply))
+    )(RegisterDTO, unlift(RegisterDTO.unapply))
 
   implicit val projectDtoRead = (
     (__ \ 'id).readNullable[String](maxLength[String](50)) ~

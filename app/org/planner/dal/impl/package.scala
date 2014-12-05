@@ -62,7 +62,10 @@ package object impl {
           value
         }
         val f = client.get(key) flatMap {
-          case Some(v) => Future.successful(Json.fromJson[A](Json.parse(v)).asInstanceOf[A])
+          case Some(v) => Future.successful{
+            val js = Json.parse(v)
+            Json.fromJson[A](js).get.asInstanceOf[A]
+          }
           case _ =>
             orElse map {
               case None => None.asInstanceOf[A]

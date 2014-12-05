@@ -1,4 +1,4 @@
-import org.planner.modules.dto.{GroupDTO, UserDTO}
+import org.planner.modules.dto.{GroupDTO, RegisterDTO}
 import play.api.http.Status
 import org.planner.util.Gen._
 import org.planner.util.Time._
@@ -74,7 +74,7 @@ class UserModuleSpec extends Specification with Mockito {
 
     "implement register and call dal" in {
       val service = module
-      val u = UserDTO(login = guid, password = guid)
+      val u = RegisterDTO(login = guid, password = guid)
       service.dalUser.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
       service.dalUser.getUserByEmail(any[String]) returns dal(None)
       val s = Await.result(service.userModule.registerUser(u), duration)
@@ -85,7 +85,7 @@ class UserModuleSpec extends Specification with Mockito {
 
     "not call insert if email already exists" in {
       val service = module
-      val u = UserDTO(login = guid, password = guid)
+      val u = RegisterDTO(login = guid, password = guid)
       service.dalUser.insertUser(any[User]) answers (a => dal(a.asInstanceOf[User]))
       service.dalUser.getUserByEmail(any[String]) returns dal(Some(newUser))
 

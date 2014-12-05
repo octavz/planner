@@ -1,21 +1,17 @@
 package org.planner.modules.core.impl
 
-import akka.actor.Status.Success
 import org.planner.modules.core.{UserModuleComponent}
-import org.planner.modules.dto.{GroupDTO, UserDTO}
-import org.planner.util.Gen._
+import org.planner.modules.dto.{UserDTO, GroupDTO, RegisterDTO}
 import play.api.http.Status
 import scala.concurrent._
 import ExecutionContext.Implicits._
 import org.planner.modules._
 import org.planner.dal._
 import org.planner.db._
-import play.api.Logger
 import java.util.Date
 import scalaoauth2.provider._
-import org.planner.modules.dto.GroupDTO
 
-trait DefaultUserModuleComponent extends UserModuleComponent{
+trait DefaultUserModuleComponent extends UserModuleComponent {
   this: UserDALComponent with Oauth2DALComponent =>
   val userModule = new DefaultUserModule
 
@@ -48,9 +44,12 @@ trait DefaultUserModuleComponent extends UserModuleComponent{
       }
     }
 
-    override def getUserById(id: String) = {
+    override def getUserById(id: String): Result[UserDTO] = {
       try {
-        dalUser.getUserById(id) map (u => resultSync(new UserDTO(u))) recover {
+        dalUser.getUserById(id) map {
+          u =>
+            resultSync(new UserDTO(u))
+        } recover {
           case e: Throwable => resultExSync(e, "getUserById")
         }
       } catch {
@@ -58,13 +57,13 @@ trait DefaultUserModuleComponent extends UserModuleComponent{
       }
     }
 
-    def registerUser(u: UserDTO): Result[UserDTO] = {
+    def registerUser(u: RegisterDTO): Result[RegisterDTO] = {
       try {
         val model = u.toModel
 
         val f = dalUser.getUserByEmail(u.login) flatMap {
           case Some(_) => resultError(Status.INTERNAL_SERVER_ERROR, "Email already exists")
-          case _ => dalUser.insertUser(model) map (a => resultSync(new UserDTO(a)))
+          case _ => dalUser.insertUser(model) map (a => resultSync(new RegisterDTO(a)))
         }
 
         f recover { case e: Throwable => resultExSync(e, "registerUser")}
@@ -83,5 +82,21 @@ trait DefaultUserModuleComponent extends UserModuleComponent{
           resultEx(e, "addGroup")
       }
     }
+
+    override def getUserByToken(token: String): Result[UserDTO] = {
+      val f: Result[UserDTO] = for {
+        at <- dalAuth.findAccessToken(token)
+        data <- dalAuth.findAuthInfoByAccessToken(at.getOrElse(throw new Exception("Token not found")))
+      } yield data match {
+          case Some(info) => resultSync(new UserDTO(info.user))
+          case _ => resultErrorSync(404, "User not found by access token")
+        }
+
+      f recover {
+        case e: Throwable => resultExSync(e, "getUserByToken")
+      }
+
+    }
   }
+
 }

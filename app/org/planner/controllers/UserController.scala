@@ -1,11 +1,13 @@
 package org.planner.controllers
 
-import com.wordnik.swagger.annotations.{ApiImplicitParam, ApiImplicitParams, ApiOperation, Api}
+import javax.ws.rs.{PathParam, QueryParam}
+
+import com.wordnik.swagger.annotations._
 import org.planner.modules.core.{UserModuleComponent}
 import org.planner.modules.dto._
 import play.api.data.Forms._
 import play.api.data._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,44 +44,21 @@ trait UserController extends BaseController {
   ))
   def loginPost = Action.async {
     implicit request =>
-      userModule.login(request) map {
+      userModule.login(request) flatMap {
         case Right(r) =>
           if (request.accepts("text/html")) {
-            Redirect("/public.html").withCookies(Cookie("access_token", r.accessToken))
+            Future.successful(Redirect("/public.html").withCookies(Cookie("access_token", r.accessToken)))
           } else {
-            Ok(Json.obj("accessToken" -> r.accessToken))
+            userModule.getUserByToken(r.accessToken) map {
+              u =>
+                Ok(Json.obj("accessToken" -> r.accessToken) ++ Json.toJson(u).as[JsObject])
+            }
           }
         case _ =>
           if (request.accepts("text/html")) {
-            Ok(views.html.users.login.render())
+            Future.successful(Ok(views.html.users.login.render()))
           } else {
-            Unauthorized
-          }
-      }
-  }
-
-  @ApiOperation(value = "Login user", notes = "Login user", response = classOf[JsValue], httpMethod = "POST", nickname = "login")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "username", required = true, dataType = "String", paramType = "form", defaultValue = "aaa@aaa.com")
-    , new ApiImplicitParam(name = "password", required = true, dataType = "String", paramType = "form", defaultValue = "123456")
-    , new ApiImplicitParam(name = "client_id", required = true, dataType = "String", paramType = "form", defaultValue = "1")
-    , new ApiImplicitParam(name = "grant_type", required = true, dataType = "String", paramType = "form", defaultValue = "password")
-    , new ApiImplicitParam(name = "client_secret", required = true, dataType = "String", paramType = "form", defaultValue = "secret")
-  ))
-  def loginApi = Action.async {
-    implicit request =>
-      userModule.login(request) map {
-        case Right(r) =>
-          if (request.accepts("text/html")) {
-            Redirect("/public.html").withCookies(Cookie("access_token", r.accessToken))
-          } else {
-            Ok(Json.obj("accessToken" -> r.accessToken))
-          }
-        case _ =>
-          if (request.accepts("text/html")) {
-            Ok(views.html.users.login.render())
-          } else {
-            Unauthorized
+            Future.successful(Unauthorized)
           }
       }
   }
@@ -90,7 +69,7 @@ trait UserController extends BaseController {
     implicit request =>
       request.body.asJson.map {
         json => try {
-          val dto = json.as[UserDTO]
+          val dto = json.as[RegisterDTO]
           userModule.registerUser(dto) map (r => Ok(Json.toJson(r)))
         } catch {
           case e: Throwable =>
@@ -112,5 +91,34 @@ trait UserController extends BaseController {
             Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
         }
       }.getOrElse(Future.successful(BadRequest("Wrong json")))
+  }
+
+  @ApiOperation(value = "Add user group", notes = "Get user by id", response = classOf[RegisterDTO], httpMethod = "GET", nickname = "getUserById")
+  def getUserById(
+                   @ApiParam(value = "user id", required = true, allowMultiple = false) @PathParam("userId") userId: String) = Action.async {
+    implicit request =>
+      try {
+        userModule.getUserById(userId) map (r => Ok(Json.toJson(r)))
+      } catch {
+        case e: Throwable =>
+          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+      }
+  }
+
+  @ApiOperation(value = "Add user group", notes = "Get user by session", response = classOf[RegisterDTO], httpMethod = "GET", nickname = "getUserBySession")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
+  def getUserBySession = Action.async {
+    implicit request =>
+      try {
+        authorize {
+          implicit authInfo =>
+            userModule.getUserById(authInfo.user.id) map (r => Ok(Json.toJson(r)))
+        }
+      } catch {
+        case e: Throwable =>
+          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+      }
   }
 }

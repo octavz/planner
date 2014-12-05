@@ -3,26 +3,28 @@
 # ~~~~
 OPTIONS      /*path                      @org.planner.controllers.MainController.options(path)
 
-POST         /api/oauth2/access_token        @org.planner.controllers.UserController.accessToken
-POST         /api/project                    @org.planner.controllers.ProjectController.insertProject
-PUT         /api/project/id                    @org.planner.controllers.ProjectController.updateProject
+POST         /api/oauth2/access_token    @org.planner.controllers.UserController.accessToken
+POST         /api/project                @org.planner.controllers.ProjectController.insertProject
+PUT          /api/project/id             @org.planner.controllers.ProjectController.updateProject
 
 GET          /login                      @org.planner.controllers.UserController.login
 POST         /login                      @org.planner.controllers.UserController.loginPost
-POST         /api/login                      @org.planner.controllers.UserController.loginApi
-POST         /api/register                   @org.planner.controllers.UserController.register
-POST         /api/group                      @org.planner.controllers.UserController.addGroup
-GET          /api/user/:id/projects          @org.planner.controllers.ProjectController.getUserProjects(id: String, offset: Int, count: Int)
+POST         /api/login                  @org.planner.controllers.UserController.loginPost
+GET          /api/user/:userId           @org.planner.controllers.UserController.getUserById(userId: String)
+GET          /api/user                   @org.planner.controllers.UserController.getUserBySession
+POST         /api/register               @org.planner.controllers.UserController.register
+POST         /api/group                  @org.planner.controllers.UserController.addGroup
+GET          /api/user/:id/projects      @org.planner.controllers.ProjectController.getUserProjects(id: String, offset: Int, count: Int)
 
 GET          /api-docs                   controllers.ApiHelpController.getResources
-GET          /api-docs/api/project           controllers.ApiHelpController.getResource(path = "/api/project")
-GET          /api-docs/api/user              controllers.ApiHelpController.getResource(path = "/api/user")
+GET          /api-docs/api/project       controllers.ApiHelpController.getResource(path = "/api/project")
+GET          /api-docs/api/user          controllers.ApiHelpController.getResource(path = "/api/user")
 
 GET          /docs/*file                 controllers.Assets.at(path="/public/docs", file)
 GET          /app/*file                  controllers.Assets.at(path="/public/client/app",file)
 GET          /public.html                controllers.Assets.at(path="/public/client",file="public.html")
 GET          /autologin.html             controllers.Assets.at(path="/public/client",file="autologin.html")
 GET          /index.html                 controllers.Assets.at(path="/public/client",file="index.html")
-#GET          /*user/*project             @org.planner.controllers.MainController.indexProject(user: String, project: String)
-#GET          /*user                      @org.planner.controllers.MainController.indexUser(user: String)
+#GET         /*user/*project             @org.planner.controllers.MainController.indexProject(user: String, project: String)
+#GET         /*user                      @org.planner.controllers.MainController.indexUser(user: String)
 

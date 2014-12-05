@@ -79,7 +79,7 @@ class UserAppSpec extends Specification with Mockito {
 
     "have register route" in {
       val service = newComp
-      service.userModule.registerUser(any[UserDTO]) answers (u => result(u.asInstanceOf[UserDTO]))
+      service.userModule.registerUser(any[RegisterDTO]) answers (u => result(u.asInstanceOf[RegisterDTO]))
       running(app(service)) {
         val page = route(FakeRequest(POST, "/register")
           .withJsonBody(Json.parse(
