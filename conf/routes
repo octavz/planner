@@ -22,6 +22,7 @@ GET          /api-docs/api/user          controllers.ApiHelpController.getResour
 
 GET          /docs/*file                 controllers.Assets.at(path="/public/docs", file)
 GET          /app/*file                  controllers.Assets.at(path="/public/client/app",file)
+GET          /m/*file                  controllers.Assets.at(path="/public/ionic/www",file)
 GET          /public.html                controllers.Assets.at(path="/public/client",file="public.html")
 GET          /autologin.html             controllers.Assets.at(path="/public/client",file="autologin.html")
 GET          /index.html                 controllers.Assets.at(path="/public/client",file="index.html")
