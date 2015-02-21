@@ -1,0 +1,19 @@
+<Alloy>
+	<Collection src="Project" />
+	<Window class="container">
+		<Label>Projects</Label>
+		<TextField id="tfInsert"></TextField>
+		<Button id="btnInsert" >Insert</Button>
+
+		<!-- Specifies the collection singleton or instance to bind to the table. -->
+		<TableView id="tbProjects" dataCollection="Project">
+			<TableViewRow id="listRow" rowId="{id_project}">
+				<View id="componentView">
+					<Label id="lblValue" text="{name}"></Label>
+				</View>
+			</TableViewRow>
+
+		</TableView>
+
+	</Window>
+</Alloy>

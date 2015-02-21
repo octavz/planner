@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
     <id>com.TitaniumPlanner</id>
-    <name>TitaniumPlanner</name>
+    <analytics>false</analytics>
+    <name>Titanium Planner</name>
     <version>1.0</version>
     <publisher>Planner Team</publisher>
     <url>http://TitaniumPlanner</url>
