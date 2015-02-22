@@ -1,0 +1,13 @@
+<Alloy>
+	
+	<Model src="loginData"></Model>>
+	<Window class="container" layout="vertical" navBarHidden="true">
+		<View id="view_login">
+			<Label id="lblWelcome">Welcome to Planner</Label>
+			<TextField id="txtUserName" name="User Name" value="{loginData.userName}" ></TextField>
+			<TextField id="txtUserPassword" name = "User Password" value="{loginData.userPassword}"></TextField>
+			<Button id="btnLogin" onClick="tryLogin">Login</Button>
+			<ActivityIndicator id="activityIndicator" message="Loading..."/>
+		</View>
+	</Window>
+</Alloy>
