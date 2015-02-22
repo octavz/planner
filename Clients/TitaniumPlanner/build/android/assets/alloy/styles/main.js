@@ -1,0 +1,1 @@
+module.exports=[{isApi:!0,priority:1000.001,key:"Window",style:{backgroundColor:"#fff"}},{isApi:!0,priority:1000.0011,key:"Label",style:{width:Ti.UI.SIZE,height:Ti.UI.SIZE,color:"#000",font:{fontSize:20,fontFamily:"Helvetica Neue"},textAlign:"center"}}];

@@ -1,0 +1,8 @@
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/android/support/v7/appcompat/R.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/ApplicationStylesheet.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/AssetCryptImpl.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/R.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/TitaniumPlannerActivity.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/TitaniumPlannerAppInfo.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/TitaniumPlannerApplication.java"
+"D:/gitPlanner/Planner/Clients/TitaniumPlanner/build/android/gen/ti/modules/titanium/ui/R.java"

@@ -1,10 +1,3 @@
 <Alloy>
-	<TabGroup>
-		<Tab title="Projects">
-			<Require type="view" src="Projects"/>
-		</Tab>
-		<Tab title="Tasks">
-			<Require type="view" src="Tasks"/>
-		</Tab>
-	</TabGroup>
+
 </Alloy>
