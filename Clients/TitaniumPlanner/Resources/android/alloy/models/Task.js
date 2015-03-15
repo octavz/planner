@@ -3,13 +3,15 @@ var Alloy = require("alloy"), _ = require("alloy/underscore")._, model, collecti
 exports.definition = {
     config: {
         columns: {
-            id_task: "INTEGER PRIMARY KEY AUTOINCREMENT",
             title: "TEXT"
         },
+        URL: Alloy.CFG.App.ApiUrl + "/task/",
         adapter: {
-            type: "sql",
-            collection_name: "Tasks"
-        }
+            type: "restapi",
+            collection_name: "Tasks",
+            idAttribute: "id"
+        },
+        debug: true
     },
     extendModel: function(Model) {
         _.extend(Model.prototype, {});

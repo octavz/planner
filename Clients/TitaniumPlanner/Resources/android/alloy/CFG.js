@@ -1,1 +1,1 @@
-module.exports={"dependencies":{}};
+module.exports={"App":{"ApiUrl":"http://192.168.1.100:8080"},"dependencies":{}};

@@ -1,13 +1,15 @@
 exports.definition = {
 	config : {
 		columns : {
-			"id_task" : "INTEGER PRIMARY KEY AUTOINCREMENT",
 			"title" : "TEXT",
 		},
+		URL : Alloy.CFG.App.ApiUrl + '/task/',
 		adapter : {
-			type : "sql",
-			collection_name : "Tasks"//(cip)note: this name is used only in storage
-		}
+			type : "restapi",
+			collection_name : "Tasks",
+			idAttribute : "id",
+		},
+		// debug:true,
 	},
 	extendModel : function(Model) {
 		_.extend(Model.prototype, {
@@ -23,4 +25,4 @@ exports.definition = {
 
 		return Collection;
 	}
-}; 
+};

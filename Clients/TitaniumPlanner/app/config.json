@@ -1,8 +1,11 @@
 {
-	"global": {}, 
-	"env:development": {}, 
-	"env:test": {}, 
-	"env:production": {}, 
+	"global": {},
+	"App": {
+		"ApiUrl": "http://192.168.1.100:8080"
+	} ,
+	"env:development": {},
+	"env:test": {},
+	"env:production": {},
 	"os:android": {},
 	"os:blackberry": {},
 	"os:ios": {},

@@ -25,7 +25,7 @@ function Controller() {
     var exports = {};
     exports.destroy = function() {};
     _.extend($, $.__views);
-    var loginView = Alloy.createController("login").getView();
+    var loginView = Alloy.createController("main").getView();
     loginView.open();
     _.extend($, exports);
 }

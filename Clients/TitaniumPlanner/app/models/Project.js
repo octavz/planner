@@ -1,13 +1,15 @@
 exports.definition = {
 	config : {
 		columns : {
-			"id_project" : "INTEGER PRIMARY KEY AUTOINCREMENT",
 			"name" : "TEXT",
 		},
+		URL : Alloy.CFG.App.ApiUrl + '/project/',
 		adapter : {
-			type : "sql",
-			collection_name : "Projects"
-		}
+			type : "restapi",
+			collection_name : "Projects",
+			idAttribute : "id",
+		},
+		// debug:true,
 	},
 	extendModel : function(Model) {
 		_.extend(Model.prototype, {
