@@ -1,0 +1,44 @@
+".container": {
+	backgroundColor: "white"
+},
+"#tfInsert":{
+	width: "290dp",
+	height: "40dp",
+	top: "10dp",
+	left: "15dp",
+	borderRadius: "6dp",
+	borderColor: "black",
+	borderWidth: "1dp",
+	maxLength: "80dp",
+	paddingLeft: "10dp",
+	textAlign:Titanium.UI.TEXT_ALIGNMENT_LEFT,
+	clearOnEdit: true
+},
+"#btnInsert":{
+	right: "15dp",
+	top: "60dp"
+},
+"#tbTasks":{
+	widht:Ti.UI.FILL,
+	height:Ti.UI.FILL,
+	top: "100dp"
+},
+"#listRow":{
+	hasCheck: true,
+	width:Ti.UI.FILL,
+	height: "40dp",
+	hasCheck: false
+},
+"#componentView":{
+	width: "90%",
+	height:Ti.UI.FILL,
+	left: "10dp"
+},
+"#lblValue":{
+	left: 0,
+	color: "black",
+	font: {
+		fontFamily: "HelveticaNeue",
+		fontSize: "12sp"
+	}
+}

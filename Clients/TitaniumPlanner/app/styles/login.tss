@@ -1,0 +1,59 @@
+".container": {
+	backgroundColor: "white",
+	titleControl: 'false'
+}
+
+"#view_login":{
+	top: '10%',
+	layout: 'vertical',
+	left: '10dp',
+	right: '10dp',
+	backgroundColor: "white"
+}
+
+"TextField": {
+	width: '100%',
+	height: Ti.UI.SIZE,
+	top: '10dp',
+	color: '#3975A9',
+	borderColor: '#3975A9',
+	borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE,
+	font: {
+		fontSize: 16
+	}
+}
+
+"#btnLogin":{
+	backgroundColor: '#3975A9',
+	color: 'white',
+	width: '100%',
+	top: '15dp'
+}
+
+"#txtUserName":{
+	hintText: 'User Name',
+	tintColor: '#3975A9',
+	rules: 'required'
+}
+
+"#txtUserPassword": {
+	hintText: 'User Password',
+	passwordMask: 'true',
+	rules: 'required'
+}
+
+"#lblWelcome":{
+	width: Ti.UI.SIZE,
+	height: Ti.UI.SIZE,
+	textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+	font: {
+		fontSize: 18
+	}
+}
+
+"#activityIndicator":{
+	top: 10,
+	left: 10,
+	height:Ti.UI.SIZE,
+	width: '100%'
+}
