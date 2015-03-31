@@ -24,8 +24,8 @@
   (-> $urlRouterProvider
     (.otherwise "/app/projects")))
 
-;(def.value main.baseUrl "http://localhost:9000/api/")
-(def.value main.baseUrl "http://planme.herokuapp.com/api/")
+(def.value main.baseUrl "http://localhost:9000/api/")
+;(def.value main.baseUrl "http://planme.herokuapp.com/api/")
 
 (def.controller main.ProjectsCtrl [$scope $rootScope $http baseUrl]
   (! $scope.projects
