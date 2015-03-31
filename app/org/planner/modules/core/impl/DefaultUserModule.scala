@@ -52,7 +52,8 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
         } recover {
           case e: Throwable => resultExSync(e, "getUserById")
         }
-      } catch {
+      }
+       catch {
         case e: Throwable => resultEx(e, "getUserById")
       }
     }
