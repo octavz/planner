@@ -21,8 +21,8 @@ object AppBuild extends Build {
     "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/")
 
   val appDependencies = Seq(
-    "com.typesafe.play" %% "play-cache" % "2.3.6",
-    "com.typesafe.play" %% "play-jdbc" % "2.3.6",
+    "com.typesafe.play" %% "play-cache" % "2.3.8",
+    "com.typesafe.play" %% "play-jdbc" % "2.3.8",
     "postgresql" % "postgresql" % "9.3-1102.jdbc41",
     "com.typesafe.play" %% "play-slick" % "0.8.0",
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.11.0",
@@ -36,7 +36,7 @@ object AppBuild extends Build {
   )
 
   lazy val main = Project(appName, file(".")).dependsOn(gen).enablePlugins(play.PlayScala).settings(
-    scalaVersion := "2.11.4",
+    scalaVersion := "2.11.6",
     libraryDependencies ++= appDependencies,
     resolvers ++= appResolvers,
     slick <<= slickCodeGenTask // register manual sbt command
@@ -47,7 +47,7 @@ object AppBuild extends Build {
     base = file("codegen")
   ).settings(
       resolvers ++= appResolvers,
-      scalaVersion := "2.11.4",
+      scalaVersion := "2.11.6",
       libraryDependencies ++= Seq(
         "com.typesafe.slick" %% "slick" % "2.1.0",
         "com.typesafe" % "config" % "1.2.1",
