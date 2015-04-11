@@ -18,7 +18,7 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.8")
 //addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.4.0")
 
 //addSbtPlugin("com.gu" % "sbt-teamcity-test-reporting-plugin" % "1.5")
-addSbtPlugin("org.ensime" % "ensime-sbt" % "0.1.5")
+//addSbtPlugin("org.ensime" % "ensime-sbt" % "0.1.5")
 
 //addSbtPlugin("de.johoop" % "jacoco4sbt" % "2.1.5")
 
