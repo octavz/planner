@@ -29,6 +29,8 @@ trait UserDALComponent {
 
     def getUserGroups(userId: String): DAL[List[String]]
 
+    def searchUsers(email: Option[String], nick:Option[String]): DAL[List[User]]
+
   }
 
 }

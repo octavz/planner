@@ -12,6 +12,7 @@ POST         /login                      @org.planner.controllers.UserController
 POST         /api/login                  @org.planner.controllers.UserController.loginPost
 GET          /api/user/:userId           @org.planner.controllers.UserController.getUserById(userId: String)
 GET          /api/user                   @org.planner.controllers.UserController.getUserBySession
+GET          /api/users                   @org.planner.controllers.UserController.searchUsers(email: Option[String], nick: Option[String])
 POST         /api/register               @org.planner.controllers.UserController.register
 POST         /api/group                  @org.planner.controllers.UserController.addGroup
 GET          /api/user/:id/projects      @org.planner.controllers.ProjectController.getUserProjects(id: String, offset: Int, count: Int)

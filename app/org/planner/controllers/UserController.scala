@@ -121,4 +121,23 @@ trait UserController extends BaseController {
           Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
       }
   }
+
+  @ApiOperation(value = "Search user by email or/and nick", notes = "Search users", response = classOf[List[UserDTO]], httpMethod = "GET", nickname = "searchUsers")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
+  def searchUsers(
+                   @ApiParam(value = "user email", required = false, allowMultiple = false) @QueryParam("email") email: Option[String],
+                   @ApiParam(value = "user nick", required = false, allowMultiple = false) @QueryParam("nick") nick: Option[String]) = Action.async {
+    implicit request =>
+      try {
+        authorize {
+          implicit authInfo =>
+            userModule.searchUsers(email, nick) map (r => Ok(Json.toJson(r)))
+        }
+      } catch {
+        case e: Throwable =>
+          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+      }
+  }
 }

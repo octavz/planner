@@ -28,7 +28,7 @@ object AppBuild extends Build {
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.11.0",
     "org.mockito" % "mockito-all" % "1.10.10",
     //"com.wix" %% "accord-core" % "0.4-SNAPSHOT",
-    "com.wordnik" %% "swagger-play2" % "1.3.10",
+    "com.wordnik" %% "swagger-play2" % "1.3.12",
     "net.sourceforge.htmlunit" % "htmlunit" % "2.15" % "test",
     "com.github.nscala-time" %% "nscala-time" % "1.4.0",
     "com.livestream" %% "scredis" % "2.0.5",

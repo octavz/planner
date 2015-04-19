@@ -29,7 +29,7 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
               fInsert <- dalUser.insertSession(model)
             } yield resultSync(model.id)
 
-            f recover { case e: Throwable => resultErrorSync(Status.INTERNAL_SERVER_ERROR, e.getMessage)}
+            f recover { case e: Throwable => resultErrorSync(Status.INTERNAL_SERVER_ERROR, e.getMessage) }
           }
       }
     }
@@ -53,7 +53,7 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
           case e: Throwable => resultExSync(e, "getUserById")
         }
       }
-       catch {
+      catch {
         case e: Throwable => resultEx(e, "getUserById")
       }
     }
@@ -67,7 +67,7 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
           case _ => dalUser.insertUser(model) map (a => resultSync(new RegisterDTO(a)))
         }
 
-        f recover { case e: Throwable => resultExSync(e, "registerUser")}
+        f recover { case e: Throwable => resultExSync(e, "registerUser") }
       } catch {
         case e: Throwable => resultEx(e, "registerUser")
       }
@@ -77,7 +77,7 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
       try {
         val model = dto.toModel(authData.user.id)
         val f = dalUser.insertGroupWithUser(model, authData.user.id) map (_ => resultSync(new GroupDTO(model)))
-        f recover { case e: Throwable => resultExSync(e, "addGroup")}
+        f recover { case e: Throwable => resultExSync(e, "addGroup") }
       } catch {
         case e: Throwable =>
           resultEx(e, "addGroup")
@@ -95,6 +95,14 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
 
       f recover {
         case e: Throwable => resultExSync(e, "getUserByToken")
+      }
+
+    }
+
+    override def searchUsers(email: Option[String], nick: Option[String])(implicit authInfo: AuthInfo[User]): Result[List[UserDTO]] = {
+      val f = dalUser.searchUsers(email, nick).map(lst => resultSync(lst.map(u => new UserDTO(u))))
+      f.recover {
+        case e: Throwable => resultExSync(e, "searchUsers")
       }
 
     }
