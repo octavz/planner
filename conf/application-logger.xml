@@ -8,6 +8,21 @@
         </encoder>
     </appender>
 
+  <appender name="Rolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>logs/main.log</File>
+    <encoder>
+      <pattern>%date %level [%thread] %logger{60} [%file:%line] %msg%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <maxIndex>20</maxIndex>
+      <FileNamePattern>logs/main.log.%i</FileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>10MB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+
     <logger name="play" level="INFO" />
     <logger name="application" level="INFO" />
     <logger name="mycustomlogger" level="INFO" />
