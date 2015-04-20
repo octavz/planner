@@ -1,7 +1,8 @@
 {
 	"global": {},
 	"App": {
-		"ApiUrl": "http://192.168.1.100:8080"
+		"ApiUrl": "http://192.168.1.100:8080",
+		"LoginUrl": "http://system.ml:9000/api/login"
 	} ,
 	"env:development": {},
 	"env:test": {},

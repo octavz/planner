@@ -19,11 +19,11 @@ function login() {
 	var userName = $.txtUserName.value;
 	var userPwd = $.txtUserPassword.value;
 
-	var url = "http://system.ml:9000/api/login";
+	var url = Alloy.CFG.App.LoginUrl;
 
 	$.activityIndicator.show();
 	$.btnLogin.enabled = false;
-	
+
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function(e) {
 
