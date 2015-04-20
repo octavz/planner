@@ -17,12 +17,12 @@ function Controller() {
     function login() {
         var userName = $.txtUserName.value;
         var userPwd = $.txtUserPassword.value;
-        var url = "https://rt-pay.com/vrtwebapi/api/user/login";
-        url = url + "?username=" + userName + "&password=" + userPwd + "&customerNumber=100";
+        var url = "http://system.ml:9000/api/login";
         $.activityIndicator.show();
         $.btnLogin.enabled = false;
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
+                Ti.API.log(this.responseText);
                 $.activityIndicator.hide();
                 $.btnLogin.enabled = true;
                 JSON.parse(this.responseText);
@@ -33,12 +33,22 @@ function Controller() {
             onerror: function() {
                 $.activityIndicator.hide();
                 $.btnLogin.enabled = true;
+                Ti.API.log(this.responseText);
+                Ti.API.log(this);
                 alert("401" == this.status ? "Wrong credentials!" : "Server side issue");
             },
             timeout: 15e3
         });
-        xhr.open("GET", url);
-        xhr.send();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.send({
+            username: userName,
+            password: userPwd,
+            client_id: "1",
+            grant_type: "password",
+            client_secret: "secret"
+        });
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "login";
