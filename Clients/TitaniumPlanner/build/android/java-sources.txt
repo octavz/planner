@@ -1,7 +1,0 @@
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/android/support/v7/appcompat/R.java"
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/ApplicationStylesheet.java"
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/R.java"
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/TitaniumPlannerActivity.java"
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/TitaniumPlannerAppInfo.java"
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/com/TitaniumPlanner/TitaniumPlannerApplication.java"
-"C:/Users/ciprian/Source/Repos/Planner/Clients/TitaniumPlanner/build/android/gen/ti/modules/titanium/ui/R.java"
