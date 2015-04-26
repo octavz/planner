@@ -1,7 +1,11 @@
 <Alloy>
 	<Collection src="Project" />
 	<Window class="container">
-		<Label>Projects</Label>
+		<ActionBar id="actionbar" title="My2 Projects"  />
+		<Menu>
+			<MenuItem id="item1" title="My Settings" />
+			<MenuItem id="item2" title="Logout" />
+		</Menu>
 		<TextField id="tfInsert"></TextField>
 		<Button id="btnInsert" >Insert</Button>
 
@@ -12,7 +16,6 @@
 					<Label id="lblValue" text="{name}"></Label>
 				</View>
 			</TableViewRow>
-
 		</TableView>
 
 	</Window>
