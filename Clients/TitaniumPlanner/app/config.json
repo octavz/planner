@@ -1,7 +1,7 @@
 {
 	"global": {},
 	"App": {
-		"ApiUrl": "http://192.168.1.100:8080",
+		"ApiUrl": "http://system.ml:9000/api/",
 		"LoginUrl": "http://system.ml:9000/api/login",
 		"UseFakeData": true
 	} ,
