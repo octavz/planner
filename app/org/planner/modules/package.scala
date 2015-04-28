@@ -1,6 +1,7 @@
 package org.planner
 
 import org.planner.db.User
+import org.planner.util.Gen
 
 import scala.concurrent._
 
@@ -8,6 +9,15 @@ import scalaoauth2.provider.AuthInfo
 import ExecutionContext.Implicits.global
 
 package object modules {
+
+  implicit class CustomStringOption(str: Option[String]) {
+
+    def getOrGuid = str match {
+      case Some(s) => if (s.isEmpty) Gen.guid else s
+      case _ => Gen.guid
+    }
+
+  }
 
   type ResultError = (Int, String)
 
