@@ -1,15 +1,23 @@
 exports.definition = {
 	config : {
 		columns : {
+			"id" : "TEXT",
 			"name" : "TEXT",
+			"desc" : "TEXT",
+			"parent" : "",
+			//todo cip which is the type here?
+			"public" : "TEXT",
+			//todo cip whichj is the type here?
+			"perm" : "TEXT"
+
 		},
 		URL : Alloy.CFG.App.ApiUrl + '/project/',
 		adapter : {
-			type : "restapi",
+			type : Alloy.CFG.App.UseFakeData ? "sql" : "restapi",
 			collection_name : "Projects",
 			idAttribute : "id",
 		},
-		// debug:true,
+		debug : true,
 	},
 	extendModel : function(Model) {
 		_.extend(Model.prototype, {
