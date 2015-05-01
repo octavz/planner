@@ -60,7 +60,7 @@ class ProjectDALSpec extends BaseDALSpec {
       }
     }
 
-    "get projects by user" in new WithApplication(testApp) {
+    "get private projects by user" in new WithApplication(testApp) {
       DB.withSession {
         implicit s =>
           val dal = newDal
@@ -71,13 +71,13 @@ class ProjectDALSpec extends BaseDALSpec {
       }
     }
 
-    "get projects by user" in new WithApplication {
+    "get public projects by user" in new WithApplication {
       DB.withSession {
         implicit s =>
           val dal = newDal
           val resGet = Await.result(dal.getUserPublicProjects("1", 0, 1), Duration.Inf)
           val ret = resGet.asInstanceOf[List[(Group,Project)]]
-          ret.size === 1
+          ret.size === 0
       }
     }
 

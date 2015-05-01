@@ -51,7 +51,7 @@ class ProjectModuleSpec extends Specification with Mockito {
     "implement insertProject and call dal" in {
       val m = module
       m.authData === authInfo
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None)
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"))
 
       m.projectDal.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
       val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)
@@ -61,7 +61,7 @@ class ProjectModuleSpec extends Specification with Mockito {
 
     "implement updateProject and call dal" in {
       val m = module
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None)
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"))
 
       m.projectDal.updateProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
       m.projectDal.getProjectById(any) returns dal(Some(genProject(authInfo.user.id)))
@@ -73,7 +73,7 @@ class ProjectModuleSpec extends Specification with Mockito {
 
     "return right error when dal crashes" in {
       val m = module
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = Some(1))
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = Some(1), groupId = Some("groupId"))
 
       m.projectDal.insertProject(any[Project], any[Group]) returns Future.failed(new Exception("test"))
       val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)

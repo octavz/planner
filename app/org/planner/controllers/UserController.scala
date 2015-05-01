@@ -140,4 +140,22 @@ trait UserController extends BaseController {
           Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
       }
   }
+
+  @ApiOperation(value = "Add user to group", notes = "Add user to group", response = classOf[BooleanDTO], httpMethod = "POST", nickname = "addUserToGroup")
+  @ApiImplicitParams(Array(new ApiImplicitParam(value = "Array containing user ids", required = true, dataType = "List[String]", paramType = "body")))
+  def addUsersToGroup(groupId: String) = Action.async {
+    implicit request =>
+      authorize {
+        implicit authInfo =>
+          request.body.asJson.map {
+            json => try {
+              val userIds = json.as[List[String]]
+              userModule.addUsersToGroup(userIds) map (r => Ok(Json.toJson(r)))
+            } catch {
+              case e: Throwable =>
+                Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+            }
+          }.getOrElse(Future.successful(BadRequest("Wrong json")))
+      }
+  }
 }

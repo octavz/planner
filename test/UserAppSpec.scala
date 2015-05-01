@@ -54,7 +54,7 @@ class UserAppSpec extends Specification with Mockito {
   "Application" should {
 
     "have external static files attached to root" in new WithApplication(app()) {
-      route(FakeRequest(GET, "/boum")) must beSome
+      route(FakeRequest(GET, "/docs/index.html")) must beSome
     }
 
     "render login page" in new WithApplication(app()) {
@@ -81,7 +81,7 @@ class UserAppSpec extends Specification with Mockito {
       val service = newComp
       service.userModule.registerUser(any[RegisterDTO]) answers (u => result(u.asInstanceOf[RegisterDTO]))
       running(app(service)) {
-        val page = route(FakeRequest(POST, "/register")
+        val page = route(FakeRequest(POST, "/api/register")
           .withJsonBody(Json.parse(
           """
             {
@@ -104,7 +104,7 @@ class UserAppSpec extends Specification with Mockito {
           result(dto)
       }
       running(app(service)) {
-        val page = route(FakeRequest(POST, "/group")
+        val page = route(FakeRequest(POST, "/api/group")
           .withJsonBody(Json.parse(
           """
             {

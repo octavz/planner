@@ -1,9 +1,9 @@
 package org.planner.modules.dto
 
-import org.planner.util.{Gen, Time}
 import org.planner.db._
-import play.api.libs.json._
+import org.planner.util.{Gen, Time}
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class LoginForm(email: String, password: String)
 
@@ -37,9 +37,12 @@ case class GroupDTO(id: Option[String], name: String, projectId: String) {
   }
 }
 
-case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String], public: Boolean, perm: Option[Int]) {
+case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String], public: Boolean, perm: Option[Int], groupId: Option[String]) {
 
-  def this(model: Project, group: Group) = this(Some(model.id), model.name, model.description, model.parentId, model.perm == 1, perm = Some(group.permProject))
+  def this(model: Project, group: Group) = this(
+    id = Some(model.id), name = model.name, desc = model.description,
+    parent = model.parentId, public = model.perm == 1, perm = Some(group.permProject),
+    groupId = Some(group.id))
 
   def toModel(userId: String) = {
     val n = Time.now
@@ -50,8 +53,15 @@ case class ProjectDTO(id: Option[String], name: String, desc: Option[String], pa
 
 case class ProjectListDTO(items: List[ProjectDTO])
 
+case class StringDTO(value: String)
+
+case class BooleanDTO(value: Boolean)
 
 trait JsonFormats extends BaseFormats with ConstraintReads {
+
+  implicit val stringDTO = Json.format[StringDTO]
+
+  implicit val booleanDTO = Json.format[BooleanDTO]
 
   implicit val userDTO = Json.format[UserDTO]
 
@@ -66,7 +76,8 @@ trait JsonFormats extends BaseFormats with ConstraintReads {
       (__ \ 'desc).readNullable[String](maxLength[String](1500)) ~
       (__ \ 'parent).readNullable[String](maxLength[String](50)) ~
       (__ \ 'public).read[Boolean] ~
-      (__ \ 'perm).readNullable[Int](max(999))
+      (__ \ 'perm).readNullable[Int](max(999)) ~
+      (__ \ 'groupId).readNullable[String]
     )(ProjectDTO)
 
   implicit val projectDtoWrite = Json.writes[ProjectDTO]

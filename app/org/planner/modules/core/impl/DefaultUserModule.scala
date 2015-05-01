@@ -1,7 +1,7 @@
 package org.planner.modules.core.impl
 
 import org.planner.modules.core.{UserModuleComponent}
-import org.planner.modules.dto.{UserDTO, GroupDTO, RegisterDTO}
+import org.planner.modules.dto.{BooleanDTO, UserDTO, GroupDTO, RegisterDTO}
 import play.api.http.Status
 import scala.concurrent._
 import ExecutionContext.Implicits._
@@ -104,8 +104,9 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
       f.recover {
         case e: Throwable => resultExSync(e, "searchUsers")
       }
-
     }
+
+    override def addUsersToGroup(userIds: List[String])(implicit authInfo: AuthInfo[User]): Result[BooleanDTO] = ???
   }
 
 }

@@ -60,7 +60,7 @@ class ProjectAppSpec extends Specification with Mockito {
       val module = newComp
       module.projectModule.insertProject(any[ProjectDTO]) answers (p => result(p.asInstanceOf[ProjectDTO]))
       running(app(module)) {
-        val page = route(FakeRequest(POST, "/project")
+        val page = route(FakeRequest(POST, "/api/project")
           .withHeaders("Authorization" -> "OAuth token")
           .withJsonBody(Json.parse(
           """
@@ -84,10 +84,10 @@ class ProjectAppSpec extends Specification with Mockito {
 
     "get all projects" in {
       val module = newComp
-      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1))
+      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"))
       module.projectModule.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p)))
       running(app(module)) {
-        val page = route(FakeRequest(GET, "/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
+        val page = route(FakeRequest(GET, "/api/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
         page must beSome
         status(page.get) === OK
         Await.ready(page.get, Duration.Inf)
@@ -108,10 +108,10 @@ class ProjectAppSpec extends Specification with Mockito {
 
     "update project" in {
       val module = newComp
-      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1))
+      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"))
       module.projectModule.updateProject(any) returns result(p)
       running(app(module)) {
-        val page = route(FakeRequest(PUT, "/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
+        val page = route(FakeRequest(PUT, "/api/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
           s"""
             {
             "name":"${p.name}",
