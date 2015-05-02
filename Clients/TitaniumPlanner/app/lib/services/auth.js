@@ -6,10 +6,13 @@ function Login(username, password, onok, onerror) {
 
 			Ti.API.log(this.responseText);
 
-			onok();
 			var data = JSON.parse(this.responseText);
 			Ti.API.log(this.responseText);
 
+			Alloy.Globals.UserToken = data.accessToken;
+			Alloy.Globals.UserId = data.id;
+			
+			onok();
 		},
 		onerror : function(e) {
 

@@ -1,7 +1,7 @@
 // Reference to the singleton
 var userLoginData = Alloy.Models.loginData;
-userLoginData.set('userName', 'Andrei');
-userLoginData.set('userPassword', 'Andrei');
+userLoginData.set('userName', 'aaa@aaa.com');
+userLoginData.set('userPassword', '123456');
 userLoginData.fetch();
 
 var validation = require('de.mwfire.validate');

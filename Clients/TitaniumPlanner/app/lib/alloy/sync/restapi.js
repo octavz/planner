@@ -5,7 +5,7 @@
  * Copyright Napp ApS
  * www.napp.dk
  */
-
+// taken from: https://github.com/viezel/napp.alloy.adapter.restapi
 function S4() {
 	return ((1 + Math.random()) * 65536 | 0).toString(16).substring(1);
 }

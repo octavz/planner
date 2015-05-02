@@ -10,6 +10,7 @@ $.btnInsert.addEventListener('click', function(e) {
 		var project = Alloy.createModel("Project", {
 			//with out custom parameters
 			name : $.tfInsert.value,
+			public: true
 		});
 
 		//This is how we save a model to our databaseif the model already exists, the save will be an "update".
