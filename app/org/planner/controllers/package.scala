@@ -15,6 +15,11 @@ package object controllers {
     Future.successful(BadRequest( s"""{"errCode":0, "errMessage":${ex.getMessage}}"""))
   }
 
+  def asyncBadRequest(msg: String) = {
+    Logger.error(msg)
+    Future.successful(BadRequest( s"""{"errCode":0, "errMessage":${msg}}"""))
+  }
+
   def responseOk[T](a: T)(implicit w: Writes[T]) = Ok(Json.toJson(a))
 
 }

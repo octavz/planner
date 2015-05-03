@@ -14,7 +14,8 @@ object SlickGenerator {
   val dbUrl = conf.getString("db.default.url")
   val dbUser = conf.getString("db.default.user")
   val dbPassword = conf.getString("db.default.password")
-
+  val allowed = List("access_tokens", "actions", "auth_codes", "client_grant_type", "clients", "entity_types",
+    "grant_types", "groups", "groups_users", "labels", "projects", "resources", "user_sessions", "user_statuses", "users", "verbs", "tasks")
 
   def main(args: Array[String]) = {
     codeGen.writeToFile(
@@ -27,14 +28,12 @@ object SlickGenerator {
   }
 
   def getUrl = if (dbUrl.contains("?")) s"$dbUrl&user=$dbUser&password=$dbPassword" else s"$dbUrl?user=$dbUser&password=$dbPassword"
-
   def getDriver = conf.getString("db.default.driver")
-
   val db = PostgresDriver.simple.Database.forURL(getUrl, driver = getDriver)
   // filter out desired tables
   val model = db.withSession {
     implicit session =>
-      val tables = PostgresDriver.getTables.list
+      val tables = PostgresDriver.defaultTables.filter(t => allowed.contains(t.name.name))
       createModel(tables, PostgresDriver)
   }
   val codeGen = new SourceCodeGenerator(model) {
@@ -75,8 +74,8 @@ ${sb.toString}
       // disable entity class generation and mapping
 
       override def code = {
-        if (!model.name.table.startsWith("vs_")) {
-          sb.append(EntityType.code ++ "\n\n")
+        if (allowed contains model.name.table) {
+          sb.append(EntityType.code ++ "\n")
           super.code
         } else List()
       }
@@ -86,7 +85,7 @@ ${sb.toString}
         // use the data model member of .toLowerCase.toCamelCase
         // this column to change the Scala type, e.g. to a custom enum or anything else
         override def rawName = {
-         val a = model.name.toCamelCase
+          val a = model.name.toCamelCase
           s"${a.head.toLower}${a.tail}"
         }
 

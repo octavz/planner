@@ -5,6 +5,7 @@ import javax.ws.rs.{QueryParam, PathParam}
 import com.wordnik.swagger.annotations._
 import org.planner.modules.core.{ProjectModuleComponent}
 import org.planner.modules.dto._
+import play.api.libs.json.JsResultException
 import play.api.mvc._
 import org.planner.config._
 
@@ -17,15 +18,22 @@ trait ProjectController extends BaseController {
   implicit val service = projectModule
 
   @ApiOperation(value = "Create project", notes = "Create project", response = classOf[ProjectDTO], httpMethod = "POST", nickname = "createProject")
-  @ApiImplicitParams(Array(new ApiImplicitParam(value = "The new project to be added", required = true, dataType = "ProjectDTO", paramType = "body")))
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(value = "The new project to be added", required = true, dataType = "ProjectDTO", paramType = "body"),
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
   def insertProject = Action.async {
     implicit request =>
       request.body.asJson.map {
         json => try {
           authorize {
             implicit authInfo =>
-              val dto = json.as[ProjectDTO]
-              projectModule.insertProject(dto) map (responseOk(_))
+              try {
+                val dto = json.as[ProjectDTO]
+                projectModule.insertProject(dto) map (responseOk(_))
+              } catch {
+                case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
+                case e: Throwable => asyncBadRequest(e) }
           }
         } catch {
           case e: Throwable => asyncBadRequest(e)
@@ -34,15 +42,25 @@ trait ProjectController extends BaseController {
   }
 
   @ApiOperation(value = "Update project", notes = "update project", response = classOf[ProjectDTO], httpMethod = "PUT", nickname = "updateProject")
-  @ApiImplicitParams(Array(new ApiImplicitParam(value = "The project to be updated", required = true, dataType = "ProjectDTO", paramType = "body")))
-  def updateProject = Action.async {
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(value = "The project to be updated", required = true, dataType = "ProjectDTO", paramType = "body"),
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
+  def updateProject(
+                     @ApiParam(value = "project id", required = true) @PathParam(value = "id") id: String
+                     ) = Action.async {
     implicit request =>
       request.body.asJson.map {
         json => try {
           authorize {
             implicit authInfo =>
-              val dto = json.as[ProjectDTO]
-              projectModule.updateProject(dto) map (responseOk(_))
+              try {
+                val dto = json.as[ProjectDTO].copy(id = Some(id))
+                projectModule.updateProject(dto) map (responseOk(_))
+              } catch {
+                case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
+                case e: Throwable => asyncBadRequest(e)
+              }
           }
         } catch {
           case e: Throwable => asyncBadRequest(e)
@@ -70,5 +88,32 @@ trait ProjectController extends BaseController {
         }
 
     }
+
+  @ApiOperation(value = "Create task", notes = "Create task", response = classOf[TaskDTO], httpMethod = "POST", nickname = "createTask")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(value = "The new task to be added", required = true, dataType = "TaskDTO", paramType = "body"),
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
+  def insertTask(
+                  @ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String,
+                  ) =
+  Action.async {
+    implicit request =>
+      request.body.asJson.map {
+        json => try {
+          authorize {
+            implicit authInfo =>
+              try {
+                val dto = json.as[ProjectDTO]
+                projectModule.insertTask(dto) map (responseOk(_))
+              } catch {
+                case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
+                case e: Throwable => asyncBadRequest(e) }
+          }
+        } catch {
+          case e: Throwable => asyncBadRequest(e)
+        }
+      }.getOrElse(asyncBadRequest(new Exception("Bad Json")))
+  }
 
 }

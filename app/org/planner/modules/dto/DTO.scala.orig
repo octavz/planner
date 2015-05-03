@@ -1,11 +1,17 @@
 package org.planner.modules.dto
 
-import org.planner.util.{Constants, Gen, Time}
+<<<<<<< HEAD
+import org.planner.db._
+import org.planner.util.{Gen, Time}
+=======
+import org.planner.util.{Gen, Time}
 
 import org.planner.db._
 import org.planner.modules._
 import play.api.libs.json._
+>>>>>>> 644031a06c11d24af1bb8e15ef20a7ed22bf7857
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class LoginForm(email: String, password: String)
 
@@ -50,20 +56,6 @@ case class ProjectDTO(id: Option[String], name: String, desc: Option[String], pa
     val n = Time.now
     Project(id = id.getOrGuid, userId = userId, name = name, description = desc,
       parentId = parent, created = n, updated = n, perm = if (public) 1 else 0)
-  }
-}
-
-case class TaskDTO(id: Option[String], subject: String, desc: Option[String], parent: Option[String], projectId: Option[String], public: Boolean, perm: Option[Int],userId: Option[String],groupId: Option[String]) {
-
-  def this(model: Task, group: Group) = this(
-    id = Some(model.id), subject = model.subject, desc = model.description,
-    parent = model.parentId, public = model.perm == 1, perm = Some(group.permProject),
-    groupId = Some(group.id))
-
-  def toModel() = {
-    val n = Time.now
-    Task(id = id.getOrGuid, userId = userId.getOrElse(throw new Exception("User id not set for task.")), subject = subject, description = desc,projectId = projectId.getOrElse("Task has no project id"),
-      parentId = parent, created = n, updated = n, perm = if (public) 1 else 0, groupId = groupId.getOrElse(Constants.EmptyGroupId))
   }
 }
 

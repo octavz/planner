@@ -13,11 +13,13 @@ trait ProjectDALComponent {
 
     def getUserPublicProjects(uid: String, offset: Int, count: Int): DAL[List[(Group, Project)]]
 
-    def getProjectGroupIds(projectId: String): DAL[List[String]]
+    def getProjectGroups(projectId: String): DAL[List[Group]]
 
     def updateProject(project: Project): DAL[Project]
 
     def getProjectById(id: String): DAL[Option[Project]]
+
+    def insertTask(model: Task): DAL[Task]
   }
 
 }

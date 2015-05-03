@@ -1,10 +1,10 @@
 package org.planner.dal.impl
 
 import org.planner.dal._
-import scala.slick.jdbc.{ StaticQuery => Q}
+import scala.slick.jdbc.{StaticQuery => Q}
 import Q.interpolation
 import play.api.db.slick.DB
-import org.planner.dal.{Oauth2DALComponent,  DAL}
+import org.planner.dal.{Oauth2DALComponent, DAL}
 import scalaoauth2.provider.{ClientCredential, AuthInfo, DataHandler}
 import java.sql.Timestamp
 import org.planner.util.Crypto
@@ -20,7 +20,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
   this: Caching =>
   val projectDal = new SlickProjectDAL
 
-  class SlickProjectDAL extends ProjectDAL  {
+  class SlickProjectDAL extends ProjectDAL {
 
     override def insertProject(model: Project, group: Group): DAL[Project] =
       DB.withTransaction {
@@ -49,11 +49,11 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
           dal(ret)
       }
 
-    override def getProjectGroupIds(projectId: String): DAL[List[String]] =
+    override def getProjectGroups(projectId: String): DAL[List[Group]] =
       DB.withSession {
         implicit session =>
           val ret = Groups.filter(_.projectId === projectId).list
-          dal(ret map (_.id))
+          dal(ret)
       }
 
     override def getUserPublicProjects(
@@ -78,6 +78,12 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
         dal(Projects.filter(_.id === id).firstOption)
     }
 
+    override def insertTask(model: Task): DAL[Task] =
+      DB.withTransaction {
+        implicit session =>
+          Tasks.insert(model)
+          dal(model)
+      }
   }
 
 }

@@ -2,6 +2,12 @@ package org.planner.util
 
 import java.sql.Timestamp
 
+object Constants {
+  val EmptyGroupId  = ""
+  val DefaultGroupType = 0
+}
+
+
 object Gen {
 
   /**

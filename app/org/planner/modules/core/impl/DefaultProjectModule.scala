@@ -3,6 +3,7 @@ package org.planner.modules.core.impl
 import org.planner.dal._
 import org.planner.modules.core.{ProjectModuleComponent}
 import org.planner.modules.dto._
+import org.planner.util.Constants
 import play.api.http.Status
 import org.planner.modules._
 import org.planner.db._
@@ -22,7 +23,7 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
       val project = dto.toModel(userId)
       val group = Group(id = guid, projectId = project.id, name = project.name, created = now, updated = now, userId = authData.user.id, groupId = None, perm = PermProject.OwnerReadWriteDelete)
       val f = projectDal.insertProject(project, group) map (p => resultSync(new ProjectDTO(p, group)))
-      f recover { case e: Throwable => resultExSync(e, "addGroup")}
+      f recover { case e: Throwable => resultExSync(e, "addGroup") }
     }
 
     override def getUserProjects(id: String, offset: Int, count: Int): Result[ProjectListDTO] = {
@@ -31,7 +32,7 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
         projects <- if (id == userId) projectDal.getUserProjects(userId, offset, count) else projectDal.getUserPublicProjects(id, offset, count)
       } yield resultSync(ProjectListDTO(items = projects.map(p => new ProjectDTO(p._2, p._1)).distinct))
 
-      f recover { case e: Throwable => resultExSync(e, "getUserProject")}
+      f recover { case e: Throwable => resultExSync(e, "getUserProject") }
     }
 
     override def updateProject(dto: ProjectDTO): Result[ProjectDTO] = {
@@ -43,6 +44,26 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
             resultSync(new ProjectDTO(p, Group(id = "", projectId = p.id, name = "", userId = "user", groupId = None, created = p.created, updated = p.updated)))
           }
         }
+      }
+    }
+
+    override def insertTask(task: TaskDTO): Result[TaskDTO] = {
+      projectDal.getProjectGroups(task.projectId.getOrElse(throw new Exception("Task has no group id"))) map {
+        groups =>
+          if (groups.isEmpty) throw new Exception("Project has no groups")
+          else {
+            groups.find(_.`type` == Constants.DefaultGroupType) match {
+              case Some(mainGroup) =>
+                val model = task.toModel().copy(groupId = task.groupId.getOrElse(mainGroup.projectId))
+                projectDal.insertTask(model) map {
+                  m =>
+                    task
+                }
+              case None =>
+                throw new Exception(s"Project ${task.projectId.get} has no main group")
+            }
+          }
+
       }
     }
   }

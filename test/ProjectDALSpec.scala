@@ -83,8 +83,8 @@ class ProjectDALSpec extends BaseDALSpec {
 
     "get project groups" in new WithApplication(testApp) {
       val dal = newDal
-      val projects = Await.result(dal.getProjectGroupIds(testProject.id), Duration.Inf)
-      projects must beAnInstanceOf[List[String]]
+      val projects = Await.result(dal.getProjectGroups(testProject.id), Duration.Inf)
+      projects must beAnInstanceOf[List[Group]]
       projects.size === 1
     }
   }

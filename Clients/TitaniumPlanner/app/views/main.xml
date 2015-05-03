@@ -1,7 +1,7 @@
 <Alloy>
 	<TabGroup>
 		<Tab title="Projects">
-			<Require type="view" src="Projects"/>
+			<Require type="view" src="ProjectList"/>
 		</Tab>
 		<Tab title="Tasks">
 			<Require type="view" src="Tasks"/>
