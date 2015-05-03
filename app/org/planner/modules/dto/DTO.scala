@@ -1,6 +1,8 @@
 package org.planner.modules.dto
 
+
 import org.planner.db._
+import org.planner.modules._
 import org.planner.util.{Gen, Time}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -33,7 +35,7 @@ case class GroupDTO(id: Option[String], name: String, projectId: String) {
 
   def toModel(userId: String) = {
     val n = Time.now
-    Group(id = id.getOrElse(Gen.guid), name = name, projectId = projectId, userId = userId, groupId = None, created = n, updated = n)
+    Group(id = id.getOrGuid, name = name, projectId = projectId, userId = userId, groupId = None, created = n, updated = n)
   }
 }
 
@@ -46,7 +48,7 @@ case class ProjectDTO(id: Option[String], name: String, desc: Option[String], pa
 
   def toModel(userId: String) = {
     val n = Time.now
-    Project(id = id.getOrElse(Gen.guid), userId = userId, name = name, description = desc,
+    Project(id = id.getOrGuid, userId = userId, name = name, description = desc,
       parentId = parent, created = n, updated = n, perm = if (public) 1 else 0)
   }
 }

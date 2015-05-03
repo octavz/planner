@@ -5,7 +5,7 @@ exports.definition = {
 		},
 		URL : Alloy.CFG.App.ApiUrl + '/task/',
 		adapter : {
-			type : "restapi",
+			type : Alloy.CFG.App.UseFakeData ? "sql" : "restapi",
 			collection_name : "Tasks",
 			idAttribute : "id",
 		},

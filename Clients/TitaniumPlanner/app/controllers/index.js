@@ -1,2 +1,2 @@
-var loginView = Alloy.createController('main').getView();
+var loginView = Alloy.createController('login').getView();
 loginView.open();

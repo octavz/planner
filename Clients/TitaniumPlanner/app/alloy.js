@@ -10,3 +10,5 @@
 //
 // Alloy.Globals.someGlobalFunction = function(){};
 
+Alloy.Globals.UserToken = null;
+Alloy.Globals.UserId = null;
