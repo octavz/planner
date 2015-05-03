@@ -7,11 +7,6 @@
 			<MenuItem id="menuSettings" title="My Settings" onClick="OpenMySettings"/>
 			<MenuItem id="menuLogout" title="Logout" onClick="DoLogout"/>
 		</Menu>
-		<TextField id="tfInsert">
-		</TextField>
-		<Button id="btnInsert" >
-			Insert
-		</Button>
 		<!-- Specifies the collection singleton or instance to bind to the table. -->
 		<TableView id="tbProjects" dataCollection="Project" onClick="OpenEditProject">
 			<TableViewRow id="listRow" rowId="{id}">

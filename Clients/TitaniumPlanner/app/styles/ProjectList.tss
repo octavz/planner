@@ -2,23 +2,7 @@
 	backgroundColor: "white"
 },
 
-"#tfInsert":{
-	width: "290dp",
-	height: "40dp",
-	top: "10dp",
-	left: "15dp",
-	borderRadius: "6dp",
-	borderColor: "black",
-	borderWidth: "1dp",
-	maxLength: "80dp",
-	paddingLeft: "10dp",
-	textAlign:Titanium.UI.TEXT_ALIGNMENT_LEFT,
-	clearOnEdit: true
-},
-"#btnInsert":{
-	right: "15dp",
-	top: "60dp"
-},
+
 "#tbProjects":{
 	widht:Ti.UI.FILL,
 	height:Ti.UI.FILL,
