@@ -1,9 +1,9 @@
 {
 	"global": {},
 	"App": {
-		"ApiUrl": "http://system.ml:9000/api/",
+		"ApiUrl": "http://system.ml:9000/api",
 		"LoginUrl": "http://system.ml:9000/api/login",
-		"UseFakeData": true
+		"UseFakeData":false 
 	} ,
 	"env:development": {},
 	"env:test": {},

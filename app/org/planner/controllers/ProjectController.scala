@@ -33,7 +33,7 @@ trait ProjectController extends BaseController {
                 projectModule.insertProject(dto) map (responseOk(_))
               } catch {
                 case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
-                case e: Throwable => asyncBadRequest(e) }
+              }
           }
         } catch {
           case e: Throwable => asyncBadRequest(e)
