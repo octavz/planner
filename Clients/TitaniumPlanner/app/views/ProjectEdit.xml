@@ -1,4 +1,5 @@
 <Alloy>
-	<View class="container">
-	</View>
+	<Window id="win" class="container" title="Edit project">
+		<ActionBar id="actionbar" displayHomeAsUp="true"/>
+	</Window>
 </Alloy>

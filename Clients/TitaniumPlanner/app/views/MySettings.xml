@@ -1,5 +1,5 @@
 <Alloy>
-	<Window class="container" title="New Project">
+	<Window class="container" title="My Settings">
 		<ActionBar id="actionbar" displayHomeAsUp="true"/>
 	</Window>
 </Alloy>

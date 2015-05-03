@@ -24,8 +24,7 @@ function onok() {
 	var startupView = Alloy.createController('ProjectList').getView();
 	startupView.open();
 
-	// $.index.close();
-	//$.index = null;
+	$.login.close();
 }
 
 function onerror(statuscode) {
@@ -50,8 +49,6 @@ function login() {
 
 	auth.Login(userName, userPwd, onok, onerror);
 }
-
-$.login.open();
 
 Alloy.Models.loginData.fetch();
 
