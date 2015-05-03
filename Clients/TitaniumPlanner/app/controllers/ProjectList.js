@@ -10,7 +10,7 @@ $.btnInsert.addEventListener('click', function(e) {
 		var project = Alloy.createModel("Project", {
 			//with out custom parameters
 			name : $.tfInsert.value,
-			public: true
+			public : true
 		});
 
 		//This is how we save a model to our databaseif the model already exists, the save will be an "update".
@@ -64,6 +64,30 @@ function removeRow(_row) {
 			}
 		}
 	}
+}
+
+var addprojectView = Alloy.createController('ProjectNew').getView();
+function OpenAddProject(e) {
+	Ti.API.log(e);
+	addprojectView.open();
+}
+
+var mysettingsView = Alloy.createController('MySettings').getView();
+function OpenMySettings(e) {
+	Ti.API.log(e.item);
+	mysettingsView.open();
+}
+
+function OpenEditProject(e) {
+	var projectId = e.rowData.rowId;
+	Ti.API.log(e.rowData.rowId);
+	Alloy.createController('ProjectEdit', {
+		projectId : projectId
+	}).getView().open();
+}
+
+function DoLogout(e) {
+
 }
 
 Alloy.Collections.Project.fetch();

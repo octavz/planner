@@ -1,6 +1,7 @@
 ".container": {
 	backgroundColor: "white"
 },
+
 "#tfInsert":{
 	width: "290dp",
 	height: "40dp",
@@ -39,6 +40,25 @@
 	color: "black",
 	font: {
 		fontFamily: "HelveticaNeue",
-		fontSize: "12sp"
+		fontSize: "18dp"
 	}
+},
+
+
+
+//action bar
+"MenuItem": {},
+"#menuAdd": {
+	icon: Ti.Android.R.drawable.ic_menu_add,
+	showAsAction: Titanium.Android.SHOW_AS_ACTION_IF_ROOM
+},
+"#menuSettings": {
+	icon: Ti.Android.R.drawable.ic_menu_preferences,
+	showAsAction: Titanium.Android.SHOW_AS_ACTION_IF_ROOM
+},
+"#menuLogout": {
+	icon: Ti.Android.R.drawable.ic_menu_preferences,
+	showAsAction: Titanium.Android.SHOW_AS_ACTION_NEVER
 }
+//end action bar
+

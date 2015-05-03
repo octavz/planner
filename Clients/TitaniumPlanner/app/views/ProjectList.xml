@@ -1,22 +1,24 @@
 <Alloy>
 	<Collection src="Project" />
-	<Window class="container">
-		<ActionBar id="actionbar" title="My2 Projects"  />
+	<Window class="container" title="My Projects">
+		<ActionBar id="actionbar" title="My Projects" displayHomeAsUp="false" />
 		<Menu>
-			<MenuItem id="item1" title="My Settings" />
-			<MenuItem id="item2" title="Logout" />
+			<MenuItem id="menuAdd" title="Add" onClick="OpenAddProject"/>
+			<MenuItem id="menuSettings" title="My Settings" onClick="OpenMySettings"/>
+			<MenuItem id="menuLogout" title="Logout" onClick="DoLogout"/>
 		</Menu>
-		<TextField id="tfInsert"></TextField>
-		<Button id="btnInsert" >Insert</Button>
-
+		<TextField id="tfInsert">
+		</TextField>
+		<Button id="btnInsert" >
+			Insert
+		</Button>
 		<!-- Specifies the collection singleton or instance to bind to the table. -->
-		<TableView id="tbProjects" dataCollection="Project">
-			<TableViewRow id="listRow" rowId="{id_project}">
+		<TableView id="tbProjects" dataCollection="Project" onClick="OpenEditProject">
+			<TableViewRow id="listRow" rowId="{id}">
 				<View id="componentView">
 					<Label id="lblValue" text="{name}"></Label>
 				</View>
 			</TableViewRow>
 		</TableView>
-
 	</Window>
 </Alloy>
