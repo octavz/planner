@@ -9,5 +9,6 @@ if (project == null) {
 } else {
 	Ti.API.log(project);
 	$.win.title = "Edit: " + project.attributes["name"];
+	$.tfProjectName.value = project.attributes["name"];
+	$.tfProjectDesc.value = project.attributes["desc"];
 }
-

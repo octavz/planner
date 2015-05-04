@@ -1,5 +1,10 @@
 <Alloy>
+	<Model src="Project"></Model>>
+	<ActionBar displayHomeAsUp="true"/>
 	<Window id="win" class="container" title="Edit project">
-		<ActionBar id="actionbar" displayHomeAsUp="true"/>
+		<Label id="lblProjectName">Project Name</Label>
+		<TextField id="tfProjectName" name="Project Name"></TextField>
+		<Label id="lblProjectDesc">Project Name</Label>
+		<TextField id="tfProjectDesc" name="Project Description"></TextField>
 	</Window>
 </Alloy>

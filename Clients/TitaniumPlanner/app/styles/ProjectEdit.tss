@@ -1,6 +1,43 @@
-
 ".container" : {
-  
+	backgroundColor: 'white',
+	titleControl: 'false',
+	layout: 'vertical'
 }
+
+"#lblProjectName":{
+	width: Ti.UI.SIZE,
+	height: Ti.UI.SIZE,
+	textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	left: '10dp',
+	font: {
+		fontSize: 18
+	}
+}
+
+"#tfProjectName": {
+	hintText: 'Project Name',
+	rules: 'required',
+	left: '10dp',
+	right:'10dp',
+	top: '10dp'
+}
+
+"#lblProjectDesc":{
+	width: Ti.UI.SIZE,
+	height: Ti.UI.SIZE,
+	textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	left: '10dp',
+	font: {
+		fontSize: 18
+	}
+}
+
+"#tfProjectDesc": {
+	hintText: 'Project Description',
+	rules: 'required',
+	left: '10dp',
+	right:'10dp'
+}
+
 
 
