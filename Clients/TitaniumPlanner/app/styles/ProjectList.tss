@@ -10,7 +10,6 @@
 
 "#lblValue":{
 	left: 0,
-	color: "black",
 	font: {
 		fontFamily: "HelveticaNeue",
 		fontSize: "20dp"
