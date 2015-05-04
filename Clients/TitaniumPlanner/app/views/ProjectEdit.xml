@@ -1,7 +1,7 @@
 <Alloy>
-	<Model src="Project"></Model>>
-	<ActionBar displayHomeAsUp="true"/>
+	<Model src="Project"></Model>
 	<Window id="win" class="container" title="Edit project">
+		<ActionBar displayHomeAsUp="true"/>
 		<Label id="lblProjectName">Project Name</Label>
 		<TextField id="tfProjectName" name="Project Name"></TextField>
 		<Label id="lblProjectDesc">Project Name</Label>
