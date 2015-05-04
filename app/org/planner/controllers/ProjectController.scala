@@ -55,7 +55,7 @@ trait ProjectController extends BaseController {
           authorize {
             implicit authInfo =>
               try {
-                val dto = json.as[ProjectDTO].copy(id = Some(id))
+                val dto = json.as[ProjectDTO].copy(id = Some(id), userId = authInfo.user.userId)
                 projectModule.updateProject(dto) map (responseOk(_))
               } catch {
                 case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
@@ -95,25 +95,26 @@ trait ProjectController extends BaseController {
     new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
   ))
   def insertTask(
-                  @ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String,
+                  @ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String
                   ) =
-  Action.async {
-    implicit request =>
-      request.body.asJson.map {
-        json => try {
-          authorize {
-            implicit authInfo =>
-              try {
-                val dto = json.as[ProjectDTO]
-                projectModule.insertTask(dto) map (responseOk(_))
-              } catch {
-                case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
-                case e: Throwable => asyncBadRequest(e) }
+    Action.async {
+      implicit request =>
+        request.body.asJson.map {
+          json => try {
+            authorize {
+              implicit authInfo =>
+                try {
+                  val dto = json.as[TaskDTO]
+                  projectModule.insertTask(dto) map (responseOk(_))
+                } catch {
+                  case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
+                  case e: Throwable => asyncBadRequest(e)
+                }
+            }
+          } catch {
+            case e: Throwable => asyncBadRequest(e)
           }
-        } catch {
-          case e: Throwable => asyncBadRequest(e)
-        }
-      }.getOrElse(asyncBadRequest(new Exception("Bad Json")))
-  }
+        }.getOrElse(asyncBadRequest(new Exception("Bad Json")))
+    }
 
 }

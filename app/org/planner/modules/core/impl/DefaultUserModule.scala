@@ -99,14 +99,14 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
 
     }
 
-    override def searchUsers(email: Option[String], nick: Option[String])(implicit authInfo: AuthInfo[User]): Result[List[UserDTO]] = {
+    override def searchUsers(email: Option[String], nick: Option[String]): Result[List[UserDTO]] = {
       val f = dalUser.searchUsers(email, nick).map(lst => resultSync(lst.map(u => new UserDTO(u))))
       f.recover {
         case e: Throwable => resultExSync(e, "searchUsers")
       }
     }
 
-    override def addUsersToGroup(userIds: List[String])(implicit authInfo: AuthInfo[User]): Result[BooleanDTO] = ???
+    override def addUsersToGroup(userIds: List[String]): Result[BooleanDTO] = ???
   }
 
 }

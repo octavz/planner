@@ -40,31 +40,59 @@ case class GroupDTO(id: Option[String], name: String, projectId: String) {
   }
 }
 
-case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String], public: Boolean, perm: Option[Int], groupId: Option[String]) {
+case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String], public: Boolean, perm: Option[Int], groupId: Option[String], userId: Option[String]) {
 
   def this(model: Project, group: Group) = this(
-    id = Some(model.id), name = model.name, desc = model.description,
-    parent = model.parentId, public = model.perm == 1, perm = Some(group.permProject),
-    groupId = Some(group.id))
-
-  def toModel(userId: String) = {
-    val n = Time.now
-    Project(id = id.getOrGuid, userId = userId, name = name, description = desc,
-      parentId = parent, created = n, updated = n, perm = if (public) 1 else 0)
-  }
-}
-
-case class TaskDTO(id: Option[String], subject: String, desc: Option[String], parent: Option[String], projectId: Option[String], public: Boolean, perm: Option[Int],userId: Option[String],groupId: Option[String]) {
-
-  def this(model: Task, group: Group) = this(
-    id = Some(model.id), subject = model.subject, desc = model.description,
-    parent = model.parentId, public = model.perm == 1, perm = Some(group.permProject),
-    groupId = Some(group.id))
+    id = Some(model.id),
+    name = model.name,
+    desc = model.description,
+    parent = model.parentId,
+    public = model.perm == 1,
+    perm = Some(group.permProject),
+    groupId = Some(group.id),
+    userId = Some(model.userId)
+  )
 
   def toModel() = {
     val n = Time.now
-    Task(id = id.getOrGuid, userId = userId.getOrElse(throw new Exception("User id not set for task.")), subject = subject, description = desc,projectId = projectId.getOrElse("Task has no project id"),
-      parentId = parent, created = n, updated = n, perm = if (public) 1 else 0, groupId = groupId.getOrElse(Constants.EmptyGroupId))
+    Project(
+      id = id.getOrGuid,
+      userId = userId.getOrElse(throw new Exception("No user!")),
+      name = name,
+      description = desc,
+      parentId = parent,
+      created = n,
+      updated = n,
+      perm = if (public) 1 else 0)
+  }
+}
+
+case class TaskDTO(id: Option[String], subject: String, desc: Option[String], parent: Option[String], projectId: Option[String], public: Boolean, perm: Option[Int], userId: Option[String], groupId: Option[String]) {
+
+  def this(model: Task) = this(
+    id = Some(model.id),
+    subject = model.subject,
+    desc = model.description,
+    parent = model.parentId,
+    projectId = Some(model.projectId),
+    public = model.perm == 1,
+    perm = Some(model.perm),
+    userId = Some(model.userId),
+    groupId = Some(model.groupId))
+
+  def toModel() = {
+    val n = Time.now
+    Task(
+      id = id.getOrGuid,
+      userId = userId.getOrElse(throw new Exception("User id not set for task.")),
+      subject = subject,
+      description = desc,
+      projectId = projectId.getOrElse("Task has no project id"),
+      parentId = parent,
+      created = n,
+      updated = n,
+      perm = if (public) 1 else 0,
+      groupId = groupId.getOrElse(Constants.EmptyGroupId))
   }
 }
 
@@ -82,6 +110,8 @@ trait JsonFormats extends BaseFormats with ConstraintReads {
 
   implicit val userDTO = Json.format[UserDTO]
 
+  implicit val taskDTO = Json.format[TaskDTO]
+
   implicit val registerDTO = (
     (__ \ 'login).format[String](maxLength[String](200) keepAnd email) ~
       (__ \ 'password).format[String](minLength[String](6) keepAnd maxLength[String](50))
@@ -94,7 +124,8 @@ trait JsonFormats extends BaseFormats with ConstraintReads {
       (__ \ 'parent).readNullable[String](maxLength[String](50)) ~
       (__ \ 'public).read[Boolean] ~
       (__ \ 'perm).readNullable[Int](max(999)) ~
-      (__ \ 'groupId).readNullable[String]
+      (__ \ 'groupId).readNullable[String] ~
+      (__ \ 'userId).readNullable[String]
     )(ProjectDTO)
 
   implicit val projectDtoWrite = Json.writes[ProjectDTO]
