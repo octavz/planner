@@ -8,13 +8,18 @@
 			<MenuItem id="menuLogout" title="Logout" onClick="DoLogout"/>
 		</Menu>
 		<ListView defaultItemTemplate="deftemplate" id="lvProjects" onItemclick="OpenEditProject">
+            <!-- Sets ListView's searchView property.
+            For Android, you can also do <SearchView platform="android" />
+            to use a Ti.UI.Android.SearchView instead of a search bar. -->
+            <SearchBar platform="android"/>
 			<Templates>
 				<ItemTemplate name="deftemplate">
 					<Label id="lblValue" bindId="name"></Label>
 				</ItemTemplate>
 			</Templates>
 			<ListSection dataCollection="Project">
-				<ListItem class="liProject" itemId="{id}" template="deftemplate" name:text="{name}" accessoryType="Titanium.UI.LIST_ACCESSORY_TYPE_DISCLOSURE"/>
+				<ListItem class="liProject" itemId="{id}" template="deftemplate" name:text="{name}" accessoryType="Titanium.UI.LIST_ACCESSORY_TYPE_DISCLOSURE"
+					searchableText="{name}"/>
 			</ListSection>
 		</ListView>
 	</Window>
