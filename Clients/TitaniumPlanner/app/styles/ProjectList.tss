@@ -1,34 +1,21 @@
-".container": {
-	backgroundColor: "white"
-},
-
-
-"#tbProjects":{
+"#lvProjects":{
 	widht:Ti.UI.FILL,
-	height:Ti.UI.FILL,
-	top: "100dp"
+	height:Ti.UI.FILL
 },
-"#listRow":{
-	hasCheck: true,
+
+".liProject":{
+	height: "60dp",
 	width:Ti.UI.FILL,
-	height: "40dp",
-	hasCheck: false
 },
-"#componentView":{
-	width: "90%",
-	height:Ti.UI.FILL,
-	left: "10dp"
-},
+
 "#lblValue":{
 	left: 0,
 	color: "black",
 	font: {
 		fontFamily: "HelveticaNeue",
-		fontSize: "18dp"
+		fontSize: "20dp"
 	}
 },
-
-
 
 //action bar
 "MenuItem": {},

@@ -13,8 +13,9 @@ function OpenMySettings(e) {
 }
 
 function OpenEditProject(e) {
-	var projectId = e.rowData.rowId;
-	Ti.API.log(e.rowData.rowId);
+	Ti.API.log(e.itemIndex, e.sectionIndex, e.itemId);
+	var projectId = e.itemId;
+	Ti.API.log("projectId", projectId);
 	Alloy.createController('ProjectEdit', {
 		projectId : projectId
 	}).getView().open();

@@ -7,13 +7,15 @@
 			<MenuItem id="menuSettings" title="My Settings" onClick="OpenMySettings"/>
 			<MenuItem id="menuLogout" title="Logout" onClick="DoLogout"/>
 		</Menu>
-		<!-- Specifies the collection singleton or instance to bind to the table. -->
-		<TableView id="tbProjects" dataCollection="Project" onClick="OpenEditProject">
-			<TableViewRow id="listRow" rowId="{id}">
-				<View id="componentView">
-					<Label id="lblValue" text="{name}"></Label>
-				</View>
-			</TableViewRow>
-		</TableView>
+		<ListView defaultItemTemplate="deftemplate" id="lvProjects" onItemclick="OpenEditProject">
+			<Templates>
+				<ItemTemplate name="deftemplate">
+					<Label id="lblValue" bindId="name"></Label>
+				</ItemTemplate>
+			</Templates>
+			<ListSection dataCollection="Project">
+				<ListItem class="liProject" itemId="{id}" template="deftemplate" name:text="{name}" accessoryType="Titanium.UI.LIST_ACCESSORY_TYPE_DISCLOSURE"/>
+			</ListSection>
+		</ListView>
 	</Window>
 </Alloy>
