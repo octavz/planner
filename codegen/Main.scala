@@ -14,7 +14,7 @@ object SlickGenerator {
   val dbUrl = conf.getString("db.default.url")
   val dbUser = conf.getString("db.default.user")
   val dbPassword = conf.getString("db.default.password")
-  val allowed = List("access_tokens", "actions", "auth_codes", "client_grant_type", "clients", "entity_types",
+  val allowed = List("access_tokens", "actions", "auth_codes", "client_grant_types", "clients", "entity_types",
     "grant_types", "groups", "groups_users", "labels", "projects", "resources", "user_sessions", "user_statuses", "users", "verbs", "tasks")
 
   def main(args: Array[String]) = {

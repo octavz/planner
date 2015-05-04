@@ -10,7 +10,7 @@ trait DB {
   import scala.slick.jdbc.{GetResult => GR}
   
   /** DDL for all tables. Call .create to execute. */
-  lazy val ddl = AccessTokens.ddl ++ Actions.ddl ++ AuthCodes.ddl ++ Clients.ddl ++ EntityTypes.ddl ++ GrantTypes.ddl ++ Groups.ddl ++ GroupsUsers.ddl ++ Labels.ddl ++ Projects.ddl ++ Resources.ddl ++ Tasks.ddl ++ Users.ddl ++ UserSessions.ddl ++ UserStatuses.ddl ++ Verbs.ddl
+  lazy val ddl = AccessTokens.ddl ++ Actions.ddl ++ AuthCodes.ddl ++ ClientGrantTypes.ddl ++ Clients.ddl ++ EntityTypes.ddl ++ GrantTypes.ddl ++ Groups.ddl ++ GroupsUsers.ddl ++ Labels.ddl ++ Projects.ddl ++ Resources.ddl ++ Tasks.ddl ++ Users.ddl ++ UserSessions.ddl ++ UserStatuses.ddl ++ Verbs.ddl
   
   /** GetResult implicit for fetching AccessToken objects using plain SQL queries */
   implicit def GetResultAccessToken(implicit e0: GR[String], e1: GR[Option[String]], e2: GR[Int], e3: GR[java.sql.Timestamp]): GR[AccessToken] = GR{
@@ -124,6 +124,33 @@ trait DB {
   }
   /** Collection-like TableQuery object for table AuthCodes */
   lazy val AuthCodes = new TableQuery(tag => new AuthCodes(tag))
+  
+  /** GetResult implicit for fetching ClientGrantType objects using plain SQL queries */
+  implicit def GetResultClientGrantType(implicit e0: GR[String], e1: GR[Int]): GR[ClientGrantType] = GR{
+    prs => import prs._
+    ClientGrantType.tupled((<<[String], <<[Int]))
+  }
+  /** Table description of table client_grant_types. Objects of this class serve as prototypes for rows in queries. */
+  class ClientGrantTypes(_tableTag: Tag) extends Table[ClientGrantType](_tableTag, "client_grant_types") {
+    def * = (clientId, grantTypeId) <> (ClientGrantType.tupled, ClientGrantType.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (clientId.?, grantTypeId.?).shaped.<>({r=>import r._; _1.map(_=> ClientGrantType.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    
+    /** Database column client_id DBType(varchar), Length(254,true) */
+    val clientId: Column[String] = column[String]("client_id", O.Length(254,varying=true))
+    /** Database column grant_type_id DBType(int4) */
+    val grantTypeId: Column[Int] = column[Int]("grant_type_id")
+    
+    /** Primary key of ClientGrantTypes (database name client_grant_types_pkey) */
+    val pk = primaryKey("client_grant_types_pkey", (clientId, grantTypeId))
+    
+    /** Foreign key referencing Clients (database name client_grant_types_client_id_fkey) */
+    lazy val relclient = foreignKey("client_grant_types_client_id_fkey", clientId, Clients)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing GrantTypes (database name client_grant_types_grant_type_id_fkey) */
+    lazy val relgrant_type = foreignKey("client_grant_types_grant_type_id_fkey", grantTypeId, GrantTypes)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table ClientGrantTypes */
+  lazy val ClientGrantTypes = new TableQuery(tag => new ClientGrantTypes(tag))
   
   /** GetResult implicit for fetching Client objects using plain SQL queries */
   implicit def GetResultClient(implicit e0: GR[String], e1: GR[Option[String]]): GR[Client] = GR{
@@ -513,6 +540,7 @@ trait DB {
 case class AccessToken(accessToken: String, refreshToken: Option[String] = None, userId: String, scope: Option[String] = None, expiresIn: Int, created: java.sql.Timestamp, clientId: String)
 case class Action(id: String, description: Option[String] = None, url: String, verbId: Int, secured: Short, userId: String, groupId: String, perm: Int = 448, created: java.sql.Timestamp, updated: java.sql.Timestamp)
 case class AuthCode(authorizationCode: String, userId: String, redirectUri: Option[String] = None, createdAt: java.sql.Timestamp, scope: Option[String] = None, clientId: String, expiresIn: Int)
+case class ClientGrantType(clientId: String, grantTypeId: Int)
 case class Client(id: String, secret: Option[String] = None, redirectUri: Option[String] = None, scope: Option[String] = None)
 case class EntityType(id: String, description: Option[String] = None)
 case class GrantType(id: Int, grantType: String)
