@@ -16,19 +16,3 @@
 	}
 },
 
-//action bar
-"MenuItem": {},
-"#menuAdd": {
-	icon: Ti.Android.R.drawable.ic_menu_add,
-	showAsAction: Titanium.Android.SHOW_AS_ACTION_IF_ROOM
-},
-"#menuSettings": {
-	icon: Ti.Android.R.drawable.ic_menu_preferences,
-	showAsAction: Titanium.Android.SHOW_AS_ACTION_IF_ROOM
-},
-"#menuLogout": {
-	icon: Ti.Android.R.drawable.ic_menu_preferences,
-	showAsAction: Titanium.Android.SHOW_AS_ACTION_NEVER
-}
-//end action bar
-

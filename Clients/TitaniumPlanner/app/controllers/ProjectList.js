@@ -25,4 +25,42 @@ function DoLogout(e) {
 
 }
 
+// use action bar search view
+var search = Alloy.createController("ProjectSearchView").getView();
+$.lvProjects.searchView = search;
+
+$.win.addEventListener("open", function() {
+
+	$.win.activity.onCreateOptionsMenu = function(e) {
+		
+		e.menu.add({
+			title : "Table Search",
+			icon : Ti.Android.R.drawable.ic_menu_search,
+			actionView : search,
+			showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS
+		});
+
+		e.menu.add({
+			title : "Add",
+			icon : Ti.Android.R.drawable.ic_menu_add,
+			showAsAction : Titanium.Android.SHOW_AS_ACTION_IF_ROOM,
+		}).addEventListener("click", OpenAddProject);
+
+		e.menu.add({
+			title : "My Settings",
+			icon : Ti.Android.R.drawable.ic_menu_add,
+			showAsAction : Titanium.Android.SHOW_AS_ACTION_IF_ROOM,
+		}).addEventListener("click", OpenMySettings);
+
+		e.menu.add({
+			title : "Logout",
+			icon : Ti.Android.R.drawable.ic_menu_add,
+			showAsAction : Titanium.Android.SHOW_AS_ACTION_NEVER,
+		}).addEventListener("click", DoLogout);
+
+	};
+
+	$.win.activity.invalidateOptionsMenu();
+});
+
 Alloy.Collections.Project.fetch();
