@@ -22,7 +22,11 @@ function OpenEditProject(e) {
 }
 
 function DoLogout(e) {
-
+	Alloy.Globals.UserToken = undefined;
+	Alloy.Globals.UserId = undefined;
+	Alloy.createController('login').getView().open();
+	Ti.UI.currentWindow.close();
+	$.win = null;
 }
 
 // use action bar search view

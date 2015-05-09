@@ -62,3 +62,6 @@ var postLayoutCallback = function(e) {
 };
 
 $.login.addEventListener('postlayout', postLayoutCallback);
+$.login.addEventListener('android:back', function(e) {
+    e.cancelBubble = true;
+});
