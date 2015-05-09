@@ -3,8 +3,8 @@
 	<Window id="win" class="container" title="">
 		<ActionBar id="actionbar" title="" displayHomeAsUp="false" />
 		<Menu>
-			<MenuItem id="menuEdit" title="Edit" onClick="OpenEditProject"/>
-			<MenuItem id="menuDelete" title="Delete" onClick="OpenDeleteProject"/>
+			<MenuItem id="menuEdit" title="Edit" onClick="OpenEditProject" icon="Ti.Android.R.drawable.ic_menu_preferences" showAsAction="Titanium.Android.SHOW_AS_ACTION_IF_ROOM"/>
+			<MenuItem id="menuDelete" title="Delete" icon="Ti.Android.R.drawable.ic_menu_delete" showAsAction="Titanium.Android.SHOW_AS_ACTION_IF_ROOM"/>
 		</Menu>
 	</Window>
 </Alloy>

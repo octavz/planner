@@ -4,15 +4,3 @@
 }
 
 
-//action bar
-"#menuEdit": {
-    icon: Ti.Android.R.drawable.ic_menu_edit,
-    showAsAction: Titanium.Android.SHOW_AS_ACTION_IF_ROOM
-},
-"#menuDelete": {
-    icon: Ti.Android.R.drawable.ic_menu_delete,
-    showAsAction: Titanium.Android.SHOW_AS_ACTION_IF_ROOM
-},
-//end action bar
-
-

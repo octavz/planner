@@ -10,7 +10,7 @@ if (project == null) {
 	$.win.close();
 } else {
 	Ti.API.log(project);
-	$.win.title = project.attributes["name"] + " Home";
+	$.win.title = project.attributes["name"];
 }
 
 function OpenEditProject(e) {
@@ -20,9 +20,3 @@ function OpenEditProject(e) {
 	}).getView().open();
 }
 
-function OpenDeleteProject(e) {
-	Ti.API.log("projectId", projectId);
-	Alloy.createController('ProjectEdit', {
-		projectId : projectId
-	}).getView().open();
-}
