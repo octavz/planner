@@ -3,7 +3,7 @@
 	"App": {
 		"ApiUrl": "http://system.ml:9000/api",
 		"LoginUrl": "http://system.ml:9000/api/login",
-		"UseFakeData": false
+		"UseFakeData": true
 	} ,
 	"env:development": {},
 	"env:test": {},

@@ -1,0 +1,8 @@
+<Alloy>
+	<Model src="Project"/>
+	<Window id="win" class="container" title="">
+		<ActionBar id="actionbar" title="" displayHomeAsUp="false" />
+		<Menu>
+		</Menu>
+	</Window>
+</Alloy>

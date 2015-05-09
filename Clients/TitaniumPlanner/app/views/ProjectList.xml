@@ -3,7 +3,7 @@
 	<Window id="win" class="container" title="My Projects">
 		<ActionBar id="actionbar" title="" displayHomeAsUp="false" />
 		<Menu></Menu>
-		<ListView defaultItemTemplate="deftemplate" id="lvProjects" onItemclick="OpenEditProject">
+		<ListView defaultItemTemplate="deftemplate" id="lvProjects" onItemclick="OpenProject">
 			<Templates>
 				<ItemTemplate name="deftemplate">
 					<Label id="lblValue" bindId="name"></Label>

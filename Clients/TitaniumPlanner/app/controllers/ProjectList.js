@@ -12,11 +12,11 @@ function OpenMySettings(e) {
 	mysettingsView.open();
 }
 
-function OpenEditProject(e) {
+function OpenProject(e) {
 	Ti.API.log(e.itemIndex, e.sectionIndex, e.itemId);
 	var projectId = e.itemId;
 	Ti.API.log("projectId", projectId);
-	Alloy.createController('ProjectEdit', {
+	Alloy.createController('ProjectHome', {
 		projectId : projectId
 	}).getView().open();
 }
