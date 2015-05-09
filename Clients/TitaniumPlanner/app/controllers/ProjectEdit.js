@@ -30,11 +30,11 @@ function SaveProject(e) {
 function validate(){
 	var isValid = true;
 	
-	if($.tfProjectName.value.lenth == 0){
+	if($.tfProjectName.value.length == 0){
 		isValid = false;
 	}
 	
-	if($.tfProjectDesc.value.lenth == 0){
+	if($.tfProjectDesc.value.legnth == 0){
 		isValid = false;
 	}
 	
