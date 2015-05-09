@@ -52,7 +52,7 @@ $.win.addEventListener("open", function() {
 
 		e.menu.add({
 			title : "My Settings",
-			icon : Ti.Android.R.drawable.ic_menu_add,
+			icon : Ti.Android.R.drawable.ic_menu_preferences,
 			showAsAction : Titanium.Android.SHOW_AS_ACTION_IF_ROOM,
 		}).addEventListener("click", OpenMySettings);
 
