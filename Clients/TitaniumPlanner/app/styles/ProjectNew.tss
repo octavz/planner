@@ -4,7 +4,7 @@
 },
 
 
-"#tfInsert":{
+"#tfProjectName":{
 	width: "290dp",
 	height: "40dp",
 	top: "10dp",
@@ -16,8 +16,4 @@
 	paddingLeft: "10dp",
 	textAlign:Titanium.UI.TEXT_ALIGNMENT_LEFT,
 	clearOnEdit: true
-},
-"#btnInsert":{
-	right: "15dp",
-	top: "60dp"
-},
+}

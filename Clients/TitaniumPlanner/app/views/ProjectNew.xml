@@ -1,8 +1,7 @@
 <Alloy>
-	<Window class="container" title="New Project">
+	<Window id="win" class="container" title="New Project">
 		<ActionBar id="actionbar" displayHomeAsUp="true"/>
-		<TextField id="tfInsert"></TextField>
-		<Button id="btnInsert" >Insert</Button>
+		<TextField id="tfProjectName"></TextField>
 
 	</Window>
 </Alloy>

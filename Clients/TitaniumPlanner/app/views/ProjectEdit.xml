@@ -4,7 +4,7 @@
 		<ActionBar displayHomeAsUp="true"/>
 		<Label id="lblProjectName">Project Name</Label>
 		<TextField id="tfProjectName" name="Project Name"></TextField>
-		<Label id="lblProjectDesc">Project Name</Label>
+		<Label id="lblProjectDesc">Project Description</Label>
 		<TextField id="tfProjectDesc" name="Project Description"></TextField>
 	</Window>
 </Alloy>
