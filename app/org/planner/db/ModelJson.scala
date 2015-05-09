@@ -13,6 +13,7 @@ trait ModelJson {
   implicit val wrs: Writes[Timestamp] = (__ \ "time").write[Long].contramap { (a: Timestamp) => a.getTime}
   implicit val fmt: Format[Timestamp] = Format(rds, wrs)
   implicit val fmtUser = Json.format[User]
+  implicit val fmtGroup = Json.format[Group]
   implicit val fmtUserSession = Json.format[UserSession]
 
 }

@@ -1,5 +1,6 @@
 package org.planner.modules.dto
 
+import com.wordnik.swagger.annotations.{ApiModelProperty, ApiModel}
 import org.planner.util.{Constants, Gen, Time}
 
 import org.planner.db._
@@ -7,6 +8,8 @@ import org.planner.modules._
 import org.planner.modules._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+
+import scala.annotation.meta.field
 
 case class LoginForm(email: String, password: String)
 
@@ -40,7 +43,15 @@ case class GroupDTO(id: Option[String], name: String, projectId: String) {
   }
 }
 
-case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String], public: Boolean, perm: Option[Int], groupId: Option[String], userId: Option[String]) {
+@ApiModel("ProjectDTO")
+case class ProjectDTO(@(ApiModelProperty@field)(required = false, hidden = true) id: Option[String],
+                      @(ApiModelProperty@field)(required = true) name: String,
+                      @(ApiModelProperty@field)(required = false) desc: Option[String],
+                      @(ApiModelProperty@field)(required = false) parent: Option[String],
+                      @(ApiModelProperty@field)(required = false) public: Boolean,
+                      @(ApiModelProperty@field)(required = false, hidden = true, dataType = "Int") perm: Option[Int],
+                      @(ApiModelProperty@field)(required = false) groupId: Option[String],
+                      @(ApiModelProperty@field)(required = false, hidden = true) userId: Option[String]) {
 
   def this(model: Project, group: Group) = this(
     id = Some(model.id),
@@ -67,7 +78,17 @@ case class ProjectDTO(id: Option[String], name: String, desc: Option[String], pa
   }
 }
 
-case class TaskDTO(id: Option[String], subject: String, desc: Option[String], parent: Option[String], projectId: Option[String], public: Boolean, perm: Option[Int], userId: Option[String], groupId: Option[String]) {
+@ApiModel("TaskDTO")
+case class TaskDTO(
+                    @(ApiModelProperty@field)(required = false) id: Option[String],
+                    @(ApiModelProperty@field)(required = false) subject: String,
+                    @(ApiModelProperty@field)(required = false) desc: Option[String],
+                    @(ApiModelProperty@field)(required = false) parent: Option[String],
+                    @(ApiModelProperty@field)(required = false) projectId: Option[String],
+                    @(ApiModelProperty@field)(required = false) public: Boolean,
+                    @(ApiModelProperty@field)(required = false) perm: Option[Int],
+                    @(ApiModelProperty@field)(required = false) userId: Option[String],
+                    @(ApiModelProperty@field)(required = false) groupId: Option[String]) {
 
   def this(model: Task) = this(
     id = Some(model.id),

@@ -106,7 +106,22 @@ trait DefaultUserModuleComponent extends UserModuleComponent {
       }
     }
 
-    override def addUsersToGroup(userIds: List[String]): Result[BooleanDTO] = ???
+    override def addUsersToGroup(groupId: String, userIds: List[String]): Result[BooleanDTO] = {
+      //check if current user is allowed to add users to group
+      val loggedIn = authData.user
+      val models = userIds.map(uid => GroupsUser(groupId, uid))
+      val f = Future.sequence(models.map {
+        m =>
+          dalUser.insertGroupsUser(m)
+      }) map {
+        _ =>
+          resultSync(BooleanDTO(true))
+      }
+      f.recover {
+        case e: Throwable =>
+          resultExSync(e, "searchUsers")
+      }
+    }
   }
 
 }

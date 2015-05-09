@@ -84,10 +84,20 @@ trait SlickUserDALComponent extends UserDALComponent with DB with ModelJson {
         dal(model)
     }
 
-    override def getUserGroups(userId: String): DAL[List[String]] = DB.withSession {
+    override def getUserGroupsIds(userId: String): DAL[List[String]] = DB.withSession {
       implicit session =>
-        getOrElse[List[String]](CacheKeys.userGroups(userId)) {
-          dal(GroupsUsers.filter(_.userId === userId).list map (gu => gu.groupId))
+        getOrElse[List[String]](CacheKeys.userGroupsIds(userId)) {
+          dal(GroupsUsers.filter(_.userId === userId).list map (_.groupId))
+        }
+    }
+
+    override def getUserGroups(userId: String): DAL[List[Group]] = DB.withSession {
+      implicit session =>
+        getOrElse[List[Group]](CacheKeys.userGroups(userId)) {
+          val q = for {
+            (groupUser, group) <- GroupsUsers innerJoin Groups on (_.groupId === _.id)
+          } yield group
+          dal(q.list)
         }
     }
 

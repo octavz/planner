@@ -29,6 +29,8 @@ package object dal {
 
     def user(id: String): String = s"user:$id"
 
+    def userGroupsIds(id: String): String = s"userGroupIds:$id"
+
     def userGroups(id: String): String = s"userGroup:$id"
   }
 

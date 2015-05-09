@@ -28,7 +28,7 @@ trait UserModuleComponent extends BaseModule {
 
     def searchUsers(email: Option[String], nick: Option[String]): Result[List[UserDTO]]
 
-    def addUsersToGroup(userIds: List[String]): Result[BooleanDTO]
+    def addUsersToGroup(groupId: String, userIds: List[String]): Result[BooleanDTO]
 
   }
 

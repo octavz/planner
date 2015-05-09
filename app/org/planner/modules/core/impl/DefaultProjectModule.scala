@@ -54,7 +54,7 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
     private def checkUser(userId: String, projectId: String): Future[Boolean] = {
       for {
         projectGroups <- projectDal.getProjectGroups(projectId)
-        userGroups <- dalUser.getUserGroups(userId)
+        userGroups <- dalUser.getUserGroupsIds(userId)
       } yield {
         projectGroups map (_.id) intersect (userGroups) nonEmpty
       }
@@ -62,24 +62,27 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
 
     override def insertTask(task: TaskDTO): Result[TaskDTO] = {
       projectDal.getProjectGroups(task.projectId.getOrElse(throw new Exception("Task has no group id"))) flatMap {
-        groups =>
-          dalUser.getUserGroups(task.userId.getOrElse(throw new Exception("User id not found"))) flatMap {
+        projectGroups =>
+          dalUser.getUserGroupsIds(task.userId.getOrElse(throw new Exception("User id not found"))) flatMap {
             userGroups =>
               task.groupId match {
                 case Some(gid) =>
-                  groups.find(_.id == gid) match {
-                    case None => throw new Exception("Attched group doesn't belong to the project")
-                    case _ => projectDal.insertTask(task.toModel()) map { _ => resultSync(task) }
+                  projectGroups.find(_.id == gid) match {
+                    case None =>
+                      Future.failed(new Exception("Attached group doesn't belong to the project"))
+                    case _ =>
+                      val userBelongsToProject = projectGroups.map(_.id).intersect(userGroups).nonEmpty
+                      if (!userBelongsToProject) Future.failed(new Exception(s"User ${task.userId.get} doesn't belong to project ${task.projectId.get}"))
+                      else projectDal.insertTask(task.toModel()) map { _ => resultSync(task) }
                   }
                 case None =>
-                  groups.find(_.`type` == Constants.DefaultGroupType) match {
+                  projectGroups.find(_.`type` == Constants.DefaultGroupType) match {
                     case Some(mainGroup) =>
                       val model = task.toModel().copy(groupId = mainGroup.projectId)
                       projectDal.insertTask(model) map { _ => resultSync(task) }
                     case None => throw new Exception(s"Project ${task.projectId.get} has no main group")
                   }
               }
-
           }
       }
     }

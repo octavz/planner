@@ -27,7 +27,9 @@ trait UserDALComponent {
 
     def insertGroupWithUser(model: Group, userId: String): DAL[Group]
 
-    def getUserGroups(userId: String): DAL[List[String]]
+    def getUserGroupsIds(userId: String): DAL[List[String]]
+
+    def getUserGroups(userId: String): DAL[List[Group]]
 
     def searchUsers(email: Option[String], nick:Option[String]): DAL[List[User]]
 

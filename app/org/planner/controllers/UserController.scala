@@ -150,7 +150,7 @@ trait UserController extends BaseController {
           request.body.asJson.map {
             json => try {
               val userIds = json.as[List[String]]
-              userModule.addUsersToGroup(userIds) map (r => Ok(Json.toJson(r)))
+              userModule.addUsersToGroup(groupId, userIds) map (r => Ok(Json.toJson(r)))
             } catch {
               case e: Throwable =>
                 Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))

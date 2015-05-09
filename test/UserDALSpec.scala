@@ -95,7 +95,7 @@ class UserDALSpec extends BaseDALSpec {
           GroupsUsers.insertAll(GroupsUser(groupId = model.id, userId = testUser.id),
             GroupsUser(groupId = model1.id, userId = testUser.id )) === Some(2)
       }
-      val groups = Await.result(dao.getUserGroups(testUser.id), Duration.Inf)
+      val groups = Await.result(dao.getUserGroupsIds(testUser.id), Duration.Inf)
       groups.size === 3
     }
   }
