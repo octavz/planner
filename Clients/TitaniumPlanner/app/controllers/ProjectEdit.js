@@ -17,6 +17,8 @@ if (project == null) {
 function SaveProject(e) {
 	Ti.API.log("info", "[Info] Save project with Id: " + projectId.toString());
 	
+	project.fetch();
+	Ti.API.log("info", "[Info] Name: " + project.name);
 	//TODO: Is there a way of automate validation?
 	if(validate() === true){	 
 		project.save();
@@ -51,4 +53,8 @@ $.win.addEventListener("open", function() {
 	};
 
 	$.win.activity.invalidateOptionsMenu();
+});
+
+$.win.addEventListener("close", function(){
+    $.destroy();
 });
