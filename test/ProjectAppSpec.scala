@@ -85,7 +85,7 @@ class ProjectAppSpec extends Specification with Mockito {
     "get all projects" in {
       val module = newComp
       val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"),userId = Some("userId"))
-      module.projectModule.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p)))
+      module.projectModule.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p),total = 1))
       running(app(module)) {
         val page = route(FakeRequest(GET, "/api/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
         page must beSome

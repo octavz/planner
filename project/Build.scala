@@ -26,7 +26,7 @@ object AppBuild extends Build {
     "postgresql" % "postgresql" % "9.3-1102.jdbc41",
     "com.typesafe.play" %% "play-slick" % "0.8.0",
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.11.0",
-    "org.mockito" % "mockito-all" % "1.10.10",
+    "org.mockito" % "mockito-all" % "1.10.19",
     //"com.wix" %% "accord-core" % "0.4-SNAPSHOT",
     "com.wordnik" %% "swagger-play2" % "1.3.12",
     "net.sourceforge.htmlunit" % "htmlunit" % "2.15" % "test",
