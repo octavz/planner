@@ -6,7 +6,8 @@ OPTIONS      /*path                      @org.planner.controllers.MainController
 POST         /api/oauth2/access_token    @org.planner.controllers.UserController.accessToken
 POST         /api/project                @org.planner.controllers.ProjectController.insertProject
 PUT          /api/project/:id             @org.planner.controllers.ProjectController.updateProject(id: String)
-POST         /api/project/:projectId/task             @org.planner.controllers.ProjectController.insertTask(projectId: String)
+POST         /api/project/:projectId/task @org.planner.controllers.ProjectController.insertTask(projectId: String)
+GET         /api/project/:projectId/tasks @org.planner.controllers.ProjectController.getTasks(projectId: String, offset: Int, count: Int)
 
 GET          /login                      @org.planner.controllers.UserController.login
 POST         /login                      @org.planner.controllers.UserController.loginPost

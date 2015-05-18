@@ -37,7 +37,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
           dal(model)
       }
 
-    override def getUserProjects(uid: String, offset: Int, count: Int): DAL[List[(Group, Project)]] =
+    override def getUserProjects(uid: String, offset: Int, count: Int): DAL[(List[(Group, Project)], Int)] =
       DB.withSession {
         implicit session =>
           val q = for {
@@ -45,7 +45,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
             gu <- GroupsUsers if g.id === gu.groupId && gu.userId === uid
             p <- Projects if g.projectId === p.id
           } yield (g, p)
-          val ret = q.list
+          val ret = (q.drop(offset).take(count).list, q.length.run)
           dal(ret)
       }
 
@@ -57,7 +57,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
       }
 
     override def getUserPublicProjects(
-                                        uid: String, offset: Int, count: Int): DAL[List[(Group, Project)]] =
+                                        uid: String, offset: Int, count: Int): DAL[(List[(Group, Project)], Int)] =
       DB.withSession {
         implicit session =>
           val projectsByUser = sql"""
@@ -69,7 +69,14 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
             (p.perm & 64 <> 0 OR p.perm & 128 <> 0)
             offset $offset limit $count
             """.as[(Group, Project)]
-          val ret = projectsByUser.list
+          val total = sql"""
+            SELECT count(g.*) FROM projects p
+            INNER JOIN groups g ON g.project_id = p.id
+            INNER JOIN groups_users gu ON gu.group_id = g.id
+            WHERE gu.user_id = $uid AND
+            (p.perm & 64 <> 0 OR p.perm & 128 <> 0)
+            """.as[Int]
+          val ret = (projectsByUser.list, total.list.head)
           dal(ret)
       }
 
@@ -84,6 +91,8 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
           Tasks.insert(model)
           dal(model)
       }
+
+    override def getTasksByProjectAndUser(projectId: String, userId: String, offset: Int, count: Int): DAL[(List[Task], Int)] = ???
   }
 
 }

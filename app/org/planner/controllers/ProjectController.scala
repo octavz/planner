@@ -2,15 +2,13 @@ package org.planner.controllers
 
 import javax.ws.rs.{QueryParam, PathParam}
 
+
 import com.wordnik.swagger.annotations._
 import org.planner.modules.core.{ProjectModuleComponent}
 import org.planner.modules.dto._
 import play.api.libs.json.JsResultException
 import play.api.mvc._
-import org.planner.config._
-
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent._
 
 @Api(value = "/api/project", description = "Project operations")
 trait ProjectController extends BaseController {
@@ -94,8 +92,7 @@ trait ProjectController extends BaseController {
     new ApiImplicitParam(value = "The new task to be added", required = true, dataType = "TaskDTO", paramType = "body"),
     new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
   ))
-  def insertTask(
-                  @ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String
+  def insertTask(@ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String
                   ) =
     Action.async {
       implicit request =>
@@ -104,7 +101,7 @@ trait ProjectController extends BaseController {
             authorize {
               implicit authInfo =>
                 try {
-                  val dto = json.as[TaskDTO]
+                  val dto = json.as[TaskDTO].copy(projectId = Some(projectId), userId = Some(authInfo.user.id))
                   projectModule.insertTask(dto) map (responseOk(_))
                 } catch {
                   case je: JsResultException => asyncBadRequest(je.errors.mkString(","))
@@ -115,6 +112,25 @@ trait ProjectController extends BaseController {
             case e: Throwable => asyncBadRequest(e)
           }
         }.getOrElse(asyncBadRequest(new Exception("Bad Json")))
+    }
+
+  @ApiOperation(value = "Get project top level tasks", notes = "Get project tasks", response = classOf[List[TaskDTO]], httpMethod = "GET", nickname = "getTasks")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
+  def getTasks(@ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String,
+               @ApiParam(value = "offset", required = true, defaultValue = "0") @QueryParam(value = "offset") offset: Int,
+               @ApiParam(value = "count", required = true, defaultValue = "100") @QueryParam(value = "count") count: Int) =
+    Action.async {
+      implicit request =>
+        try {
+          authorize {
+            implicit authInfo =>
+              projectModule.getTasks(projectId, offset, count) map (responseOk(_))
+          }
+        } catch {
+          case e: Throwable => asyncBadRequest(e)
+        }
     }
 
 }

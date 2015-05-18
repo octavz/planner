@@ -49,7 +49,7 @@ case class ProjectDTO(@(ApiModelProperty@field)(required = false, hidden = true)
                       @(ApiModelProperty@field)(required = false) desc: Option[String],
                       @(ApiModelProperty@field)(required = false) parent: Option[String],
                       @(ApiModelProperty@field)(required = false) public: Boolean,
-                      @(ApiModelProperty@field)(required = false, hidden = true, dataType = "Int") perm: Option[Int],
+                      @(ApiModelProperty@field)(required = false, hidden = true, dataType = "int") perm: Option[Int],
                       @(ApiModelProperty@field)(required = false) groupId: Option[String],
                       @(ApiModelProperty@field)(required = false, hidden = true) userId: Option[String]) {
 
@@ -81,13 +81,13 @@ case class ProjectDTO(@(ApiModelProperty@field)(required = false, hidden = true)
 @ApiModel("TaskDTO")
 case class TaskDTO(
                     @(ApiModelProperty@field)(required = false) id: Option[String],
-                    @(ApiModelProperty@field)(required = false) subject: String,
+                    @(ApiModelProperty@field)(required = true) subject: String,
                     @(ApiModelProperty@field)(required = false) desc: Option[String],
                     @(ApiModelProperty@field)(required = false) parent: Option[String],
                     @(ApiModelProperty@field)(required = false) projectId: Option[String],
-                    @(ApiModelProperty@field)(required = false) public: Boolean,
-                    @(ApiModelProperty@field)(required = false) perm: Option[Int],
-                    @(ApiModelProperty@field)(required = false) userId: Option[String],
+                    @(ApiModelProperty@field)(required = false) public: Option[Boolean],
+                    @(ApiModelProperty@field)(required = false, dataType = "int") perm: Option[Int],
+                    @(ApiModelProperty@field)(required = false, hidden = true) userId: Option[String],
                     @(ApiModelProperty@field)(required = false) groupId: Option[String]) {
 
   def this(model: Task) = this(
@@ -96,7 +96,7 @@ case class TaskDTO(
     desc = model.description,
     parent = model.parentId,
     projectId = Some(model.projectId),
-    public = model.perm == 1,
+    public = Some(model.perm == 1),
     perm = Some(model.perm),
     userId = Some(model.userId),
     groupId = Some(model.groupId))
@@ -112,12 +112,14 @@ case class TaskDTO(
       parentId = parent,
       created = n,
       updated = n,
-      perm = if (public) 1 else 0,
-      groupId = groupId.getOrElse(Constants.EmptyGroupId))
+      perm = if (public.isDefined && public.get) 1 else 0,
+      groupId = groupId.getOrElse(Constants.EMPTY_GROUP))
   }
 }
 
-case class ProjectListDTO(items: List[ProjectDTO])
+case class ProjectListDTO(items: List[ProjectDTO], total: Int)
+
+case class TaskListDTO(items: List[TaskDTO], total: Int)
 
 case class StringDTO(value: String)
 
@@ -132,6 +134,8 @@ trait JsonFormats extends BaseFormats with ConstraintReads {
   implicit val userDTO = Json.format[UserDTO]
 
   implicit val taskDTO = Json.format[TaskDTO]
+
+  implicit val tasksDTO = Json.format[TaskListDTO]
 
   implicit val registerDTO = (
     (__ \ 'login).format[String](maxLength[String](200) keepAnd email) ~
