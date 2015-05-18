@@ -95,7 +95,14 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
           dal(model)
       }
 
-    override def getTasksByProjectAndUser(projectId: String, userId: String, offset: Int, count: Int): DAL[(List[Task], Int)] = ???
+    override def getTasksByProjectAndUser(projectId: String, userId: String, offset: Int, count: Int): DAL[(List[Task], Int)] =
+      DB.withSession {
+       implicit session =>
+          val q = Tasks.filter(t => t.projectId === projectId)
+          val total = q.length.run
+          val lst = q.take(count).drop(offset).list
+          dal(lst -> total)
+    }
   }
 
 }
