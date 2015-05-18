@@ -19,7 +19,7 @@ import org.planner.util.Time._
 
 trait SlickProjectDALComponent extends ProjectDALComponent with DB {
   this: Caching =>
-  val projectDal = new SlickProjectDAL
+  val dalProject = new SlickProjectDAL
 
   class SlickProjectDAL extends ProjectDAL {
 
@@ -69,7 +69,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
             INNER JOIN groups_users gu ON gu.group_id = g.id
             WHERE
             gu.user_id = $uid AND
-            (p.perm & 64 <> 0 OR p.perm & 128 <> 0) and status <> ${Constants.STATUS_DELETE}
+            (p.perm & 64 <> 0 OR p.perm & 128 <> 0) and p.status <> ${Constants.STATUS_DELETE}
             offset $offset limit $count
             """.as[(Group, Project)]
           val total = sql"""
@@ -77,8 +77,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
             INNER JOIN groups g ON g.project_id = p.id
             INNER JOIN groups_users gu ON gu.group_id = g.id
             WHERE gu.user_id = $uid AND
-            (p.perm & 64 <> 0 OR p.perm & 128 <> 0)
-            (p.perm & 64 <> 0 OR p.perm & 128 <> 0) and status <> ${Constants.STATUS_DELETE}
+            (p.perm & 64 <> 0 OR p.perm & 128 <> 0) and p.status <> ${Constants.STATUS_DELETE}
             """.as[Int]
           val ret = (projectsByUser.list, total.list.head)
           dal(ret)

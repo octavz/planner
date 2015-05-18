@@ -3,7 +3,7 @@ package org.planner.dal
 import org.planner.db._
 
 trait ProjectDALComponent {
-  val projectDal: ProjectDAL
+  val dalProject: ProjectDAL
 
   trait ProjectDAL {
 

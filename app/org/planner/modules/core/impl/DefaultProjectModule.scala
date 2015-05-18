@@ -22,14 +22,14 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
     override def insertProject(dto: ProjectDTO): Result[ProjectDTO] = {
       val project = dto.toModel()
       val group = Group(id = guid, projectId = project.id, name = project.name, created = now, updated = now, userId = authData.user.id, groupId = None, perm = PermProject.OwnerReadWriteDelete)
-      val f = projectDal.insertProject(project, group) map (p => resultSync(new ProjectDTO(p, group)))
+      val f = dalProject.insertProject(project, group) map (p => resultSync(new ProjectDTO(p, group)))
       f recover { case e: Throwable => resultExSync(e, "addGroup") }
     }
 
     override def getUserProjects(id: String, offset: Int, count: Int): Result[ProjectListDTO] = {
       println(s"Wanted for: $id - current user: $userId")
       val f = for {
-        res <- if (id == userId) projectDal.getUserProjects(userId, offset, count) else projectDal.getUserPublicProjects(id, offset, count)
+        res <- if (id == userId) dalProject.getUserProjects(userId, offset, count) else dalProject.getUserPublicProjects(id, offset, count)
       } yield resultSync(ProjectListDTO(items = res._1.map(p => new ProjectDTO(p._2, p._1)).distinct, total = res._2))
 
       f recover { case e: Throwable => resultExSync(e, "getUserProject") }
@@ -41,9 +41,9 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
         checkUser(dto.userId.getOrElse(throw new Exception("User not found!")), dto.id.get) flatMap {
           res =>
             if (!res) throw new Exception("Not valid")
-            projectDal.getProjectById(dto.id.get) flatMap {
+            dalProject.getProjectById(dto.id.get) flatMap {
               case None => resultError(Status.NOT_FOUND, "Project not found")
-              case Some(project) => projectDal.updateProject(dto.toModel()) map { p =>
+              case Some(project) => dalProject.updateProject(dto.toModel()) map { p =>
                 resultSync(new ProjectDTO(p, Group(id = "", projectId = p.id, name = "", userId = "user", groupId = None, created = p.created, updated = p.updated)))
               }
             }
@@ -55,7 +55,7 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
 
     private def checkUser(userId: String, projectId: String): Future[Boolean] = {
       for {
-        projectGroups <- projectDal.getProjectGroups(projectId)
+        projectGroups <- dalProject.getProjectGroups(projectId)
         userGroups <- dalUser.getUserGroupsIds(userId)
       } yield {
         projectGroups map (_.id) intersect (userGroups) nonEmpty
@@ -63,7 +63,7 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
     }
 
     override def insertTask(task: TaskDTO): Result[TaskDTO] = {
-      val f = projectDal.getProjectGroups(task.projectId.getOrElse(throw new Exception("Task has no project id"))) flatMap {
+      val f = dalProject.getProjectGroups(task.projectId.getOrElse(throw new Exception("Task has no project id"))) flatMap {
         projectGroups =>
           dalUser.getUserGroupsIds(task.userId.getOrElse(throw new Exception("User id not found"))) flatMap {
             userGroups =>
@@ -75,13 +75,13 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
                     case _ =>
                       val userBelongsToProject = projectGroups.map(_.id).intersect(userGroups).nonEmpty
                       if (!userBelongsToProject) Future.failed(new Exception(s"User ${task.userId.get} doesn't belong to project ${task.projectId.get}"))
-                      else projectDal.insertTask(task.toModel()) map { _ => resultSync(task) }
+                      else dalProject.insertTask(task.toModel()) map { _ => resultSync(task) }
                   }
                 case None =>
                   projectGroups.find(_.`type` == Constants.DEFAULT_GROUP_TYPE) match {
                     case Some(mainGroup) =>
                       val model = task.toModel().copy(groupId = mainGroup.projectId)
-                      projectDal.insertTask(model) map { _ => resultSync(task) }
+                      dalProject.insertTask(model) map { _ => resultSync(task) }
                     case None => throw new Exception(s"Project ${task.projectId.get} has no main group")
                   }
               }
@@ -97,7 +97,7 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
       val f = checkUser(userId, projectId) flatMap {
         isValid =>
           if (!isValid) throw new Exception("User is not valid in context")
-          projectDal.getTasksByProjectAndUser(projectId, userId, offset, count) map {
+          dalProject.getTasksByProjectAndUser(projectId, userId, offset, count) map {
             res =>
               resultSync(TaskListDTO(items = res._1.map(t => new TaskDTO(t)), total = res._2))
           }
@@ -112,10 +112,10 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
       val f = checkUser(userId, projectId) flatMap {
         isValid =>
           if (!isValid) throw new Exception("User is not valid in context")
-          projectDal.getProjectById(projectId) flatMap {
+          dalProject.getProjectById(projectId) flatMap {
             case Some(project) =>
               val newProject = project.copy(status = Constants.STATUS_DELETE)
-              projectDal.updateProject(newProject) map {
+              dalProject.updateProject(newProject) map {
                 x =>
                  resultSync(BooleanDTO(true))
               }

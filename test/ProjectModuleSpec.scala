@@ -30,7 +30,7 @@ class ProjectModuleSpec extends Specification with Mockito {
 
   def module = {
     new DefaultProjectModuleComponent with ProjectDALComponent with UserDALComponent {
-      override val projectDal: ProjectDAL = mock[ProjectDAL]
+      override val dalProject: ProjectDAL = mock[ProjectDAL]
       override val dalUser: UserDAL = mock[UserDAL]
 
       _authData = authInfo
@@ -51,33 +51,43 @@ class ProjectModuleSpec extends Specification with Mockito {
     "implement insertProject and call dal" in {
       val m = module
       m.authData === authInfo
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"),userId = Some("userId"))
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"), userId = Some("userId"))
 
-      m.projectDal.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
+      m.dalProject.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
       val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)
-      there was one(m.projectDal).insertProject(any[Project], any[Group])
+      there was one(m.dalProject).insertProject(any[Project], any[Group])
       s must beRight
     }
 
     "implement updateProject and call dal" in {
       val m = module
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"),userId = Some("userId"))
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"), userId = Some("userId"))
 
-      m.projectDal.updateProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
-      m.projectDal.getProjectById(any) returns dal(Some(genProject(authInfo.user.id)))
+      m.dalProject.updateProject(any[Project]) answers (a => dal(a.asInstanceOf[Project]))
+      m.dalProject.getProjectById(any) returns dal(Some(genProject(authInfo.user.id)))
+      m.dalProject.getProjectGroups(any) returns dal(List(Group(
+        id = "g1",
+        projectId = dto.id.get,
+        `type` = 0,
+        name = "project",
+        created = now,
+        updated = now,
+        userId = dto.userId.get)))
+      m.dalUser.getUserGroupsIds(any) returns dal(List("g1"))
+
       val s = Await.result(m.projectModule.updateProject(dto), Duration.Inf)
-      there was one(m.projectDal).updateProject(any[Project])
-      there was one(m.projectDal).getProjectById(dto.id.get)
+      there was one(m.dalProject).updateProject(any[Project])
+      there was one(m.dalProject).getProjectById(dto.id.get)
       s must beRight
     }
 
     "return right error when dal crashes" in {
       val m = module
-      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = Some(1), groupId = Some("groupId"),userId = Some("userId"))
+      val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
 
-      m.projectDal.insertProject(any[Project], any[Group]) returns Future.failed(new Exception("test"))
+      m.dalProject.insertProject(any[Project], any[Group]) returns Future.failed(new Exception("test"))
       val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)
-      there was one(m.projectDal).insertProject(any[Project], any[Group])
+      there was one(m.dalProject).insertProject(any[Project], any[Group])
       s must beLeft
       val (code, message) = s.merge.asInstanceOf[ResultError]
       code === Status.INTERNAL_SERVER_ERROR
@@ -86,7 +96,7 @@ class ProjectModuleSpec extends Specification with Mockito {
 
     "implement get user projects" in {
       val m = module
-      m.projectDal.getUserProjects(anyString, any, any) returns dal(List(),0)
+      m.dalProject.getUserProjects(anyString, any, any) returns dal(List(), 0)
       val s = m.projectModule.getUserProjects(m.userId, 0, 100)
       s must not be (null)
     }
@@ -95,11 +105,11 @@ class ProjectModuleSpec extends Specification with Mockito {
       val m = module
       val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
       val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
-      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
+      m.dalProject.getUserProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
 
       val s = Await.result(m.projectModule.getUserProjects(m.userId, 0, 100), Duration.Inf)
 
-      there was one(m.projectDal).getUserProjects(m.authData.user.id, 0, 100)
+      there was one(m.dalProject).getUserProjects(m.authData.user.id, 0, 100)
       s must beRight
       val ret = s.merge.asInstanceOf[ProjectListDTO]
       ret.items.size === 1
@@ -110,9 +120,9 @@ class ProjectModuleSpec extends Specification with Mockito {
 
     "get user project should handle dal errors" in {
       val m = module
-      m.projectDal.getUserProjects(anyString, any, any) returns dalErr("Test error")
+      m.dalProject.getUserProjects(anyString, any, any) returns dalErr("Test error")
       val s = Await.result(m.projectModule.getUserProjects(m.authData.user.id, 0, 100), Duration.Inf)
-      there was one(m.projectDal).getUserProjects(m.authData.user.id, 0, 100)
+      there was one(m.dalProject).getUserProjects(m.authData.user.id, 0, 100)
       s must beLeft
       val (code, message) = s.merge.asInstanceOf[ResultError]
       code === Status.INTERNAL_SERVER_ERROR
@@ -121,9 +131,9 @@ class ProjectModuleSpec extends Specification with Mockito {
 
     "get user projects and handle future failure" in {
       val m = module
-      m.projectDal.getUserProjects(anyString, any, any) returns Future.failed(new RuntimeException("test future"))
+      m.dalProject.getUserProjects(anyString, any, any) returns Future.failed(new RuntimeException("test future"))
       val s = Await.result(m.projectModule.getUserProjects(m.authData.user.id, 0, 100), Duration.Inf)
-      there was one(m.projectDal).getUserProjects(m.authData.user.id, 0, 100)
+      there was one(m.dalProject).getUserProjects(m.authData.user.id, 0, 100)
       s must beLeft
       val (code, message) = s.merge.asInstanceOf[ResultError]
       code === Status.INTERNAL_SERVER_ERROR
@@ -134,10 +144,10 @@ class ProjectModuleSpec extends Specification with Mockito {
       val m = module
       val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
       val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
-      m.projectDal.getUserPublicProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
-      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)),1)
+      m.dalProject.getUserPublicProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
+      m.dalProject.getUserProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
       val s = Await.result(m.projectModule.getUserProjects("id", 0, 100), Duration.Inf)
-      there was one(m.projectDal).getUserPublicProjects("id", 0, 100)
+      there was one(m.dalProject).getUserPublicProjects("id", 0, 100)
       s must beRight
     }
 

@@ -36,7 +36,7 @@ class ProjectDALSpec extends BaseDALSpec {
     (p,g)
   }
 
-  def newDal = new SlickProjectDALComponent with TestCaching{}.projectDal
+  def newDal = new SlickProjectDALComponent with TestCaching{}.dalProject
 
   "Project DAL" should {
 
