@@ -94,7 +94,6 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
     }
 
     override def getTasks(projectId: String, offset: Int, count: Int): Result[TaskListDTO] = {
-      val user = authData.user
       val f = checkUser(userId, projectId) flatMap {
         isValid =>
           if (!isValid) throw new Exception("User is not valid in context")
@@ -106,6 +105,27 @@ trait DefaultProjectModuleComponent extends ProjectModuleComponent {
 
       f recover {
         case e: Throwable => resultExSync(e, "getTasks")
+      }
+    }
+
+    override def deleteProject(projectId: String): Result[BooleanDTO] = {
+      val f = checkUser(userId, projectId) flatMap {
+        isValid =>
+          if (!isValid) throw new Exception("User is not valid in context")
+          projectDal.getProjectById(projectId) flatMap {
+            case Some(project) =>
+              val newProject = project.copy(status = Constants.STATUS_DELETE)
+              projectDal.updateProject(newProject) map {
+                x =>
+                 resultSync(BooleanDTO(true))
+              }
+            case None =>
+              resultError(Status.NOT_FOUND, "Project not found")
+          }
+      }
+
+      f recover {
+        case e: Throwable => resultExSync(e, "deleteProject")
       }
     }
   }

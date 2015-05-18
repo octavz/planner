@@ -133,4 +133,20 @@ trait ProjectController extends BaseController {
         }
     }
 
+  @ApiOperation(value = "Delete project", notes = "Delete project", response = classOf[BooleanDTO], httpMethod = "DELETE", nickname = "deleteProject")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
+  ))
+  def deleteProject(
+                     @ApiParam(value = "project id", required = true) @PathParam(value = "projectId") projectId: String
+                     ) =
+    Action.async {
+      implicit request =>
+        authorize {
+          implicit authInfo =>
+            projectModule.deleteProject(projectId) map (responseOk(_))
+        }
+    }
+
+
 }

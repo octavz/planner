@@ -65,9 +65,9 @@ class ProjectDALSpec extends BaseDALSpec {
         implicit s =>
           val dal = newDal
           val resGet = Await.result(dal.getUserProjects(testUser.id, 0, 100), Duration.Inf)
-          val ret = resGet.asInstanceOf[List[(Group,Project)]]
-          ret.size === 1
-          ret(0)._2 === testProject 
+          val ret = resGet.asInstanceOf[(List[(Group,Project)], Int)]
+          ret._1.size === 1
+          ret._1(0)._2 === testProject
       }
     }
 
@@ -76,8 +76,8 @@ class ProjectDALSpec extends BaseDALSpec {
         implicit s =>
           val dal = newDal
           val resGet = Await.result(dal.getUserPublicProjects("1", 0, 1), Duration.Inf)
-          val ret = resGet.asInstanceOf[List[(Group,Project)]]
-          ret.size === 0
+          val ret = resGet.asInstanceOf[(List[(Group,Project)], Int)]
+          ret._1.size === 0
       }
     }
 

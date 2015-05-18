@@ -7,7 +7,7 @@ import play.api.db.slick.DB
 import org.planner.dal.{Oauth2DALComponent, DAL}
 import scalaoauth2.provider.{ClientCredential, AuthInfo, DataHandler}
 import java.sql.Timestamp
-import org.planner.util.Crypto
+import org.planner.util.{Constants, Crypto}
 import scala.concurrent._
 import play.api.db.slick.Config.driver.simple._
 import play.api.Play.current
@@ -15,6 +15,7 @@ import java.util.Date
 import org.planner.db._
 import play.api.db.slick.DB
 import ExecutionContext.Implicits.global
+import org.planner.util.Time._
 
 trait SlickProjectDALComponent extends ProjectDALComponent with DB {
   this: Caching =>
@@ -34,6 +35,8 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
     override def updateProject(model: Project): DAL[Project] =
       DB.withTransaction {
         implicit session =>
+          val newModel = model.copy(updated = now)
+          Projects.filter(_.id === model.id).update(newModel)
           dal(model)
       }
 
@@ -43,7 +46,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
           val q = for {
             g <- Groups
             gu <- GroupsUsers if g.id === gu.groupId && gu.userId === uid
-            p <- Projects if g.projectId === p.id
+            p <- Projects if g.projectId === p.id && p.status =!= Constants.STATUS_DELETE
           } yield (g, p)
           val ret = (q.drop(offset).take(count).list, q.length.run)
           dal(ret)
@@ -66,7 +69,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
             INNER JOIN groups_users gu ON gu.group_id = g.id
             WHERE
             gu.user_id = $uid AND
-            (p.perm & 64 <> 0 OR p.perm & 128 <> 0)
+            (p.perm & 64 <> 0 OR p.perm & 128 <> 0) and status <> ${Constants.STATUS_DELETE}
             offset $offset limit $count
             """.as[(Group, Project)]
           val total = sql"""
@@ -75,6 +78,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
             INNER JOIN groups_users gu ON gu.group_id = g.id
             WHERE gu.user_id = $uid AND
             (p.perm & 64 <> 0 OR p.perm & 128 <> 0)
+            (p.perm & 64 <> 0 OR p.perm & 128 <> 0) and status <> ${Constants.STATUS_DELETE}
             """.as[Int]
           val ret = (projectsByUser.list, total.list.head)
           dal(ret)
@@ -82,7 +86,7 @@ trait SlickProjectDALComponent extends ProjectDALComponent with DB {
 
     override def getProjectById(id: String) = DB.withSession {
       implicit session =>
-        dal(Projects.filter(_.id === id).firstOption)
+        dal(Projects.filter(p => p.id === id && p.status =!= Constants.STATUS_DELETE).firstOption)
     }
 
     override def insertTask(model: Task): DAL[Task] =

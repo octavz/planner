@@ -86,7 +86,7 @@ class ProjectModuleSpec extends Specification with Mockito {
 
     "implement get user projects" in {
       val m = module
-      m.projectDal.getUserProjects(anyString, any, any) returns dal(List())
+      m.projectDal.getUserProjects(anyString, any, any) returns dal(List(),0)
       val s = m.projectModule.getUserProjects(m.userId, 0, 100)
       s must not be (null)
     }
@@ -95,7 +95,7 @@ class ProjectModuleSpec extends Specification with Mockito {
       val m = module
       val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
       val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
-      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)))
+      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
 
       val s = Await.result(m.projectModule.getUserProjects(m.userId, 0, 100), Duration.Inf)
 
@@ -134,8 +134,8 @@ class ProjectModuleSpec extends Specification with Mockito {
       val m = module
       val p1 = Project(id = guid, userId = "1", name = guid, description = guido, parentId = guido, created = now, updated = now)
       val g1 = Group(id = guid, projectId = p1.id, name = guid, updated = now, created = now, groupId = None, userId = m.authData.user.id)
-      m.projectDal.getUserPublicProjects(anyString, any, any) returns dal(List((g1, p1)))
-      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)))
+      m.projectDal.getUserPublicProjects(anyString, any, any) returns dal(List((g1, p1)), 1)
+      m.projectDal.getUserProjects(anyString, any, any) returns dal(List((g1, p1)),1)
       val s = Await.result(m.projectModule.getUserProjects("id", 0, 100), Duration.Inf)
       there was one(m.projectDal).getUserPublicProjects("id", 0, 100)
       s must beRight

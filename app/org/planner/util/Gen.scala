@@ -5,6 +5,7 @@ import java.sql.Timestamp
 object Constants {
   val EMPTY_GROUP  = ""
   val DEFAULT_GROUP_TYPE = 1
+  val STATUS_DELETE: Short = 5
 }
 
 
