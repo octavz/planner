@@ -1,6 +1,6 @@
 package org.planner.dal.impl
 
-import org.planner.dal.{Oauth2DALComponent,  DAL}
+import org.planner.dal.{Oauth2DALComponent, DAL}
 import scalaoauth2.provider.{ClientCredential, AuthInfo, DataHandler}
 import java.sql.Timestamp
 import org.planner.util.Crypto
@@ -73,27 +73,30 @@ trait SlickOauth2DALComponent extends Oauth2DALComponent with DB {
     override def findAccessToken(token: String): Future[Option[scalaoauth2.provider.AccessToken]] = Future.successful {
       DB.withTransaction {
         implicit session =>
-          AccessTokens.filter(a => a.accessToken === token).firstOption map { a =>
+          AccessTokens.filter(_.accessToken === token).firstOption map { a =>
             scalaoauth2.provider.AccessToken(a.accessToken, a.refreshToken, a.scope, Some(a.expiresIn.toLong), a.created)
           }
       }
     }
 
     override def getUserById(id: String): Future[Option[User]] = Future.successful {
-      DB.withTransaction { implicit session =>
-        Users.filter(u => u.id === id).firstOption
+      DB.withTransaction {
+        implicit session =>
+          Users.filter(_.id === id).firstOption
       }
     }
 
     override def getAccessTokenById(token: String): Future[Option[AccessToken]] = Future.successful {
-      DB.withTransaction { implicit session =>
-        AccessTokens.filter(u => u.accessToken === token).firstOption
+      DB.withTransaction {
+        implicit session =>
+          AccessTokens.filter(_.accessToken === token).firstOption
       }
     }
 
     override def findRefreshToken(token: String): Future[Option[AccessToken]] = Future.successful {
-      DB.withTransaction { implicit session =>
-        AccessTokens.filter(a => a.refreshToken === token).firstOption
+      DB.withTransaction {
+        implicit session =>
+          AccessTokens.filter(_.refreshToken === token).firstOption
       }
     }
 
@@ -108,7 +111,7 @@ trait SlickOauth2DALComponent extends Oauth2DALComponent with DB {
     override def findAuthInfoByRefreshToken(refreshToken: String): Future[Option[AuthInfo[User]]] =
       findRefreshToken(refreshToken) flatMap {
         case Some(a) => getUserById(a.userId) map {
-          _.map { user => AuthInfo(user, Some(a.clientId), a.scope, Some(""))}
+          _.map { user => AuthInfo(user, Some(a.clientId), a.scope, Some("")) }
         }
         case _ => Future.successful(None)
       }
@@ -137,6 +140,13 @@ trait SlickOauth2DALComponent extends Oauth2DALComponent with DB {
       //      case _ => Clients.filter(c => c.id === clientCredential.clientId )
       //    }
       None
+    }
+
+    override def deleteAuthCode(code: String): Future[Unit] = Future.successful {
+      DB.withTransaction {
+        implicit session =>
+          AuthCodes.filter(_.authorizationCode === code).delete
+      }
     }
   }
 

@@ -9,11 +9,11 @@ import play.api.mvc._
 
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-import scalaoauth2.provider.{AuthInfo, OAuth2AsyncProvider, ProtectedResource}
+import scalaoauth2.provider.{OAuth2Provider, AuthInfo, OAuth2AsyncProvider, ProtectedResource}
 
 trait BaseController
   extends Controller
-  with OAuth2AsyncProvider
+  with OAuth2Provider
   with Oauth2DALComponent
   with JsonFormats {
   this: BaseModule =>

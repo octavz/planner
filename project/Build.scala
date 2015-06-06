@@ -21,18 +21,18 @@ object AppBuild extends Build {
     "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/")
 
   val appDependencies = Seq(
-    "com.typesafe.play" %% "play-cache" % "2.3.8",
-    "com.typesafe.play" %% "play-jdbc" % "2.3.8",
+    "com.typesafe.play" %% "play-cache" % "2.3.9",
+    "com.typesafe.play" %% "play-jdbc" % "2.3.9",
     "postgresql" % "postgresql" % "9.3-1102.jdbc41",
-    "com.typesafe.play" %% "play-slick" % "0.8.0",
-    "com.nulab-inc" %% "play2-oauth2-provider" % "0.11.0",
+    "com.typesafe.play" %% "play-slick" % "0.8.1",
+    "com.nulab-inc" %% "play2-oauth2-provider" % "0.14.0",
     "org.mockito" % "mockito-all" % "1.10.19",
     //"com.wix" %% "accord-core" % "0.4-SNAPSHOT",
     "com.wordnik" %% "swagger-play2" % "1.3.12",
     "net.sourceforge.htmlunit" % "htmlunit" % "2.15" % "test",
-    "com.github.nscala-time" %% "nscala-time" % "1.4.0",
-    "com.livestream" %% "scredis" % "2.0.5",
-    "redis.embedded" % "embedded-redis" % "0.3"
+    "com.github.nscala-time" %% "nscala-time" % "2.0.0",
+    "com.livestream" %% "scredis" % "2.0.6",
+    "com.github.kstyrc" % "embedded-redis" % "0.6"
   )
 
   lazy val main = Project(appName, file(".")).dependsOn(gen).enablePlugins(play.PlayScala).settings(
