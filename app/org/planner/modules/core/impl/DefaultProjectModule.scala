@@ -9,6 +9,7 @@ import org.planner.modules._
 import org.planner.db._
 import org.planner.util.Gen._
 import org.planner.util.Time._
+import DB._
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits._

@@ -19,7 +19,7 @@ package object dal {
 
     def get[A](key: String)(implicit r: Reads[A]): Future[Option[A]]
 
-    def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit r: Reads[A], w:Writes[A]): Future[A]
+    def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit r: Reads[A], w: Writes[A]): Future[A]
 
     def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A)(implicit r: Reads[A], w: Writes[A]): Future[A]
   }
@@ -32,6 +32,9 @@ package object dal {
     def userGroupsIds(id: String): String = s"userGroupIds:$id"
 
     def userGroups(id: String): String = s"userGroup:$id"
+
+    def byEmail(email: String): String = s"user:email:$email"
+
   }
 
 }

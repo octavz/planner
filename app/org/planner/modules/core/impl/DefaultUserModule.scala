@@ -1,6 +1,7 @@
 package org.planner.modules.core.impl
 
 import org.planner.modules.core.{UserModuleComponent}
+
 import org.planner.modules.dto.{BooleanDTO, UserDTO, GroupDTO, RegisterDTO}
 import play.api.http.Status
 import scala.concurrent._
@@ -10,6 +11,7 @@ import org.planner.dal._
 import org.planner.db._
 import java.util.Date
 import scalaoauth2.provider._
+import DB._
 
 trait DefaultUserModuleComponent extends UserModuleComponent {
   this: UserDALComponent with Oauth2DALComponent =>

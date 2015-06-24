@@ -1,21 +1,23 @@
 package org.planner.dal
 
 import org.planner.db._
+import DB._
 import scala.concurrent._
 import scalaoauth2.provider.{ClientCredential, AuthInfo, DataHandler}
+import DB._
 
 trait Oauth2DALComponent {
   val dalAuth: Oauth2DAL
 
   trait Oauth2DAL extends DataHandler[User] {
 
-    def deleteExistingAndCreate(accessToken: org.planner.db.AccessToken, userId: String, clientId: String): Future[Int]
+    def deleteExistingAndCreate(accessToken: AccessToken, userId: String, clientId: String): Future[Int]
 
     def getUserById(id: String): Future[Option[User]]
 
-    def getAccessTokenById(token: String): Future[Option[org.planner.db.AccessToken]]
+    def getAccessTokenById(token: String): Future[Option[AccessToken]]
 
-    def findRefreshToken(token: String): Future[Option[org.planner.db.AccessToken]]
+    def findRefreshToken(token: String): Future[Option[AccessToken]]
 
     def findAuthCode(code: String): Future[Option[AuthCode]]
 

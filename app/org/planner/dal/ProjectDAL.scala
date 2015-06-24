@@ -1,6 +1,7 @@
 package org.planner.dal
 
 import org.planner.db._
+import DB._
 
 trait ProjectDALComponent {
   val dalProject: ProjectDAL
@@ -21,7 +22,7 @@ trait ProjectDALComponent {
 
     def insertTask(model: Task): DAL[Task]
 
-    def getTasksByProjectAndUser(projectId: String, userId: String, offset: Int, count: Int): DAL[(List[Task],Int)]
+    def getTasksByProjectAndUser(projectId: String, userId: String, offset: Int, count: Int): DAL[(List[Task], Int)]
 
   }
 

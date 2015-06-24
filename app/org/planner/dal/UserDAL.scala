@@ -1,6 +1,7 @@
 package org.planner.dal
 
 import org.planner.db._
+import DB._
 
 trait UserDALComponent {
   val dalUser: UserDAL

@@ -1,6 +1,7 @@
 package org.planner.modules.dto
 
 import com.wordnik.swagger.annotations.{ApiModelProperty, ApiModel}
+
 import org.planner.util.{Constants, Gen, Time}
 
 import org.planner.db._
@@ -8,6 +9,7 @@ import org.planner.modules._
 import org.planner.modules._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import DB._
 
 import scala.annotation.meta.field
 
