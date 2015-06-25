@@ -14,10 +14,10 @@ object Global extends WithFilters(CORSFilter()) {
     Logger.info("Application is shutting down!")
   }
 
-  override def getControllerInstance[A](clazz: Class[A]) = clazz match {
-    case c if c.isAssignableFrom(classOf[UserController]) => Runtime.userController.asInstanceOf[A]
-    case c if c.isAssignableFrom(classOf[ProjectController]) => Runtime.projectController.asInstanceOf[A]
-    case _ => super.getControllerInstance(clazz)
-  }
+//  override def getControllerInstance[A](clazz: Class[A]) = clazz match {
+//    case c if c.isAssignableFrom(classOf[UserController]) => Runtime.userController.asInstanceOf[A]
+//    case c if c.isAssignableFrom(classOf[ProjectController]) => Runtime.projectController.asInstanceOf[A]
+//    case _ => super.getControllerInstance(clazz)
+//  }
 
 }

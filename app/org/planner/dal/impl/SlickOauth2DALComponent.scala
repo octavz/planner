@@ -18,7 +18,7 @@ trait SlickOauth2DALComponent extends Oauth2DALComponent with DB with HasDatabas
   val dalAuth = new SlickOauth2DAL
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
 
-  import driver.api._
+  import dbConfig.driver.api._
 
   //  import slick.driver.PostgresDriver.api._
 
@@ -54,7 +54,8 @@ trait SlickOauth2DALComponent extends Oauth2DALComponent with DB with HasDatabas
     override def deleteExistingAndCreate(accessToken: AccessToken, userId: String, clientId: String): Future[Int] = {
       val action = (for {
       // these two operations should happen inside a transaction
-        d <- AccessTokens.filter(a => a.clientId === clientId && a.userId === userId).delete
+      //        d <-  AccessTokens.filter(a => a.clientId === clientId && a.userId === userId).delete
+        d <- sqlu"delete from access_tokens where client_id = $clientId and user_id = $userId"
         r <- AccessTokens += accessToken
       } yield r).transactionally
 
@@ -137,8 +138,8 @@ trait SlickOauth2DALComponent extends Oauth2DALComponent with DB with HasDatabas
     }
 
     override def deleteAuthCode(code: String): Future[Unit] = {
-      val action = AuthCodes.filter(_.authorizationCode === code).delete
-      db.run(action) map (x => _)
+      val sql = sqlu"""delete from auth_codes where authorization_code = $code"""
+      db.run(sql) map (_ => ())
     }
   }
 

@@ -38,8 +38,8 @@ trait SlickUserDALComponent extends UserDALComponent with DB with ModelJson {
       }
 
     override def deleteSessionByUser(uid: String): DAL[Int] = {
-      val action = UserSessions.filter(_.userId === uid).delete
-      db.run(action.result)
+      val action = sqlu"delete from user_sessions where user_id = $uid"
+      db.run(action)
     }
 
     override def getUserById(uid: String): DAL[User] = {
@@ -53,7 +53,7 @@ trait SlickUserDALComponent extends UserDALComponent with DB with ModelJson {
     }
 
     override def getUserByEmail(email: String): DAL[Option[User]] = {
-      getOrElse(CacheKeys.byEmail(email)) {
+      getOrElse[Option[User]](CacheKeys.byEmail(email)) {
         db.run(Users.filter(_.login === email).result.headOption)
       }
     }

@@ -8,9 +8,6 @@ import scredis.serialization._
 import scala.concurrent._
 import scala.concurrent.duration._
 
-/**
- * Created by Octav on 7/9/2014.
- */
 package object impl {
 
   def async[T](result: T): Future[T] = Future.successful(result)
@@ -26,7 +23,7 @@ package object impl {
     override def set[A](key: String, value: A, expiration: Int = 0)(implicit w: Writes[A]): Future[Boolean] = {
       try {
         val f = client.set(key, Json.toJson(value).toString(), if (expiration == 0) None else Some(expiration.seconds))
-        f recover { case _ => false}
+        f recover { case _ => false }
       } catch {
         case ex: Throwable =>
           Logger.error(ex.getMessage)
@@ -45,7 +42,7 @@ package object impl {
             }
           case _ => None
         }
-        f recover { case _ => None}
+        f recover { case _ => None }
       } catch {
         case ex: Throwable =>
           Logger.error(ex.getMessage)
@@ -57,23 +54,23 @@ package object impl {
 
     override def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit r: Reads[A], w: Writes[A]): Future[A] =
       try {
-        def save(value: A): A = {
-          client.set(key, Json.toJson(value).toString(), if (expiration == 0) None else Some(expiration.seconds))
-          value
-        }
-        val f = client.get(key) flatMap {
-          case Some(v) => Future.successful{
+        val f: Future[A] = client.get(key) flatMap {
+          case Some(v) => Future.successful {
             val js = Json.parse(v)
-            Json.fromJson[A](js).get.asInstanceOf[A]
+            Json.fromJson[A](js).get
           }
           case _ =>
-            orElse map {
-              case None => None.asInstanceOf[A]
-              case v if v != null => save(v)
-              case v => v
+            orElse flatMap {
+              case None => Future.successful(None.asInstanceOf[A])
+              case v if v != null =>
+                set(key, v, expiration) map {
+                  case true => v
+                  case _ => throw new RuntimeException("Saving value failed")
+                }
+              case v => Future.successful(v)
             }
         }
-        f recoverWith { case _ => orElse}
+        f recoverWith { case _ => orElse }
       } catch {
         case ex: Throwable =>
           Logger.error(ex.getMessage)
