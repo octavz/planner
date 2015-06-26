@@ -23,7 +23,6 @@ object AppBuild extends Build {
 
   val appDependencies = Seq(
     "com.typesafe.slick" %% "slick" % "3.0.0",
-    "com.typesafe.play" %% "play-slick-evolutions" % "1.0.0",
     "org.specs2" %% "specs2" % "3.0.1" % "test",
     "org.specs2" %% "specs2-junit" % "3.0.1" % "test",
     "com.typesafe.play" %% "play-cache" % "2.4.0",
@@ -33,11 +32,15 @@ object AppBuild extends Build {
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.0",
     "org.mockito" % "mockito-all" % "1.10.19",
     //"com.wix" %% "accord-core" % "0.4-SNAPSHOT",
-    "com.wordnik" %% "swagger-play2" % "1.3.12",
+//    "com.wordnik" %% "swagger-play2" % "1.3.12",
+    "pl.matisoft" %% "swagger-play24" % "1.4",
+    "com.wordnik" %% "swagger-core" % "1.3.12",
+    "com.wordnik" %% "swagger-jaxrs" % "1.3.12",
     "net.sourceforge.htmlunit" % "htmlunit" % "2.15" % "test",
     "com.github.nscala-time" %% "nscala-time" % "2.0.0",
     "com.livestream" %% "scredis" % "2.0.6",
     "com.github.kstyrc" % "embedded-redis" % "0.6",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.0-rc2",
     "com.typesafe.slick" %% "slick-codegen" % "3.0.0"
   )
 

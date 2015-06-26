@@ -1,26 +1,23 @@
 package org.planner.controllers
 
 import javax.ws.rs.{QueryParam, PathParam}
-
-
+import com.google.inject.Inject
 import com.wordnik.swagger.annotations._
-import org.planner.modules.core.{ProjectModuleComponent}
+import org.planner.modules.core.ProjectModule
 import org.planner.modules.dto._
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Api(value = "/api/project", description = "Project operations")
-trait ProjectController extends BaseController {
-  this: ProjectModuleComponent =>
-  implicit val service = projectModule
+class ProjectController @Inject()(projectModule: ProjectModule) extends BaseController(projectModule) {
 
   @ApiOperation(value = "Create project", notes = "Create project", response = classOf[ProjectDTO], httpMethod = "POST", nickname = "createProject")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(value = "The new project to be added", required = true, dataType = "ProjectDTO", paramType = "body"),
     new ApiImplicitParam(name = "Authorization", value = "authorization", defaultValue = "OAuth token", required = true, dataType = "string", paramType = "header")
   ))
-  def insertProject = Action.async {
+  def insertProject() = Action.async {
     implicit request =>
       request.body.asJson.map {
         json => try {

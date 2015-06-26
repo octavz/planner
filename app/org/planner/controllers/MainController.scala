@@ -4,7 +4,7 @@ import controllers.Assets
 import play.api.mvc.{Action, Controller}
 import scalaoauth2.provider.OAuth2Provider
 
-class MainController extends Controller with OAuth2Provider {
+class MainController extends Controller {
 
   def build = Action { _ => Ok("build")}
 

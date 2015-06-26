@@ -1,7 +1,8 @@
 package org.planner.dal
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import play.api.Logger
-import play.api.libs.json._
 import scredis._
 import scredis.serialization._
 
@@ -10,19 +11,21 @@ import scala.concurrent.duration._
 
 package object impl {
 
-  def async[T](result: T): Future[T] = Future.successful(result)
-
-  trait RedisCaching extends Caching {
+  class RedisCaching extends Caching {
 
     class UTF8Reader extends StringReader("UTF-8")
+
+    val mapper = new ObjectMapper()
+    mapper.registerModule(DefaultScalaModule)
 
     lazy val client = Redis()
 
     import client.dispatcher
 
-    override def set[A](key: String, value: A, expiration: Int = 0)(implicit w: Writes[A]): Future[Boolean] = {
+    override def set[A](key: String, value: A, expiration: Int = 0): Future[Boolean] = {
       try {
-        val f = client.set(key, Json.toJson(value).toString(), if (expiration == 0) None else Some(expiration.seconds))
+        val json = mapper.writeValueAsString(value)
+        val f = client.set(key, json, if (expiration == 0) None else Some(expiration.seconds))
         f recover { case _ => false }
       } catch {
         case ex: Throwable =>
@@ -31,18 +34,19 @@ package object impl {
       }
     }
 
-    override def get[A](key: String)(implicit r: Reads[A]): Future[Option[A]] = {
+    override def get[A](key: String)(implicit m: Manifest[A]): Future[Option[A]] = {
       try {
         val f = client.get(key) map {
           case Some(value) =>
             try {
-              Some(Json.fromJson[A](Json.parse(value.toString)).asInstanceOf[A])
+              val res = mapper.readValue(value, m.runtimeClass).asInstanceOf[A]
+              Some(res)
             } catch {
               case ex: Exception => None
             }
           case _ => None
         }
-        f recover { case _ => None }
+        f recover { case _ => Option.empty[A] }
       } catch {
         case ex: Throwable =>
           Logger.error(ex.getMessage)
@@ -50,14 +54,13 @@ package object impl {
       }
     }
 
-    override def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A)(implicit r: Reads[A], w: Writes[A]): Future[A] = getOrElse[A](key, expiration)(Future.successful(orElse))
+    override def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A)(implicit m: Manifest[A]): Future[A] = getOrElse[A](key, expiration)(Future.successful(orElse))
 
-    override def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit r: Reads[A], w: Writes[A]): Future[A] =
+    override def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit m: Manifest[A]): Future[A] =
       try {
         val f: Future[A] = client.get(key) flatMap {
           case Some(v) => Future.successful {
-            val js = Json.parse(v)
-            Json.fromJson[A](js).get
+            mapper.readValue(v, m.runtimeClass).asInstanceOf[A]
           }
           case _ =>
             orElse flatMap {
@@ -76,16 +79,20 @@ package object impl {
           Logger.error(ex.getMessage)
           orElse
       }
+
+    override def getOrElseOpt[A](key: String, expiration: Int)(orElse: => Future[Option[A]])(implicit m: Manifest[A]): Future[A] = ???
   }
 
-  trait TestCaching extends Caching {
-    override def set[A](key: String, value: A, expiration: Int)(implicit w: Writes[A]): Future[Boolean] = Future.successful(false)
+  class TestCaching extends Caching {
+    override def set[A](key: String, value: A, expiration: Int): Future[Boolean] = Future.successful(false)
 
-    override def get[A](key: String)(implicit w: Reads[A]): Future[Option[A]] = Future.successful(None)
+    override def get[A](key: String)(implicit m: Manifest[A]): Future[Option[A]] = Future.successful(None)
 
-    override def getOrElse[A](key: String, expiration: Int)(orElse: => Future[A])(implicit r: Reads[A], w: Writes[A]): Future[A] = orElse
+    override def getOrElse[A](key: String, expiration: Int)(orElse: => Future[A])(implicit m: Manifest[A]): Future[A] = orElse
 
-    override def getOrElseSync[A](key: String, expiration: Int)(orElse: => A)(implicit r: Reads[A], w: Writes[A]): Future[A] = Future.successful(orElse)
+    override def getOrElseSync[A](key: String, expiration: Int)(orElse: => A)(implicit m: Manifest[A]): Future[A] = Future.successful(orElse)
+
+    override def getOrElseOpt[A](key: String, expiration: Int)(orElse: => Future[Option[A]])(implicit m: Manifest[A]): Future[A] = ???
   }
 
 }

@@ -21,9 +21,13 @@ POST         /api/group                  @org.planner.controllers.UserController
 POST         /api/group/:groupId/users   @org.planner.controllers.UserController.addUsersToGroup(groupId: String)
 GET          /api/user/:id/projects      @org.planner.controllers.ProjectController.getUserProjects(id: String, offset: Int, count: Int)
 
-GET          /api-docs                   controllers.ApiHelpController.getResources
-GET          /api-docs/api/project       controllers.ApiHelpController.getResource(path = "/api/project")
-GET          /api-docs/api/user          controllers.ApiHelpController.getResource(path = "/api/user")
+#GET          /api-docs                   controllers.ApiHelpController.getResources
+#GET          /api-docs/api/project       controllers.ApiHelpController.getResource(path = "/api/project")
+#GET          /api-docs/api/user          controllers.ApiHelpController.getResource(path = "/api/user")
+
+GET          /api-docs                   @pl.matisoft.swagger.ApiHelpController.getResources
+GET          /api-docs/api/project       @pl.matisoft.swagger.ApiHelpController.getResource(path = "/api/project")
+GET          /api-docs/api/user          @pl.matisoft.swagger.ApiHelpController.getResource(path = "/api/user")
 
 GET          /docs/*file                 controllers.Assets.at(path="/public/docs", file)
 GET          /app/*file                  controllers.Assets.at(path="/public/client/app",file)

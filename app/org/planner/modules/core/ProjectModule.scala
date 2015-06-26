@@ -3,13 +3,7 @@ package org.planner.modules.core
 import org.planner.modules.Result
 import org.planner.modules.dto._
 
-/**
- * Created by Octav on 6/30/2014.
- */
-trait ProjectModuleComponent extends BaseModule {
-  val projectModule: ProjectModule
-
-  trait ProjectModule {
+  trait ProjectModule extends BaseModule{
 
     def insertProject(project: ProjectDTO): Result[ProjectDTO]
 
@@ -23,6 +17,5 @@ trait ProjectModuleComponent extends BaseModule {
 
     def getTasks(projectId: String, offset: Int, count: Int): Result[TaskListDTO]
 
-  }
 
 }

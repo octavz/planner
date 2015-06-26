@@ -2,8 +2,9 @@ package org.planner.controllers
 
 import javax.ws.rs.{PathParam, QueryParam}
 
+import com.google.inject.Inject
 import com.wordnik.swagger.annotations._
-import org.planner.modules.core.{UserModuleComponent}
+import org.planner.modules.core.{UserModule}
 import org.planner.modules.dto._
 import play.api.data.Forms._
 import play.api.data._
@@ -14,13 +15,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
 @Api(value = "/api/user", description = "User operations")
-trait UserController extends BaseController {
-  this: UserModuleComponent =>
-  //val userModule = inject[UserModule]
+class UserController @Inject()(userModule: UserModule) extends BaseController(userModule) {
 
   @ApiOperation(value = "Issue access token", notes = """{"token_type": "Bearer","access_token": "MDEwNTBkNDgtNDhkNC00YmNhLWJiMjktMzVhMTJkMjMwNDBk","expires_in": 3600,"refresh_token": "NzVmYjQ4ZDMtMjY3NS00NDA4LTkyZTgtNmNjOTNlNjRhNDZl"}""", response = classOf[String], httpMethod = "POST", nickname = "createAccessToken")
-  def accessToken = Action.async { implicit request =>
-    issueAccessToken(dalAuth)
+  def accessToken = Action.async {
+    implicit request =>
+      issueAccessToken(dalAuth)
   }
 
   def login = Action {
@@ -73,7 +73,9 @@ trait UserController extends BaseController {
           userModule.registerUser(dto) map (r => Ok(Json.toJson(r)))
         } catch {
           case e: Throwable =>
-            Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+            Future.successful(BadRequest(s"Wrong json: ${
+              e.getMessage
+            }"))
         }
       }.getOrElse(Future.successful(BadRequest("Wrong json")))
   }
@@ -88,7 +90,9 @@ trait UserController extends BaseController {
           userModule.addGroup(dto) map (r => Ok(Json.toJson(r)))
         } catch {
           case e: Throwable =>
-            Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+            Future.successful(BadRequest(s"Wrong json: ${
+              e.getMessage
+            }"))
         }
       }.getOrElse(Future.successful(BadRequest("Wrong json")))
   }
@@ -101,7 +105,9 @@ trait UserController extends BaseController {
         userModule.getUserById(userId) map (r => Ok(Json.toJson(r)))
       } catch {
         case e: Throwable =>
-          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+          Future.successful(BadRequest(s"Wrong json: ${
+            e.getMessage
+          }"))
       }
   }
 
@@ -118,7 +124,9 @@ trait UserController extends BaseController {
         }
       } catch {
         case e: Throwable =>
-          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+          Future.successful(BadRequest(s"Wrong json: ${
+            e.getMessage
+          }"))
       }
   }
 
@@ -137,7 +145,9 @@ trait UserController extends BaseController {
         }
       } catch {
         case e: Throwable =>
-          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+          Future.successful(BadRequest(s"Wrong json: ${
+            e.getMessage
+          }"))
       }
   }
 
@@ -153,7 +163,9 @@ trait UserController extends BaseController {
               userModule.addUsersToGroup(groupId, userIds) map (r => Ok(Json.toJson(r)))
             } catch {
               case e: Throwable =>
-                Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+                Future.successful(BadRequest(s"Wrong json: ${
+                  e.getMessage
+                }"))
             }
           }.getOrElse(Future.successful(BadRequest("Wrong json")))
       }
