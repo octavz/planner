@@ -3,11 +3,9 @@ package org.planner
 import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc.Results._
+
 import scala.concurrent._
 
-/**
- * Created by Octav on 7/30/2014.
- */
 package object controllers {
 
   def asyncBadRequest(ex: Throwable) = {
@@ -20,6 +18,6 @@ package object controllers {
     Future.successful(BadRequest( s"""{"errCode":0, "errMessage":${msg}}"""))
   }
 
-  def responseOk[T](a: T)(implicit w: Writes[T]) = Ok(Json.toJson(a))
+  def responseOk[T <: AnyRef](a: T)(implicit m: Writes[T]) = Ok(Json.toJson(a))
 
 }

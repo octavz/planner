@@ -1,21 +1,20 @@
 package org.planner.controllers
 
 import com.google.inject.Inject
-import org.planner.dal.{Oauth2DAL}
-
+import org.planner.dal.Oauth2DAL
 import org.planner.db.User
 import org.planner.modules.core.BaseModule
-import org.planner.modules.dto.JsonFormats
+import org.planner.modules.dto.JsonDTOFormats
 import play.api.mvc._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-import ExecutionContext.Implicits.global
-import scalaoauth2.provider.{OAuth2Provider, AuthInfo, OAuth2AsyncProvider, ProtectedResource}
+import scalaoauth2.provider.{AuthInfo, OAuth2Provider, ProtectedResource}
 
 class BaseController(module: BaseModule)
   extends Controller
-  with OAuth2Provider
-  with JsonFormats {
+  with JsonDTOFormats
+  with OAuth2Provider {
   @Inject var dalAuth: Oauth2DAL = _
 
   //val authHandler = inject[Oauth2DAL]

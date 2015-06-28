@@ -1,15 +1,11 @@
 package org.planner.modules.dto
 
-import com.wordnik.swagger.annotations.{ApiModelProperty, ApiModel}
-
-import org.planner.util.{Constants, Gen, Time}
-
+import com.wordnik.swagger.annotations.{ApiModel, ApiModelProperty}
 import org.planner.db._
 import org.planner.modules._
-import org.planner.modules._
-import play.api.libs.json._
+import org.planner.util.{Constants, Gen, Time}
 import play.api.libs.functional.syntax._
-import DB._
+import play.api.libs.json._
 
 import scala.annotation.meta.field
 
@@ -25,7 +21,12 @@ case class RegisterDTO(login: String, password: String) {
   }
 }
 
-case class UserDTO(login: String, password: String, id: String, nick: String) {
+@ApiModel("UserDTO")
+case class UserDTO(
+                    @(ApiModelProperty@field)(required = true, hidden = false) login: String,
+                    @(ApiModelProperty@field)(required = true, hidden = false) password: String,
+                    @(ApiModelProperty@field)(required = false, hidden = true) id: String,
+                    @(ApiModelProperty@field)(required = true, hidden = false) nick: String) {
 
   def this(model: User) = this(model.login, model.password, model.id, model.nick)
 
@@ -127,7 +128,7 @@ case class StringDTO(value: String)
 
 case class BooleanDTO(value: Boolean)
 
-trait JsonFormats extends BaseFormats with ConstraintReads {
+trait JsonDTOFormats extends BaseFormats with ConstraintReads {
 
   implicit val stringDTO = Json.format[StringDTO]
 

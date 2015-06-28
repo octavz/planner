@@ -1,12 +1,14 @@
 package org.planner.controllers
 
-import javax.ws.rs.{QueryParam, PathParam}
+import javax.ws.rs.{PathParam, QueryParam}
+
 import com.google.inject.Inject
 import com.wordnik.swagger.annotations._
 import org.planner.modules.core.ProjectModule
 import org.planner.modules.dto._
 import play.api.libs.json.JsResultException
 import play.api.mvc._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Api(value = "/api/project", description = "Project operations")

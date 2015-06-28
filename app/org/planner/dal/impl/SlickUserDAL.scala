@@ -1,17 +1,15 @@
 package org.planner.dal.impl
 
 import com.google.inject.Inject
-import org.planner.dal.{DAL}
-import play.api.Play
-import slick.driver.JdbcProfile
-import slick.driver.PostgresDriver.api._
-import scala.concurrent._
-import play.api.Play.current
+import org.planner.dal.JsonFormats._
+import org.planner.dal.{DAL, _}
 import org.planner.db._
-import play.api.db.slick.{HasDatabaseConfig, DatabaseConfigProvider}
-import org.planner.dal._
+import play.api.Play
+import play.api.db.slick.DatabaseConfigProvider
+import slick.driver.JdbcProfile
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-import ExecutionContext.Implicits.global
 
 class SlickUserDAL @Inject()(cache: Caching) extends UserDAL with DB {
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
@@ -30,7 +28,7 @@ class SlickUserDAL @Inject()(cache: Caching) extends UserDAL with DB {
   }
 
   override def findSessionById(id: String): DAL[Option[UserSession]] =
-    cache.getOrElse(CacheKeys.session(id)) {
+    cache.getOrElseOpt(CacheKeys.session(id)) {
       db.run(UserSessions.filter(_.id === id).result.headOption)
     }
 
@@ -50,7 +48,7 @@ class SlickUserDAL @Inject()(cache: Caching) extends UserDAL with DB {
   }
 
   override def getUserByEmail(email: String): DAL[Option[User]] = {
-    cache.getOrElse[Option[User]](CacheKeys.byEmail(email)) {
+    cache.getOrElseOpt(CacheKeys.byEmail(email)) {
       db.run(Users.filter(_.login === email).result.headOption)
     }
   }

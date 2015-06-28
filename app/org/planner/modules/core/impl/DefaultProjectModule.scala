@@ -14,6 +14,7 @@ import DB._
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.language.postfixOps
 
 class DefaultProjectModule @Inject()(dalUser: UserDAL, dalProject: ProjectDAL) extends ProjectModule {
 

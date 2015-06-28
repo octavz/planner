@@ -1,22 +1,19 @@
-import controllers._
-
-import org.planner.controllers.{UserController, MainController}
-import org.planner.modules.core.UserModuleComponent
-import org.planner.modules.dto._
-import org.specs2.mock.Mockito
-import org.specs2.mutable._
-import org.specs2.runner._
 import org.junit.runner._
-import play.api.libs.json._
-import org.planner.util.Gen._
-
-import play.api.GlobalSettings
-import play.api.test._
-import play.api.test.Helpers._
 import org.planner.modules._
+import org.planner.modules.core.UserModule
+import org.planner.modules.dto._
+import org.planner.util.Gen._
+import org.specs2.mock.Mockito
+import org.specs2.runner._
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json._
+import play.api.test._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
+import scala.language.postfixOps
 import scalaoauth2.provider.GrantHandlerResult
 
 /**
@@ -25,50 +22,43 @@ import scalaoauth2.provider.GrantHandlerResult
  * For more information, consult the wiki.
  */
 @RunWith(classOf[JUnitRunner])
-class UserAppSpec extends Specification with Mockito {
+class UserAppSpec extends PlaySpecification with Mockito {
 
-  def waitFor[T](f: Future[T], duration: FiniteDuration = 1000 milli)(implicit ec: ExecutionContext): T = Await.result(f, duration)
+  def waitFor[T](f: Future[T], duration: FiniteDuration = 1000.milli)(implicit ec: ExecutionContext): T = Await.result(f, duration)
 
-  def app(m: UserModuleComponent = mock[UserModuleComponent]) = FakeApplication(
-    additionalConfiguration = Map(
+  def app(m: UserModule = mock[UserModule]) = {
+    new GuiceApplicationBuilder()
+      .configure(Map(
       "evolutionplugin" -> "disabled",
       "db.default.driver" -> "org.h2.Driver",
-      "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"),
-    withoutPlugins = Seq("com.typesafe.plugin.RedisPlugin"),
-    withGlobal = Some(
-      new GlobalSettings {
-        override def getControllerInstance[A](clazz: Class[A]) = clazz match {
-          case c if c.isAssignableFrom(classOf[UserController]) => new UserController with UserModuleComponent {
-            override val dalAuth: Oauth2DAL = mock[Oauth2DAL]
-            override val userModule = m.userModule.asInstanceOf[this.UserModule]
-          }.asInstanceOf[A]
-          case _ => super.getControllerInstance(clazz)
-        }
-      }))
-
-
-  def newComp = new UserModuleComponent {
-    override val userModule: UserModule = mock[UserModule]
+      "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
+      .overrides(bind[UserModule].toInstance(m))
+      .build()
   }
+
+  def newComp = mock[UserModule]
 
   "Application" should {
 
-    "have external static files attached to root" in new WithApplication(app()) {
-      route(FakeRequest(GET, "/docs/index.html")) must beSome
+    "have external static files attached to root" in {
+      running(app()) {
+        route(FakeRequest(GET, "/docs/index.html")) must beSome
+      }
     }
 
-    "render login page" in new WithApplication(app()) {
-      val page = route(FakeRequest(GET, "/login")).get
-      status(page) must equalTo(OK)
-      contentType(page) must beSome.which(_ == "text/html")
-      contentAsString(page) must contain("login")
-
+    "render login page" in {
+      running(app()) {
+        val page = route(FakeRequest(GET, "/login")).get
+        status(page) must equalTo(OK)
+        contentType(page) must beSome.which(_ == "text/html")
+        contentAsString(page) must contain("login")
+      }
     }
 
     "have login route" in {
       val service = newComp
       running(app(service)) {
-        service.userModule.login(any) returns Future.successful(Right(GrantHandlerResult(tokenType = "1", accessToken = "at", expiresIn = None, refreshToken = None, scope = None)))
+        service.login(any) returns Future.successful(Right(GrantHandlerResult(tokenType = "1", accessToken = "at", expiresIn = None, refreshToken = None, scope = None)))
         val page = route(FakeRequest(POST, "/login")
           .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "12345"))
         page must beSome
@@ -79,7 +69,7 @@ class UserAppSpec extends Specification with Mockito {
 
     "have register route" in {
       val service = newComp
-      service.userModule.registerUser(any[RegisterDTO]) answers (u => result(u.asInstanceOf[RegisterDTO]))
+      service.registerUser(any[RegisterDTO]) answers (u => result(u.asInstanceOf[RegisterDTO]))
       running(app(service)) {
         val page = route(FakeRequest(POST, "/api/register")
           .withJsonBody(Json.parse(
@@ -92,13 +82,14 @@ class UserAppSpec extends Specification with Mockito {
         page must beSome
         val res = Await.result(page.get, Duration.Inf)
         val json = contentAsJson(page.get)
-        json \ "login" === JsString("test@test.com")
+        println(json)
+        (json \ "login").get === JsString("test@test.com")
       }
     }
 
     "have add group route" in {
       val service = newComp
-      service.userModule.addGroup(any[GroupDTO]) answers {
+      service.addGroup(any[GroupDTO]) answers {
         u =>
           val dto = u.asInstanceOf[GroupDTO].copy(id = guido)
           result(dto)
@@ -115,9 +106,9 @@ class UserAppSpec extends Specification with Mockito {
         page must beSome
         val res = Await.result(page.get, Duration.Inf)
         val json = contentAsJson(page.get)
-        json \ "name" === JsString("group name")
-        json \ "projectId" === JsString("pid")
-        (json \ "id").as[JsString].value must contain("-")
+        json \ "name" === JsDefined(JsString("group name"))
+        json \ "projectId" === JsDefined(JsString("pid"))
+        (json \ "id").get.as[JsString].value must contain("-")
       }
 
     }

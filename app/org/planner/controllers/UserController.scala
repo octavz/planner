@@ -4,11 +4,10 @@ import javax.ws.rs.{PathParam, QueryParam}
 
 import com.google.inject.Inject
 import com.wordnik.swagger.annotations._
-import org.planner.modules.core.{UserModule}
+import org.planner._
+import org.planner.modules.core.UserModule
 import org.planner.modules.dto._
-import play.api.data.Forms._
-import play.api.data._
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,7 +33,7 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
   //    )(LoginForm.apply)(LoginForm.unapply)
   //  )
 
-  @ApiOperation(value = "Login user", notes = "Login user", response = classOf[JsValue], httpMethod = "POST", nickname = "login")
+  @ApiOperation(value = "Login user", notes = "Login user", response = classOf[String], httpMethod = "POST", nickname = "login")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "username", required = true, dataType = "String", paramType = "form", defaultValue = "aaa@aaa.com")
     , new ApiImplicitParam(name = "password", required = true, dataType = "String", paramType = "form", defaultValue = "123456")
@@ -70,7 +69,7 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
       request.body.asJson.map {
         json => try {
           val dto = json.as[RegisterDTO]
-          userModule.registerUser(dto) map (r => Ok(Json.toJson(r)))
+          userModule.registerUser(dto).toResponse
         } catch {
           case e: Throwable =>
             Future.successful(BadRequest(s"Wrong json: ${
@@ -82,12 +81,12 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
 
   @ApiOperation(value = "Add user group", notes = "Add user group", response = classOf[GroupDTO], httpMethod = "POST", nickname = "createGroup")
   @ApiImplicitParams(Array(new ApiImplicitParam(value = "New group", required = true, dataType = "GroupDTO", paramType = "body")))
-  def addGroup = Action.async {
+  def addGroup() = Action.async {
     implicit request =>
       request.body.asJson.map {
         json => try {
           val dto = json.as[GroupDTO]
-          userModule.addGroup(dto) map (r => Ok(Json.toJson(r)))
+          userModule.addGroup(dto).toResponse
         } catch {
           case e: Throwable =>
             Future.successful(BadRequest(s"Wrong json: ${
@@ -102,7 +101,7 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
                    @ApiParam(value = "user id", required = true, allowMultiple = false) @PathParam("userId") userId: String) = Action.async {
     implicit request =>
       try {
-        userModule.getUserById(userId) map (r => Ok(Json.toJson(r)))
+        userModule.getUserById(userId).toResponse
       } catch {
         case e: Throwable =>
           Future.successful(BadRequest(s"Wrong json: ${
@@ -120,7 +119,7 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
       try {
         authorize {
           implicit authInfo =>
-            userModule.getUserById(authInfo.user.id) map (r => Ok(Json.toJson(r)))
+            userModule.getUserById(authInfo.user.id).toResponse
         }
       } catch {
         case e: Throwable =>
@@ -141,7 +140,7 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
       try {
         authorize {
           implicit authInfo =>
-            userModule.searchUsers(email, nick) map (r => Ok(Json.toJson(r)))
+            userModule.searchUsers(email, nick).toResponse
         }
       } catch {
         case e: Throwable =>
@@ -160,7 +159,7 @@ class UserController @Inject()(userModule: UserModule) extends BaseController(us
           request.body.asJson.map {
             json => try {
               val userIds = json.as[List[String]]
-              userModule.addUsersToGroup(groupId, userIds) map (r => Ok(Json.toJson(r)))
+              userModule.addUsersToGroup(groupId, userIds).toResponse
             } catch {
               case e: Throwable =>
                 Future.successful(BadRequest(s"Wrong json: ${

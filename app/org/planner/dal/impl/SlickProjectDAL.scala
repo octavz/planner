@@ -2,17 +2,14 @@ package org.planner.dal.impl
 
 import com.google.inject.Inject
 import org.planner.dal._
-import play.api.Play
-import slick.driver.JdbcProfile
-import play.api.db.slick.DatabaseConfigProvider
-import org.planner.util.Constants
-import scala.concurrent._
-import play.api.Play.current
-import java.util.Date
 import org.planner.db._
-import ExecutionContext.Implicits.global
+import org.planner.util.Constants
 import org.planner.util.Time._
-import slick.driver.PostgresDriver.api._
+import play.api.Play
+import play.api.db.slick.DatabaseConfigProvider
+import slick.driver.JdbcProfile
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class SlickProjectDAL @Inject()(cache: Caching) extends ProjectDAL with DB {
   val config = DatabaseConfigProvider.get[JdbcProfile](Play.current)
