@@ -5,8 +5,12 @@ import org.planner.modules.AuthData
 trait BaseModule {
   protected var _authData: AuthData = null
 
-  def authData = _authData
-  def authData_=(value: AuthData): Unit = _authData = value
+  def setAuth(value: AuthData) = {
+    _authData = value
+  }
+
+  def authData: AuthData = _authData
+
 
   def userId = {
     authData.user.id

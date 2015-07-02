@@ -29,9 +29,8 @@ class ProjectModuleSpec extends Specification with Mockito {
   case class MockedContext(projectModule: DefaultProjectModule, dalUser: UserDAL, dalProject: ProjectDAL)
 
   def module(dalUser: UserDAL = mock[UserDAL], dalProject: ProjectDAL = mock[ProjectDAL]) = {
-    val ret = new DefaultProjectModule(dalUser, dalProject) {
-      _authData = authInfo
-    }
+    val ret = new DefaultProjectModule(dalUser, dalProject)
+    ret.setAuth(authInfo)
     MockedContext(ret, dalUser, dalProject)
   }
 
@@ -50,7 +49,13 @@ class ProjectModuleSpec extends Specification with Mockito {
       val m = module()
       val dto = ProjectDTO(id = guido, name = guid, desc = guido, parent = None, public = true, perm = None, groupId = Some("groupId"), userId = Some("userId"))
 
-      m.dalProject.insertProject(any[Project], any[Group]) answers (a => dal(a.asInstanceOf[Project]))
+      m.dalProject.insertProject(any[Project], any[Group]) answers (a => a match {
+        case Array(p: Project, g: Group) =>
+          Some(g.projectId) === dto.id
+          g.name === dto.name
+          g.userId === m.projectModule.authData.user.id
+          dal(p.asInstanceOf[Project])
+      })
       val s = Await.result(m.projectModule.insertProject(dto), Duration.Inf)
       there was one(m.dalProject).insertProject(any[Project], any[Group])
       s must beRight

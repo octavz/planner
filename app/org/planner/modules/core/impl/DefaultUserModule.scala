@@ -60,7 +60,6 @@ class DefaultUserModule @Inject()(dalUser: UserDAL, dalAuth: Oauth2DAL) extends 
   def registerUser(u: RegisterDTO): Result[RegisterDTO] = {
     try {
       val model = u.toModel
-
       val f = dalUser.getUserByEmail(u.login) flatMap {
         case Some(_) => resultError(Status.INTERNAL_SERVER_ERROR, "Email already exists")
         case _ => dalUser.insertUser(model) map (a => resultSync(new RegisterDTO(a)))

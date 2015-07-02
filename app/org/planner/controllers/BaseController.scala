@@ -24,7 +24,7 @@ class BaseController(module: BaseModule)
       case Left(e) if e.statusCode == 400 => Future.successful(BadRequest.withHeaders(responseOAuthErrorHeader(e)))
       case Left(e) if e.statusCode == 401 => Future.successful(Unauthorized.withHeaders(responseOAuthErrorHeader(e)))
       case Right(authInfo) =>
-        module.authData = authInfo
+        module.setAuth(authInfo)
         callback(authInfo)
     }
 

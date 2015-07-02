@@ -37,6 +37,7 @@ object AppBuild extends Build {
     "net.sourceforge.htmlunit" % "htmlunit" % "2.17" % "test",
     "com.github.nscala-time" %% "nscala-time" % "2.0.0",
     "com.livestream" %% "scredis" % "2.0.6",
+    "com.h2database" % "h2" % "1.4.187",
     //    "com.github.kstyrc" % "embedded-redis" % "0.6",
     //"com.fasterxml.jackson.core" % "jackson-core" % "2.5.4",
     //"com.fasterxml.jackson.core" % "jackson-annotations" % "2.5.4",
