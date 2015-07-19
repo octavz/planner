@@ -57,9 +57,8 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
 
     val ret = new GuiceApplicationBuilder()
       .configure(Map(
-      "evolutionplugin" -> "disabled",
-      "db.default.driver" -> "org.h2.Driver",
-      "db.default.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
+      "evolutionplugin" -> "disabled"
+    ))
       .overrides(bind[ProjectModule].toInstance(mp))
       .overrides(bind[Oauth2DAL].toInstance(dalAuth))
       .build()
@@ -98,37 +97,37 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
       }
     }
 
-        "get all projects" in {
-          val module = app()
-          val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
-          module.projectModule.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p), total = 1))
-          running(module.app) {
-            val page = route(FakeRequest(GET, "/api/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
-            page must beSome
-            status(page.get) === OK
-            Await.ready(page.get, Duration.Inf)
-            there was one(module.projectModule).setAuth(authInfo)
-            there was one(module.projectModule).getUserProjects("id", 0, 10)
-            val json = contentAsJson(page.get)
-            val arr = (json \ "items").as[JsArray].value
-            arr.size === 1
-            arr(0) \ "id" === JsDefined(JsString(p.id.get))
-            arr(0) \ "name" === JsDefined(JsString(p.name))
-            arr(0) \ "desc" === JsDefined(JsString(p.desc.get))
-            arr(0) \ "parent" === JsDefined(JsString(p.parent.get))
-            arr(0) \ "public" === JsDefined(JsBoolean(true))
-            arr(0) \ "perm" === JsDefined(JsNumber(p.perm.get))
-          }
+    "get all projects" in {
+      val module = app()
+      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
+      module.projectModule.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p), total = 1))
+      running(module.app) {
+        val page = route(FakeRequest(GET, "/api/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
+        page must beSome
+        status(page.get) === OK
+        Await.ready(page.get, Duration.Inf)
+        there was one(module.projectModule).setAuth(authInfo)
+        there was one(module.projectModule).getUserProjects("id", 0, 10)
+        val json = contentAsJson(page.get)
+        val arr = (json \ "items").as[JsArray].value
+        arr.size === 1
+        arr(0) \ "id" === JsDefined(JsString(p.id.get))
+        arr(0) \ "name" === JsDefined(JsString(p.name))
+        arr(0) \ "desc" === JsDefined(JsString(p.desc.get))
+        arr(0) \ "parent" === JsDefined(JsString(p.parent.get))
+        arr(0) \ "public" === JsDefined(JsBoolean(true))
+        arr(0) \ "perm" === JsDefined(JsNumber(p.perm.get))
+      }
 
-        }
+    }
 
-        "update project" in {
-          val module = app()
-          val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
-          module.projectModule.updateProject(any) returns result(p)
-          running(module.app) {
-            val page = route(FakeRequest(PUT, "/api/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
-              s"""
+    "update project" in {
+      val module = app()
+      val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
+      module.projectModule.updateProject(any) returns result(p)
+      running(module.app) {
+        val page = route(FakeRequest(PUT, "/api/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
+          s"""
                 {
                 "name":"${p.name}",
                 "desc":"${p.desc}",
@@ -136,18 +135,18 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
                 "public" : true
                 }
               """)))
-            Await.ready(page.get, Duration.Inf)
-            val json = contentAsJson(page.get)
-            page must beSome
-            status(page.get) === OK
-            Await.ready(page.get, Duration.Inf)
-            there was one(module.projectModule).setAuth(authInfo)
-            there was one(module.projectModule).updateProject(any)
-            json \ "name" === JsDefined(JsString(p.name))
-            json \ "desc" === JsDefined(JsString(p.desc.get))
-            json \ "parent" === JsDefined(JsString(p.parent.get))
-          }
-       }
+        Await.ready(page.get, Duration.Inf)
+        val json = contentAsJson(page.get)
+        page must beSome
+        status(page.get) === OK
+        Await.ready(page.get, Duration.Inf)
+        there was one(module.projectModule).setAuth(authInfo)
+        there was one(module.projectModule).updateProject(any)
+        json \ "name" === JsDefined(JsString(p.name))
+        json \ "desc" === JsDefined(JsString(p.desc.get))
+        json \ "parent" === JsDefined(JsString(p.parent.get))
+      }
+    }
 
   }
 }

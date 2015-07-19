@@ -2,7 +2,6 @@ package org.planner.modules.core.impl
 
 import com.google.inject.Inject
 import org.planner.modules.core.UserModule
-
 import org.planner.modules.dto.{BooleanDTO, UserDTO, GroupDTO, RegisterDTO}
 import play.api.http.Status
 import scala.concurrent._
@@ -12,7 +11,6 @@ import org.planner.dal._
 import org.planner.db._
 import java.util.Date
 import scalaoauth2.provider._
-import DB._
 
 class DefaultUserModule @Inject()(dalUser: UserDAL, dalAuth: Oauth2DAL) extends UserModule {
 

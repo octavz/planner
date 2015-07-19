@@ -1,10 +1,9 @@
 package org.planner.dal
 
 import org.planner.db._
-import DB._
+
 import scala.concurrent._
 import scalaoauth2.provider.{ClientCredential, AuthInfo, DataHandler}
-import DB._
 
 trait Oauth2DAL extends DataHandler[User] {
 

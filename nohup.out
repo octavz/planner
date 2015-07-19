@@ -1,0 +1,195 @@
+OpenJDK 64-Bit Client VM warning: ignoring option MaxPermSize=350m; support was removed in 8.0
+Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=lcd                       -Dsun.java2d.xrender=true
+falling back to default color for JAVA_SEMICOLON
+[ 882010]   WARN - ution.rmi.RemoteProcessSupport - Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=lcd                       -Dsun.java2d.xrender=true 
+[1387061]  ERROR - idea.vim.VimTypedActionHandler - Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1 
+java.lang.AssertionError: Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1
+	at com.maddyhome.idea.vim.handler.VisualOperatorActionHandler.execute(VisualOperatorActionHandler.java:50)
+	at com.maddyhome.idea.vim.handler.EditorActionHandlerBase.execute(EditorActionHandlerBase.java:45)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doExecute(EditorActionHandler.java:172)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler$4.perform(EditorActionHandler.java:217)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doIfEnabled(EditorActionHandler.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.execute(EditorActionHandler.java:214)
+	at com.intellij.openapi.editor.actionSystem.EditorAction$1.run(EditorAction.java:98)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:117)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:83)
+	at com.maddyhome.idea.vim.KeyHandler.executeAction(KeyHandler.java:587)
+	at com.maddyhome.idea.vim.KeyHandler$ActionRunner.run(KeyHandler.java:651)
+	at com.intellij.openapi.application.impl.ApplicationImpl.runWriteAction(ApplicationImpl.java:931)
+	at com.maddyhome.idea.vim.helper.RunnableHelper$WriteAction.run(RunnableHelper.java:71)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:124)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:99)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:85)
+	at com.maddyhome.idea.vim.helper.RunnableHelper.runWriteCommand(RunnableHelper.java:48)
+	at com.maddyhome.idea.vim.KeyHandler.executeCommand(KeyHandler.java:433)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:198)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:103)
+	at com.maddyhome.idea.vim.VimTypedActionHandler$1.run(VimTypedActionHandler.java:57)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:744)
+	at java.awt.EventQueue.access$400(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:697)
+	at java.awt.EventQueue$3.run(EventQueue.java:691)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:714)
+	at com.intellij.ide.IdeEventQueue.defaultDispatchEvent(IdeEventQueue.java:734)
+	at com.intellij.ide.IdeEventQueue._dispatchEvent(IdeEventQueue.java:569)
+	at com.intellij.ide.IdeEventQueue.dispatchEvent(IdeEventQueue.java:382)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+[1387062]  ERROR - idea.vim.VimTypedActionHandler - IntelliJ IDEA 14.1.3  Build #IC-141.1010.3 
+[1387062]  ERROR - idea.vim.VimTypedActionHandler - JDK: 1.8.0-tuxjdk 
+[1387062]  ERROR - idea.vim.VimTypedActionHandler - VM: OpenJDK 64-Bit Client VM 
+[1387062]  ERROR - idea.vim.VimTypedActionHandler - Vendor: Oracle Corporation 
+[1387062]  ERROR - idea.vim.VimTypedActionHandler - OS: Linux 
+[1387062]  ERROR - idea.vim.VimTypedActionHandler - Last Action: Switcher 
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1 
+java.lang.AssertionError: Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1
+	at com.maddyhome.idea.vim.handler.VisualOperatorActionHandler.execute(VisualOperatorActionHandler.java:50)
+	at com.maddyhome.idea.vim.handler.EditorActionHandlerBase.execute(EditorActionHandlerBase.java:45)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doExecute(EditorActionHandler.java:172)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler$4.perform(EditorActionHandler.java:217)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doIfEnabled(EditorActionHandler.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.execute(EditorActionHandler.java:214)
+	at com.intellij.openapi.editor.actionSystem.EditorAction$1.run(EditorAction.java:98)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:117)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:83)
+	at com.maddyhome.idea.vim.KeyHandler.executeAction(KeyHandler.java:587)
+	at com.maddyhome.idea.vim.KeyHandler$ActionRunner.run(KeyHandler.java:651)
+	at com.intellij.openapi.application.impl.ApplicationImpl.runWriteAction(ApplicationImpl.java:931)
+	at com.maddyhome.idea.vim.helper.RunnableHelper$WriteAction.run(RunnableHelper.java:71)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:124)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:99)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:85)
+	at com.maddyhome.idea.vim.helper.RunnableHelper.runWriteCommand(RunnableHelper.java:48)
+	at com.maddyhome.idea.vim.KeyHandler.executeCommand(KeyHandler.java:433)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:198)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:103)
+	at com.maddyhome.idea.vim.VimTypedActionHandler$1.run(VimTypedActionHandler.java:57)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:744)
+	at java.awt.EventQueue.access$400(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:697)
+	at java.awt.EventQueue$3.run(EventQueue.java:691)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:714)
+	at com.intellij.ide.IdeEventQueue.defaultDispatchEvent(IdeEventQueue.java:734)
+	at com.intellij.ide.IdeEventQueue._dispatchEvent(IdeEventQueue.java:569)
+	at com.intellij.ide.IdeEventQueue.dispatchEvent(IdeEventQueue.java:382)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - IntelliJ IDEA 14.1.3  Build #IC-141.1010.3 
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - JDK: 1.8.0-tuxjdk 
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - VM: OpenJDK 64-Bit Client VM 
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - Vendor: Oracle Corporation 
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - OS: Linux 
+[1387783]  ERROR - idea.vim.VimTypedActionHandler - Last Action: Switcher 
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1 
+java.lang.AssertionError: Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1
+	at com.maddyhome.idea.vim.handler.VisualOperatorActionHandler.execute(VisualOperatorActionHandler.java:50)
+	at com.maddyhome.idea.vim.handler.EditorActionHandlerBase.execute(EditorActionHandlerBase.java:45)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doExecute(EditorActionHandler.java:172)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler$4.perform(EditorActionHandler.java:217)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doIfEnabled(EditorActionHandler.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.execute(EditorActionHandler.java:214)
+	at com.intellij.openapi.editor.actionSystem.EditorAction$1.run(EditorAction.java:98)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:117)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:83)
+	at com.maddyhome.idea.vim.KeyHandler.executeAction(KeyHandler.java:587)
+	at com.maddyhome.idea.vim.KeyHandler$ActionRunner.run(KeyHandler.java:651)
+	at com.intellij.openapi.application.impl.ApplicationImpl.runWriteAction(ApplicationImpl.java:931)
+	at com.maddyhome.idea.vim.helper.RunnableHelper$WriteAction.run(RunnableHelper.java:71)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:124)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:99)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:85)
+	at com.maddyhome.idea.vim.helper.RunnableHelper.runWriteCommand(RunnableHelper.java:48)
+	at com.maddyhome.idea.vim.KeyHandler.executeCommand(KeyHandler.java:433)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:198)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:103)
+	at com.maddyhome.idea.vim.VimTypedActionHandler$1.run(VimTypedActionHandler.java:57)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:744)
+	at java.awt.EventQueue.access$400(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:697)
+	at java.awt.EventQueue$3.run(EventQueue.java:691)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:714)
+	at com.intellij.ide.IdeEventQueue.defaultDispatchEvent(IdeEventQueue.java:734)
+	at com.intellij.ide.IdeEventQueue._dispatchEvent(IdeEventQueue.java:569)
+	at com.intellij.ide.IdeEventQueue.dispatchEvent(IdeEventQueue.java:382)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - IntelliJ IDEA 14.1.3  Build #IC-141.1010.3 
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - JDK: 1.8.0-tuxjdk 
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - VM: OpenJDK 64-Bit Client VM 
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - Vendor: Oracle Corporation 
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - OS: Linux 
+[1389243]  ERROR - idea.vim.VimTypedActionHandler - Last Action: Switcher 
+[1389389]  ERROR - idea.vim.VimTypedActionHandler - Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1 
+java.lang.AssertionError: Range must be not null for visual operator action class com.maddyhome.idea.vim.action.change.change.ChangeCaseLowerVisualAction$1
+	at com.maddyhome.idea.vim.handler.VisualOperatorActionHandler.execute(VisualOperatorActionHandler.java:50)
+	at com.maddyhome.idea.vim.handler.EditorActionHandlerBase.execute(EditorActionHandlerBase.java:45)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doExecute(EditorActionHandler.java:172)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler$4.perform(EditorActionHandler.java:217)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.doIfEnabled(EditorActionHandler.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorActionHandler.execute(EditorActionHandler.java:214)
+	at com.intellij.openapi.editor.actionSystem.EditorAction$1.run(EditorAction.java:98)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:117)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:109)
+	at com.intellij.openapi.editor.actionSystem.EditorAction.actionPerformed(EditorAction.java:83)
+	at com.maddyhome.idea.vim.KeyHandler.executeAction(KeyHandler.java:587)
+	at com.maddyhome.idea.vim.KeyHandler$ActionRunner.run(KeyHandler.java:651)
+	at com.intellij.openapi.application.impl.ApplicationImpl.runWriteAction(ApplicationImpl.java:931)
+	at com.maddyhome.idea.vim.helper.RunnableHelper$WriteAction.run(RunnableHelper.java:71)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:124)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:99)
+	at com.intellij.openapi.command.impl.CoreCommandProcessor.executeCommand(CoreCommandProcessor.java:85)
+	at com.maddyhome.idea.vim.helper.RunnableHelper.runWriteCommand(RunnableHelper.java:48)
+	at com.maddyhome.idea.vim.KeyHandler.executeCommand(KeyHandler.java:433)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:198)
+	at com.maddyhome.idea.vim.KeyHandler.handleKey(KeyHandler.java:103)
+	at com.maddyhome.idea.vim.VimTypedActionHandler$1.run(VimTypedActionHandler.java:57)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:744)
+	at java.awt.EventQueue.access$400(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:697)
+	at java.awt.EventQueue$3.run(EventQueue.java:691)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:714)
+	at com.intellij.ide.IdeEventQueue.defaultDispatchEvent(IdeEventQueue.java:734)
+	at com.intellij.ide.IdeEventQueue._dispatchEvent(IdeEventQueue.java:569)
+	at com.intellij.ide.IdeEventQueue.dispatchEvent(IdeEventQueue.java:382)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+[1389390]  ERROR - idea.vim.VimTypedActionHandler - IntelliJ IDEA 14.1.3  Build #IC-141.1010.3 
+[1389390]  ERROR - idea.vim.VimTypedActionHandler - JDK: 1.8.0-tuxjdk 
+[1389390]  ERROR - idea.vim.VimTypedActionHandler - VM: OpenJDK 64-Bit Client VM 
+[1389390]  ERROR - idea.vim.VimTypedActionHandler - Vendor: Oracle Corporation 
+[1389390]  ERROR - idea.vim.VimTypedActionHandler - OS: Linux 
+[1389390]  ERROR - idea.vim.VimTypedActionHandler - Last Action: Switcher 
+[1419304]   WARN - ution.rmi.RemoteProcessSupport - Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=lcd                       -Dsun.java2d.xrender=true 
+[84571272]   WARN - ution.rmi.RemoteProcessSupport - Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=lcd                       -Dsun.java2d.xrender=true 
+[85945265]   WARN - ution.rmi.RemoteProcessSupport - Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=lcd                       -Dsun.java2d.xrender=true 

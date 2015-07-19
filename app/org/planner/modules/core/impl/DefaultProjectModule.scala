@@ -1,6 +1,7 @@
 package org.planner.modules.core.impl
 
 import com.google.inject.Inject
+
 import org.planner.dal._
 import org.planner.modules.core.ProjectModule
 import org.planner.modules.dto._
@@ -10,7 +11,6 @@ import org.planner.modules._
 import org.planner.db._
 import org.planner.util.Gen._
 import org.planner.util.Time._
-import DB._
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits._

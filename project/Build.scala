@@ -24,8 +24,9 @@ object AppBuild extends Build {
   val appDependencies = Seq(
     "com.typesafe.slick" %% "slick" % "3.0.0",
     "com.typesafe.play" %% "play-cache" % "2.4.1",
+    "com.typesafe.play" %% "play-jdbc" % "2.4.1",
     "com.typesafe.play" %% "play-json" % "2.4.1",
-    "postgresql" % "postgresql" % "9.3-1102.jdbc41",
+    "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
     "com.typesafe.play" %% "play-slick" % "1.0.0",
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.0",
     //    "org.mockito" % "mockito-all" % "2.0.2-beta",
@@ -50,6 +51,9 @@ object AppBuild extends Build {
     scalaVersion := "2.11.7",
     libraryDependencies ++= appDependencies,
     resolvers ++= appResolvers,
+//    Keys.fork in (Test) := true,
+//    javaOptions in (Test) += "-Xdebug",
+//    javaOptions in (Test) += "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9998",
     slick <<= slickCodeGenTask // register manual sbt command
   )
 
