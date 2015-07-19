@@ -141,6 +141,20 @@ CREATE TABLE resources (
     updated TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL
 );
 
+CREATE TABLE tasks (
+    id CHARACTER VARYING(40) PRIMARY KEY,
+    project_id CHARACTER VARYING(40) NOT NULL REFERENCES projects,
+    user_id CHARACTER VARYING(40) NOT NULL REFERENCES users,
+    group_id CHARACTER VARYING(40) NOT NULL REFERENCES groups,
+    subject CHARACTER VARYING(255) NOT NULL,
+    description TEXT,
+    parent_id CHARACTER VARYING(40) REFERENCES tasks,
+    status SMALLINT DEFAULT 0 NOT NULL,
+    perm INT DEFAULT 448 NOT NULL,
+    created TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    updated TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL
+);
+
 INSERT INTO verbs(id, description) VALUES (1, 'get');
 INSERT INTO verbs(id, description) VALUES (2, 'post');
 INSERT INTO verbs(id, description) VALUES (3, 'put');
@@ -198,6 +212,7 @@ DROP TABLE actions;
 DROP TABLE access_tokens;
 DROP TABLE clients;
 DROP TABLE groups;
+DROP TABLE tasks;
 DROP TABLE projects;
 DROP TABLE user_sessions;
 DROP TABLE users;

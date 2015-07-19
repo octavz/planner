@@ -1,6 +1,9 @@
 package org.planner
 
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
 
+import org.planner.db.{Group, User, UserSession}
 import play.api.libs.json._
 
 import scala.concurrent.Future
@@ -13,23 +16,36 @@ package object dal {
 
   def dalErr[T](error: String): DAL[T] = Future.failed(new Exception(error))
 
+  object JsonFormats extends DefaultReads with DefaultWrites {
 
-  trait Caching {
-    def set[A](key: String, value: A, expiration: Int = 0)(implicit w: Writes[A]): Future[Boolean]
+    implicit object timestampFormat extends Format[Timestamp] {
+      val format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'")
 
-    def get[A](key: String)(implicit r: Reads[A]): Future[Option[A]]
+      def reads(json: JsValue) = {
+        val str = json.as[String]
+        JsSuccess(new Timestamp(format.parse(str).getTime))
+      }
 
-    def getOrElse[A](key: String, expiration: Int = 0)(orElse: => Future[A])(implicit r: Reads[A], w:Writes[A]): Future[A]
+      def writes(ts: Timestamp) = JsString(format.format(ts))
+    }
 
-    def getOrElseSync[A](key: String, expiration: Int = 0)(orElse: => A)(implicit r: Reads[A], w: Writes[A]): Future[A]
+    implicit val fmtUser = Json.format[User]
+    implicit val fmtSession = Json.format[UserSession]
+    implicit val fmtGroup = Json.format[Group]
   }
+
 
   object CacheKeys {
     def session(id: String): String = s"session:$id"
 
     def user(id: String): String = s"user:$id"
 
+    def userGroupsIds(id: String): String = s"userGroupIds:$id"
+
     def userGroups(id: String): String = s"userGroup:$id"
+
+    def byEmail(email: String): String = s"user:email:$email"
+
   }
 
 }

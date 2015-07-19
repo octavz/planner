@@ -2,25 +2,24 @@ package org.planner.controllers
 
 import javax.ws.rs.{PathParam, QueryParam}
 
+import com.google.inject.Inject
 import com.wordnik.swagger.annotations._
-import org.planner.modules.core.{UserModuleComponent}
+import org.planner._
+import org.planner.modules.core.UserModule
 import org.planner.modules.dto._
-import play.api.data.Forms._
-import play.api.data._
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
 @Api(value = "/api/user", description = "User operations")
-trait UserController extends BaseController {
-  this: UserModuleComponent =>
-  //val userModule = inject[UserModule]
+class UserController @Inject()(userModule: UserModule) extends BaseController(userModule) {
 
   @ApiOperation(value = "Issue access token", notes = """{"token_type": "Bearer","access_token": "MDEwNTBkNDgtNDhkNC00YmNhLWJiMjktMzVhMTJkMjMwNDBk","expires_in": 3600,"refresh_token": "NzVmYjQ4ZDMtMjY3NS00NDA4LTkyZTgtNmNjOTNlNjRhNDZl"}""", response = classOf[String], httpMethod = "POST", nickname = "createAccessToken")
-  def accessToken = Action.async { implicit request =>
-    issueAccessToken(dalAuth)
+  def accessToken = Action.async {
+    implicit request =>
+      issueAccessToken(dalAuth)
   }
 
   def login = Action {
@@ -34,7 +33,7 @@ trait UserController extends BaseController {
   //    )(LoginForm.apply)(LoginForm.unapply)
   //  )
 
-  @ApiOperation(value = "Login user", notes = "Login user", response = classOf[JsValue], httpMethod = "POST", nickname = "login")
+  @ApiOperation(value = "Login user", notes = "Login user", response = classOf[String], httpMethod = "POST", nickname = "login")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "username", required = true, dataType = "String", paramType = "form", defaultValue = "aaa@aaa.com")
     , new ApiImplicitParam(name = "password", required = true, dataType = "String", paramType = "form", defaultValue = "123456")
@@ -70,25 +69,29 @@ trait UserController extends BaseController {
       request.body.asJson.map {
         json => try {
           val dto = json.as[RegisterDTO]
-          userModule.registerUser(dto) map (r => Ok(Json.toJson(r)))
+          userModule.registerUser(dto).toResponse
         } catch {
           case e: Throwable =>
-            Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+            Future.successful(BadRequest(s"Wrong json: ${
+              e.getMessage
+            }"))
         }
       }.getOrElse(Future.successful(BadRequest("Wrong json")))
   }
 
   @ApiOperation(value = "Add user group", notes = "Add user group", response = classOf[GroupDTO], httpMethod = "POST", nickname = "createGroup")
   @ApiImplicitParams(Array(new ApiImplicitParam(value = "New group", required = true, dataType = "GroupDTO", paramType = "body")))
-  def addGroup = Action.async {
+  def addGroup() = Action.async {
     implicit request =>
       request.body.asJson.map {
         json => try {
           val dto = json.as[GroupDTO]
-          userModule.addGroup(dto) map (r => Ok(Json.toJson(r)))
+          userModule.addGroup(dto).toResponse
         } catch {
           case e: Throwable =>
-            Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+            Future.successful(BadRequest(s"Wrong json: ${
+              e.getMessage
+            }"))
         }
       }.getOrElse(Future.successful(BadRequest("Wrong json")))
   }
@@ -98,10 +101,12 @@ trait UserController extends BaseController {
                    @ApiParam(value = "user id", required = true, allowMultiple = false) @PathParam("userId") userId: String) = Action.async {
     implicit request =>
       try {
-        userModule.getUserById(userId) map (r => Ok(Json.toJson(r)))
+        userModule.getUserById(userId).toResponse
       } catch {
         case e: Throwable =>
-          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+          Future.successful(BadRequest(s"Wrong json: ${
+            e.getMessage
+          }"))
       }
   }
 
@@ -114,11 +119,13 @@ trait UserController extends BaseController {
       try {
         authorize {
           implicit authInfo =>
-            userModule.getUserById(authInfo.user.id) map (r => Ok(Json.toJson(r)))
+            userModule.getUserById(authInfo.user.id).toResponse
         }
       } catch {
         case e: Throwable =>
-          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+          Future.successful(BadRequest(s"Wrong json: ${
+            e.getMessage
+          }"))
       }
   }
 
@@ -133,11 +140,13 @@ trait UserController extends BaseController {
       try {
         authorize {
           implicit authInfo =>
-            userModule.searchUsers(email, nick) map (r => Ok(Json.toJson(r)))
+            userModule.searchUsers(email, nick).toResponse
         }
       } catch {
         case e: Throwable =>
-          Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+          Future.successful(BadRequest(s"Wrong json: ${
+            e.getMessage
+          }"))
       }
   }
 
@@ -150,10 +159,12 @@ trait UserController extends BaseController {
           request.body.asJson.map {
             json => try {
               val userIds = json.as[List[String]]
-              userModule.addUsersToGroup(userIds) map (r => Ok(Json.toJson(r)))
+              userModule.addUsersToGroup(groupId, userIds).toResponse
             } catch {
               case e: Throwable =>
-                Future.successful(BadRequest(s"Wrong json: ${e.getMessage}"))
+                Future.successful(BadRequest(s"Wrong json: ${
+                  e.getMessage
+                }"))
             }
           }.getOrElse(Future.successful(BadRequest("Wrong json")))
       }

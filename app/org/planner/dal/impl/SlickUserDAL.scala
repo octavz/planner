@@ -1,107 +1,90 @@
 package org.planner.dal.impl
 
-import org.planner.dal.{DAL}
-import scala.concurrent._
-import play.api.db.slick.Config.driver.simple._
-import play.api.Play.current
+import com.google.inject.Inject
+import org.planner.dal.JsonFormats._
+import org.planner.dal.{DAL, _}
 import org.planner.db._
-import play.api.db.slick.DB
-import org.planner.dal._
+import play.api.Play
+import play.api.db.slick.DatabaseConfigProvider
+import slick.driver.JdbcProfile
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-import ExecutionContext.Implicits.global
 
-trait SlickUserDALComponent extends UserDALComponent with DB with ModelJson {
-  this: Caching =>
-  val dalUser = new SlickUserDAL()
+class SlickUserDAL @Inject()(cache: Caching) extends UserDAL with DB {
+  val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
+  val profile = dbConfig.driver
+  val db = dbConfig.db
 
-  class SlickUserDAL extends UserDAL {
+  import dbConfig.driver.api._
 
-    override def create =
-      DB.withSession {
-        implicit session =>
-          (Clients.ddl ++ Users.ddl ++ GrantTypes.ddl ++ ClientGrantTypes.ddl ++ AccessTokens.ddl ++ AuthCodes.ddl).create
-      }
+  override def create = {
+    //(Clients.ddl ++ Users.ddl ++ GrantTypes.ddl ++ ClientGrantTypes.ddl ++ AccessTokens.ddl ++ AuthCodes.ddl).create
+    Future.successful(())
+  }
 
-    override def insertSession(us: UserSession): DAL[UserSession] = DB.withSession {
-      implicit session =>
-        UserSessions.insert(us)
-        dal(us)
+  override def insertSession(us: UserSession): DAL[UserSession] = {
+    db.run(UserSessions += us).map(_ => us)
+  }
+
+  override def findSessionById(id: String): DAL[Option[UserSession]] =
+    cache.getOrElseOpt(CacheKeys.session(id)) {
+      db.run(UserSessions.filter(_.id === id).result.headOption)
     }
 
-    override def findSessionById(id: String): DAL[Option[UserSession]] = DB.withSession {
-      implicit session =>
-        getOrElseSync(CacheKeys.session(id)) {
-          UserSessions.filter(_.id === id).firstOption
-        } flatMap {
-          case v@Some(_) => dal(v)
-          case _ => dalErr("Not found")
-        }
-    }
+  override def deleteSessionByUser(uid: String): DAL[Int] = {
+    val action = sqlu"delete from user_sessions where user_id = $uid"
+    db.run(action)
+  }
 
-    override def deleteSessionByUser(uid: String): DAL[Int] = DB.withSession {
-      implicit session =>
-        dal(UserSessions.filter(_.userId === uid).delete)
-    }
-
-    override def getUserById(uid: String): DAL[User] = DB.withSession {
-      implicit session =>
-        getOrElseSync[Option[User]](CacheKeys.user(uid)) {
-          Users.filter(_.id === uid).firstOption
-        } flatMap {
-          case Some(v) => dal(v)
-          case _ => dalErr("Not found")
-        }
-    }
-
-    override def insertUser(user: User): DAL[User] = DB.withSession {
-      implicit session =>
-        Users.insert(user)
-        dal(user)
-    }
-
-    override def getUserByEmail(email: String): DAL[Option[User]] = DB.withSession {
-      implicit session =>
-        val ret = Users.filter(_.login === email).firstOption
-        dal(ret)
-    }
-
-    override def insertGroup(model: Group): DAL[Group] = DB.withSession {
-      implicit session =>
-        Groups.insert(model)
-        dal(model)
-    }
-
-    override def insertGroupsUser(model: GroupsUser): DAL[GroupsUser] = DB.withSession {
-      implicit session =>
-        GroupsUsers.insert(model)
-        dal(model)
-    }
-
-    override def insertGroupWithUser(model: Group, userId: String): DAL[Group] = DB.withTransaction {
-      implicit session =>
-        Groups.insert(model)
-        GroupsUsers.insert(GroupsUser(model.id, userId))
-        dal(model)
-    }
-
-    override def getUserGroups(userId: String): DAL[List[String]] = DB.withSession {
-      implicit session =>
-        getOrElse[List[String]](CacheKeys.userGroups(userId)) {
-          dal(GroupsUsers.filter(_.userId === userId).list map (gu => gu.groupId))
-        }
-    }
-
-    override def searchUsers(email: Option[String], nick: Option[String]): DAL[List[User]] = DB.withSession {
-      implicit session =>
-        val ret = (if (email.isDefined && nick.isDefined)
-          Users.filter(u => u.nick === nick.get || u.login === email.get).list
-        else if (email.isDefined && nick.isEmpty)
-          Users.filter(u => u.login === email.get).list
-        else if (email.isEmpty && nick.isDefined)
-          Users.filter(u => u.nick === nick.get).list
-        else List.empty)
-        dal(ret)
+  override def getUserById(uid: String): DAL[User] = {
+    cache.getOrElse(CacheKeys.user(uid)) {
+      db.run(Users.filter(_.id === uid).result.head)
     }
   }
 
+  override def insertUser(user: User): DAL[User] = {
+    db.run(Users += user).map(_ => user)
+  }
+
+  override def getUserByEmail(email: String): DAL[Option[User]] = {
+    cache.getOrElseOpt(CacheKeys.byEmail(email)) {
+      db.run(Users.filter(_.login === email).result.headOption)
+    }
+  }
+
+  override def insertGroup(model: Group): DAL[Group] = db.run(Groups.+=(model)) map (_ => model)
+
+  override def insertGroupsUser(model: GroupsUser): DAL[GroupsUser] = db.run(GroupsUsers.+=(model)) map (_ => model)
+
+  override def insertGroupWithUser(model: Group, userId: String): DAL[Group] = {
+    val action = (for {
+      _ <- Groups += model
+      _ <- GroupsUsers += GroupsUser(model.id, userId)
+    } yield ()
+      ).transactionally
+    db run action map (_ => model)
+  }
+
+  override def getUserGroupsIds(userId: String): DAL[List[String]] =
+    cache.getOrElse(CacheKeys.userGroupsIds(userId)) {
+      db.run(GroupsUsers.filter(_.userId === userId).map(_.groupId).result).map(_.toList)
+    }
+
+  override def getUserGroups(userId: String): DAL[List[Group]] = {
+    cache.getOrElse(CacheKeys.userGroups(userId)) {
+      val q = for {
+        (groupUser, group) <- GroupsUsers join Groups on (_.groupId === _.id)
+      } yield group
+      db.run(q.result).map(_.toList)
+    }
+  }
+
+  override def searchUsers(email: Option[String], nick: Option[String]): DAL[List[User]] = {
+    val r = if (email.isDefined && nick.isDefined) db.run(Users.filter(u => u.nick === nick.get || u.login === email.get).result)
+    else if (email.isDefined && nick.isEmpty) db.run(Users.filter(u => u.login === email.get).result)
+    else if (email.isEmpty && nick.isDefined) db.run(Users.filter(u => u.nick === nick.get).result)
+    else Future.successful(Seq.empty)
+    r map (_.toList)
+  }
 }

@@ -1,11 +1,13 @@
 package org.planner.modules.dto
 
-
+import com.wordnik.swagger.annotations.{ApiModel, ApiModelProperty}
 import org.planner.db._
 import org.planner.modules._
-import org.planner.util.{Gen, Time}
+import org.planner.util.{Constants, Gen, Time}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+
+import scala.annotation.meta.field
 
 case class LoginForm(email: String, password: String)
 
@@ -19,7 +21,12 @@ case class RegisterDTO(login: String, password: String) {
   }
 }
 
-case class UserDTO(login: String, password: String, id: String, nick: String) {
+@ApiModel("UserDTO")
+case class UserDTO(
+                    @(ApiModelProperty@field)(required = true, hidden = false) login: String,
+                    @(ApiModelProperty@field)(required = true, hidden = false) password: String,
+                    @(ApiModelProperty@field)(required = false, hidden = true) id: String,
+                    @(ApiModelProperty@field)(required = true, hidden = false) nick: String) {
 
   def this(model: User) = this(model.login, model.password, model.id, model.nick)
 
@@ -39,33 +46,99 @@ case class GroupDTO(id: Option[String], name: String, projectId: String) {
   }
 }
 
-case class ProjectDTO(id: Option[String], name: String, desc: Option[String], parent: Option[String], public: Boolean, perm: Option[Int], groupId: Option[String]) {
+@ApiModel("ProjectDTO")
+case class ProjectDTO(@(ApiModelProperty@field)(required = false, hidden = true) id: Option[String],
+                      @(ApiModelProperty@field)(required = true) name: String,
+                      @(ApiModelProperty@field)(required = false) desc: Option[String],
+                      @(ApiModelProperty@field)(required = false) parent: Option[String],
+                      @(ApiModelProperty@field)(required = false) public: Boolean,
+                      @(ApiModelProperty@field)(required = false, hidden = true, dataType = "int") perm: Option[Int],
+                      @(ApiModelProperty@field)(required = false) groupId: Option[String],
+                      @(ApiModelProperty@field)(required = false, hidden = true) userId: Option[String]) {
 
   def this(model: Project, group: Group) = this(
-    id = Some(model.id), name = model.name, desc = model.description,
-    parent = model.parentId, public = model.perm == 1, perm = Some(group.permProject),
-    groupId = Some(group.id))
+    id = Some(model.id),
+    name = model.name,
+    desc = model.description,
+    parent = model.parentId,
+    public = model.perm == 1,
+    perm = Some(group.permProject),
+    groupId = Some(group.id),
+    userId = Some(model.userId)
+  )
 
-  def toModel(userId: String) = {
+  def toModel() = {
     val n = Time.now
-    Project(id = id.getOrGuid, userId = userId, name = name, description = desc,
-      parentId = parent, created = n, updated = n, perm = if (public) 1 else 0)
+    Project(
+      id = id.getOrGuid,
+      userId = userId.getOrElse(throw new Exception("No user!")),
+      name = name,
+      description = desc,
+      parentId = parent,
+      created = n,
+      updated = n,
+      perm = if (public) 1 else 0)
   }
 }
 
-case class ProjectListDTO(items: List[ProjectDTO])
+@ApiModel("TaskDTO")
+case class TaskDTO(
+                    @(ApiModelProperty@field)(required = false) id: Option[String],
+                    @(ApiModelProperty@field)(required = true) subject: String,
+                    @(ApiModelProperty@field)(required = false) desc: Option[String],
+                    @(ApiModelProperty@field)(required = false) parent: Option[String],
+                    @(ApiModelProperty@field)(required = false) projectId: Option[String],
+                    @(ApiModelProperty@field)(required = false) public: Option[Boolean],
+                    @(ApiModelProperty@field)(required = false, dataType = "int") perm: Option[Int],
+                    @(ApiModelProperty@field)(required = false, hidden = true) userId: Option[String],
+                    @(ApiModelProperty@field)(required = false) groupId: Option[String]) {
+
+  def this(model: Task) = this(
+    id = Some(model.id),
+    subject = model.subject,
+    desc = model.description,
+    parent = model.parentId,
+    projectId = Some(model.projectId),
+    public = Some(model.perm == 1),
+    perm = Some(model.perm),
+    userId = Some(model.userId),
+    groupId = Some(model.groupId))
+
+  def toModel() = {
+    val n = Time.now
+    Task(
+      id = id.getOrGuid,
+      userId = userId.getOrElse(throw new Exception("User id not set for task.")),
+      subject = subject,
+      description = desc,
+      projectId = projectId.getOrElse("Task has no project id"),
+      parentId = parent,
+      created = n,
+      updated = n,
+      perm = if (public.isDefined && public.get) 1 else 0,
+      groupId = groupId.getOrElse(Constants.EMPTY_GROUP))
+  }
+}
+
+case class ProjectListDTO(items: List[ProjectDTO], total: Int)
+
+case class TaskListDTO(items: List[TaskDTO], total: Int)
 
 case class StringDTO(value: String)
 
 case class BooleanDTO(value: Boolean)
 
-trait JsonFormats extends BaseFormats with ConstraintReads {
+trait JsonDTOFormats extends BaseFormats with ConstraintReads {
 
   implicit val stringDTO = Json.format[StringDTO]
 
   implicit val booleanDTO = Json.format[BooleanDTO]
 
   implicit val userDTO = Json.format[UserDTO]
+
+  implicit val taskDTO = Json.format[TaskDTO]
+
+  implicit val tasksDTO = Json.format[TaskListDTO]
 
   implicit val registerDTO = (
     (__ \ 'login).format[String](maxLength[String](200) keepAnd email) ~
@@ -79,7 +152,8 @@ trait JsonFormats extends BaseFormats with ConstraintReads {
       (__ \ 'parent).readNullable[String](maxLength[String](50)) ~
       (__ \ 'public).read[Boolean] ~
       (__ \ 'perm).readNullable[Int](max(999)) ~
-      (__ \ 'groupId).readNullable[String]
+      (__ \ 'groupId).readNullable[String] ~
+      (__ \ 'userId).readNullable[String]
     )(ProjectDTO)
 
   implicit val projectDtoWrite = Json.writes[ProjectDTO]

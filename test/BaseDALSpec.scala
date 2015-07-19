@@ -1,74 +1,55 @@
+import org.planner.db._
 import org.planner.util.Gen._
 import org.planner.util.Time._
-import org.planner.db._
-import org.specs2.execute.AsResult
+import org.specs2.execute.{Result, AsResult}
 import org.specs2.mock._
 import org.specs2.mutable._
-import org.specs2.specification.AroundExample
-import play.api.test.{FakeApplication}
-import redis.embedded.RedisServer
-import scala.concurrent.duration._
-import play.api.db.slick.Config.driver.simple._
-import play.api.db.slick.DB
-import play.api.test.Helpers._
+import play.api.db.slick.DatabaseConfigProvider
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.PlaySpecification
+import slick.dbio.{DBIOAction, NoStream}
+import slick.driver.JdbcProfile
 
-trait BaseDALSpec extends Specification with Mockito with DB with AroundExample {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, _}
+import scala.concurrent.duration._
+import play.api.Application
+import play.api.db.Databases
+import play.api.db.evolutions._
+
+object TestDB extends {
+  val profile = slick.driver.H2Driver
+} with DB
+
+trait BaseDALSpec extends PlaySpecification {
+
+  import TestDB._
+
   val duration = Duration.Inf
 
-  def testApp = FakeApplication(additionalConfiguration = Map(
-    "evolutionplugin" -> "disabled",
-    "db.default.driver" -> "org.h2.Driver",
-    "db.default.url" -> "jdbc:h2:mem:test;DATABASE_TO_UPPER=false;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
+  def database = Databases.inMemory(
+    name = "test",
+    urlOptions = Map(
+      "MODE" -> "PostgreSQL",
+      "DATABASE_TO_UPPER" -> "false",
+      "DB_CLOSE_DELAY" -> "-1"
+    ),
+    config = Map(
+      "logStatements" -> true,
+      "username" -> "sa",
+      "password" -> "test"
+    )
+  )
 
-  val testUser = User(id = guid, login = guid, providerToken = Some("test"), created = now, updated = now, lastLogin = None, password = guid, nick = guid, userId = None, groupId = None)
-
-  val testProject = Project(id = guid, userId = testUser.id, name = guid, description = guido, parentId = None, created = now, updated = now)
-
-  val testGroup = Group(id = guid, projectId = testProject.id, name = p.name, created = now, updated = now, userId = testUser.id, groupId = None)
-
-  def randUser = User(id = guid, login = guid, providerToken = Some("test"), created = now, updated = now, lastLogin = None, password = guid, nick = guid, userId = None, groupId = None)
-
-  def randProject(uid: String) = Project(id = guid, userId = uid, name = guid, description = guido, parentId = None, created = now, updated = now)
-
-  def randGroup(p: Project) = Group(id = guid, projectId = p.id, name = p.name, created = now, updated = now, userId = testUser.id, groupId = None)
-
-  def createTestDB(implicit s: Session) = {
+  def test[T: AsResult](t: => T) = {
     try {
-      if (s.metaData.getDriverName.toLowerCase.contains("h2")) {
-//        println("Test database")
-        try {
-          ddl.drop
-        } catch {
-          case e: Throwable =>
-//            println("Failed to drop")
-        }
-        ddl.create
-        UserStatuses.insert(UserStatus(0, Some("active")))
-        UserStatuses.insert(UserStatus(1, Some("inactive")))
-        UserStatuses.insert(UserStatus(2, Some("pending")))
-        Users.insert(testUser) //add test user
-        Projects.insert(testProject) // add a test project
-        Groups.insert(testGroup) //add test group
-        GroupsUsers.insert(GroupsUser(groupId = testGroup.id, userId = testUser.id)) //add test user to the test group
-      }
-    } catch {
-      case e: Exception =>
-        failure(e.getMessage)
-    }
-  }
-
-  def around[T: AsResult](t: => T) = {
-    try {
+      println("around around around around around around around around around around ")
       running(testApp) {
-        DB(testApp).withSession {
-          implicit s: Session =>
-            createTestDB
-            val redis = new RedisServer(6379)
-            redis.start()
-            val result = AsResult(t)
-            redis.stop()
-            result
-        }
+        Evolutions.cleanupEvolutions(database)
+        Evolutions.applyEvolutions(database)
+        val result = AsResult(t)
+        result
+
       }
     } catch {
       case e: Exception => {
@@ -76,6 +57,34 @@ trait BaseDALSpec extends Specification with Mockito with DB with AroundExample 
       }
     }
   }
+
+  def waitFor[T](f: Future[T]): T = Await.result(f, duration)
+
+  lazy val guiceApp =
+    new GuiceApplicationBuilder()
+      .configure(Map(
+      "slick.dbs.default.driver" -> "slick.driver.H2Driver$",
+      "slick.dbs.default.db.driver" -> "org.h2.Driver",
+      "slick.dbs.default.db.url" -> s"jdbc:h2:mem:test;DATABASE_TO_UPPER=false;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+      "slick.dbs.default.db.user" -> "sa",
+      "slick.dbs.default.db.password" -> "test"))
+
+  def dbSync[R](a: DBIOAction[R, NoStream, Nothing]): R = waitFor(db.run(a))
+
+  def testApp: Application = {
+    guiceApp.build()
+  }
+
+  val config = DatabaseConfigProvider.get[JdbcProfile](testApp)
+  val profile = config.driver
+  val db = config.db
+
+  def newUser = User(id = guid, login = guid, providerToken = None, created = now, userId = None, groupId = None,
+    updated = now, lastLogin = None, password = guid, nick = guid)
+
+  def randProject(uid: String) = Project(id = guid, userId = uid, name = guid, description = guido, parentId = None, created = now, updated = now)
+
+  def randGroup(p: Project) = Group(id = guid, projectId = p.id, name = p.name, created = now, updated = now, userId = "1", groupId = None)
 
   def genString(size: Int): String = (for (i <- 1 to size) yield "a").mkString
 }
