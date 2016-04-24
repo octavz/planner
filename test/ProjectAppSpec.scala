@@ -21,10 +21,10 @@ import scala.language.postfixOps
 import scalaoauth2.provider.AccessToken
 
 /**
- * Add your spec here.
- * You can mock out a whole application including requests, plugins etc.
- * For more information, consult the wiki.
- */
+  * Add your spec here.
+  * You can mock out a whole application including requests, plugins etc.
+  * For more information, consult the wiki.
+  */
 @RunWith(classOf[JUnitRunner])
 class ProjectAppSpec extends PlaySpecification with Mockito {
 
@@ -57,8 +57,8 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
 
     val ret = new GuiceApplicationBuilder()
       .configure(Map(
-      "evolutionplugin" -> "disabled"
-    ))
+        "evolutionplugin" -> "disabled"
+      ))
       .overrides(bind[ProjectModule].toInstance(mp))
       .overrides(bind[Oauth2DAL].toInstance(dalAuth))
       .build()
@@ -74,17 +74,17 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
       println("spec:" + module.projectModule)
       module.projectModule.insertProject(any[ProjectDTO]) answers (p => result(p.asInstanceOf[ProjectDTO]))
       running(module.app) {
-        val page = route(FakeRequest(POST, "/api/project")
+        val page = route(module.app, FakeRequest(POST, "/api/project")
           .withHeaders("Authorization" -> "OAuth token")
           .withJsonBody(Json.parse(
-          """
+            """
             {
             "name":"project",
             "desc":"123456",
             "parent":"parent",
             "public" : true 
             }
-          """)))
+            """)))
         page must beSome
         status(page.get) === OK
         Await.ready(page.get, Duration.Inf)
@@ -102,7 +102,7 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
       val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
       module.projectModule.getUserProjects("id", 0, 10) returns result(ProjectListDTO(items = List(p), total = 1))
       running(module.app) {
-        val page = route(FakeRequest(GET, "/api/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
+        val page = route(module.app, FakeRequest(GET, "/api/user/id/projects?offset=0&count=10").withHeaders("Authorization" -> "OAuth token"))
         page must beSome
         status(page.get) === OK
         Await.ready(page.get, Duration.Inf)
@@ -126,7 +126,7 @@ class ProjectAppSpec extends PlaySpecification with Mockito {
       val p = ProjectDTO(id = guido, name = guid, desc = guido, parent = guido, public = true, perm = Some(1), groupId = Some("groupId"), userId = Some("userId"))
       module.projectModule.updateProject(any) returns result(p)
       running(module.app) {
-        val page = route(FakeRequest(PUT, "/api/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
+        val page = route(module.app, FakeRequest(PUT, "/api/project/id").withHeaders("Authorization" -> "OAuth token").withJsonBody(Json.parse(
           s"""
                 {
                 "name":"${p.name}",

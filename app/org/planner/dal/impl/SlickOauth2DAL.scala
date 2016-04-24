@@ -2,12 +2,13 @@ package org.planner.dal.impl
 
 import java.sql.Timestamp
 import java.util.Date
+import javax.inject.Inject
 
 import org.planner.dal.Oauth2DAL
 import org.planner.db._
 import org.planner.util.Crypto
-import play.api.Play
-import play.api.db.slick.{ DatabaseConfigProvider}
+import play.api.{Application, Play}
+import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -16,8 +17,8 @@ import scalaoauth2.provider.{AuthInfo, ClientCredential}
 import slick.driver.PostgresDriver
 
 
-class SlickOauth2DAL extends Oauth2DAL with DB {
-  val config = DatabaseConfigProvider.get[JdbcProfile](Play.current)
+class SlickOauth2DAL @Inject()(app: Application) extends Oauth2DAL with DB {
+  val config = DatabaseConfigProvider.get[JdbcProfile](app)
   val profile = config.driver
   val db = config.db
 

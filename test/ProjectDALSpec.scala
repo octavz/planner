@@ -20,7 +20,7 @@ class ProjectDALSpec extends BaseDALSpec {
   import TestDB._
   import TestDB.profile.api._
 
-  def newDal = new SlickProjectDAL(new TestCaching)
+  def newDal = new SlickProjectDAL(new TestCaching, testApp)
 
   def insertRandomProject(uid: String): (Project, Group) = {
     running(testApp) {

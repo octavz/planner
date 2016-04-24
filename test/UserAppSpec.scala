@@ -16,11 +16,6 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scalaoauth2.provider.GrantHandlerResult
 
-/**
- * Add your spec here.
- * You can mock out a whole application including requests, plugins etc.
- * For more information, consult the wiki.
- */
 @RunWith(classOf[JUnitRunner])
 class UserAppSpec extends PlaySpecification with Mockito {
 
@@ -29,7 +24,8 @@ class UserAppSpec extends PlaySpecification with Mockito {
   def app(m: UserModule = mock[UserModule]) = {
     new GuiceApplicationBuilder()
       .configure(Map(
-      "evolutionplugin" -> "disabled"
+        "evolutionplugin" -> "disabled"
+
       ))
       .overrides(bind[UserModule].toInstance(m))
       .build()
@@ -40,14 +36,16 @@ class UserAppSpec extends PlaySpecification with Mockito {
   "Application" should {
 
     "have external static files attached to root" in {
-      running(app()) {
-        route(FakeRequest(GET, "/docs/index.html")) must beSome
+      val a = app()
+      running(a) {
+        route(a, FakeRequest(GET, "/docs/index.html")) must beSome
       }
     }
 
     "render login page" in {
-      running(app()) {
-        val page = route(FakeRequest(GET, "/login")).get
+      val a = app()
+      running(a) {
+        val page = route(a, FakeRequest(GET, "/login")).get
         status(page) must equalTo(OK)
         contentType(page) must beSome.which(_ == "text/html")
         contentAsString(page) must contain("login")
@@ -56,9 +54,10 @@ class UserAppSpec extends PlaySpecification with Mockito {
 
     "have login route" in {
       val service = newComp
-      running(app(service)) {
+      val a = app(service)
+      running(a) {
         service.login(any) returns Future.successful(Right(GrantHandlerResult(tokenType = "1", accessToken = "at", expiresIn = None, refreshToken = None, scope = None)))
-        val page = route(FakeRequest(POST, "/login")
+        val page = route(a, FakeRequest(POST, "/login")
           .withFormUrlEncodedBody("email" -> "test@test.com", "password" -> "12345"))
         page must beSome
         waitFor(page.get)
@@ -68,16 +67,17 @@ class UserAppSpec extends PlaySpecification with Mockito {
 
     "have register route" in {
       val service = newComp
+      val a = app(service)
       service.registerUser(any[RegisterDTO]) answers (u => result(u.asInstanceOf[RegisterDTO]))
-      running(app(service)) {
-        val page = route(FakeRequest(POST, "/api/register")
+      running(a) {
+        val page = route(a, FakeRequest(POST, "/api/register")
           .withJsonBody(Json.parse(
-          """
+            """
             {
             "login":"test@test.com",
             "password":"123456"
             }
-          """)))
+            """)))
         page must beSome
         val res = Await.result(page.get, Duration.Inf)
         val json = contentAsJson(page.get)
@@ -93,15 +93,16 @@ class UserAppSpec extends PlaySpecification with Mockito {
           val dto = u.asInstanceOf[GroupDTO].copy(id = guido)
           result(dto)
       }
-      running(app(service)) {
-        val page = route(FakeRequest(POST, "/api/group")
+      val a = app(service)
+      running(a) {
+        val page = route(a, FakeRequest(POST, "/api/group")
           .withJsonBody(Json.parse(
-          """
+            """
             {
             "name":"group name",
             "projectId" : "pid"
             }
-          """)))
+            """)))
         page must beSome
         val res = Await.result(page.get, Duration.Inf)
         val json = contentAsJson(page.get)

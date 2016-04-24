@@ -5,14 +5,14 @@ import org.planner.dal._
 import org.planner.db._
 import org.planner.util.Constants
 import org.planner.util.Time._
-import play.api.Play
+import play.api.{Application, Play}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SlickProjectDAL @Inject()(cache: Caching) extends ProjectDAL with DB {
-  val config = DatabaseConfigProvider.get[JdbcProfile](Play.current)
+class SlickProjectDAL @Inject()(cache: Caching, app: Application) extends ProjectDAL with DB {
+  val config = DatabaseConfigProvider.get[JdbcProfile](app)
   val profile = config.driver
   val db = config.db
 

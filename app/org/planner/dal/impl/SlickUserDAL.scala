@@ -4,15 +4,15 @@ import com.google.inject.Inject
 import org.planner.dal.JsonFormats._
 import org.planner.dal.{DAL, _}
 import org.planner.db._
-import play.api.Play
+import play.api.{Application, Play}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 
-class SlickUserDAL @Inject()(cache: Caching) extends UserDAL with DB {
-  val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
+class SlickUserDAL @Inject()(cache: Caching, app: Application) extends UserDAL with DB {
+  val dbConfig = DatabaseConfigProvider.get[JdbcProfile](app)
   val profile = dbConfig.driver
   val db = dbConfig.db
 

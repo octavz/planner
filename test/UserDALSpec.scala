@@ -21,7 +21,7 @@ class UserDALSpec extends BaseDALSpec {
   import TestDB._
   import TestDB.profile.api._
 
-  def newDao = new SlickUserDAL(new TestCaching)
+  def newDao = new SlickUserDAL(new TestCaching, testApp)
 
   "User DAL" should {
 
